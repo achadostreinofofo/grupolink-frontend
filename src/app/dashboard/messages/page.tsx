@@ -23,12 +23,13 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>
 
 function statusInfo(status: ScheduledMessage['status']): { label: string; variant: 'green' | 'yellow' | 'red' | 'gray' } {
-  return {
-    PENDING:   { label: 'Agendado',  variant: 'yellow' },
-    SENT:      { label: 'Enviado',   variant: 'green' },
-    FAILED:    { label: 'Falhou',    variant: 'red' },
-    CANCELLED: { label: 'Cancelado', variant: 'gray' },
-  }[status]
+  const map = {
+    PENDING:   { label: 'Agendado',  variant: 'yellow' as const },
+    SENT:      { label: 'Enviado',   variant: 'green'  as const },
+    FAILED:    { label: 'Falhou',    variant: 'red'    as const },
+    CANCELLED: { label: 'Cancelado', variant: 'gray'   as const },
+  }
+  return map[status]
 }
 
 function formatDateTime(iso: string) {
