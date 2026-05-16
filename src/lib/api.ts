@@ -28,9 +28,10 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 
   if (!res.ok) {
     const body = await res.json().catch(() => ({}))
-    // Backend restarted → new RSA key pair → invalidate cached key so next call re-fetches
     if (body?.error === 'ENCRYPTION_KEY_EXPIRED') clearPublicKeyCache()
-    throw new Error(body?.message ?? body?.error ?? `Erro ${res.status}`)
+    const err = new Error(body?.message ?? body?.error ?? `Erro ${res.status}`) as Error & { code?: string }
+    err.code = body?.error
+    throw err
   }
 
   return res.json() as Promise<T>
