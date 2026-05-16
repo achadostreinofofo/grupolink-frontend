@@ -6,7 +6,7 @@ import type {
   Structure, StructureAnalytics, SubscriptionStatus, User,
   UserProfile, UtmAnalytics, WhatsappAccount
 } from '@/types'
-import { encryptField } from './encryption'
+import { clearPublicKeyCache, encryptField } from './encryption'
 
 const BASE = '/api'
 
@@ -28,7 +28,9 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 
   if (!res.ok) {
     const body = await res.json().catch(() => ({}))
-    throw new Error(body?.error ?? `Erro ${res.status}`)
+    // Backend restarted → new RSA key pair → invalidate cached key so next call re-fetches
+    if (body?.error === 'ENCRYPTION_KEY_EXPIRED') clearPublicKeyCache()
+    throw new Error(body?.message ?? body?.error ?? `Erro ${res.status}`)
   }
 
   return res.json() as Promise<T>

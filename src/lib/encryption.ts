@@ -1,18 +1,16 @@
-// RSA-OAEP client-side encryption for sensitive fields (password, CPF)
-// Public key is fetched once per session and cached in memory.
-// Even if TLS is the primary transport security, encrypting at the payload
-// level means the plaintext never appears in server logs or intermediary layers.
+// RSA-OAEP client-side encryption for sensitive fields (password, CPF).
+// The public key is cached per session. If the backend restarts (new key pair),
+// the cache is automatically invalidated and the key is re-fetched.
 
 let cachedKey: CryptoKey | null = null
 
-async function loadPublicKey(): Promise<CryptoKey> {
-  if (cachedKey) return cachedKey
+async function fetchAndCacheKey(): Promise<CryptoKey> {
+  cachedKey = null  // always clear before fetching
 
-  const res = await fetch('/api/security/public-key')
+  const res = await fetch('/api/security/public-key', { cache: 'no-store' })
   if (!res.ok) throw new Error('Falha ao obter chave de criptografia')
 
   const { publicKey } = await res.json() as { publicKey: string }
-
   const binary = Uint8Array.from(atob(publicKey), c => c.charCodeAt(0))
 
   cachedKey = await crypto.subtle.importKey(
@@ -26,6 +24,10 @@ async function loadPublicKey(): Promise<CryptoKey> {
   return cachedKey
 }
 
+async function loadPublicKey(): Promise<CryptoKey> {
+  return cachedKey ?? fetchAndCacheKey()
+}
+
 export async function encryptField(plaintext: string): Promise<string> {
   const key = await loadPublicKey()
   const encoded = new TextEncoder().encode(plaintext)
@@ -36,7 +38,7 @@ export async function encryptField(plaintext: string): Promise<string> {
   return btoa(binary)
 }
 
-/** Call this when the user logs out or the page key should be invalidated. */
+/** Clears the cached key. Called automatically on ENCRYPTION_KEY_EXPIRED errors. */
 export function clearPublicKeyCache(): void {
   cachedKey = null
 }
