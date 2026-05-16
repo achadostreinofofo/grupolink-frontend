@@ -10,6 +10,7 @@ const PUBLIC_PATHS = new Set([
   '/auth/verify-email',
   '/politica-de-privacidade',
   '/termos-de-uso',
+  '/admin',
 ])
 
 export function proxy(request: NextRequest) {
