@@ -1,6 +1,4 @@
 import Link from 'next/link'
-import { Button } from '@/components/ui/Button'
-import { cn } from '@/lib/utils'
 
 const plans = [
   {
@@ -8,6 +6,7 @@ const plans = [
     price: 128,
     description: 'Para afiliados iniciando a automação',
     highlight: false,
+    accent: '#00E5FF',
     features: [
       '1 celular conectado',
       '80 agendamentos/mês',
@@ -22,6 +21,7 @@ const plans = [
     price: 290,
     description: 'Para afiliados em crescimento acelerado',
     highlight: true,
+    accent: '#A855F7',
     features: [
       '2 celulares conectados',
       '4 links de redirecionamento',
@@ -37,6 +37,7 @@ const plans = [
     price: 453,
     description: 'Para operações profissionais e agências',
     highlight: false,
+    accent: '#00E5FF',
     features: [
       'Acesso completo à API',
       'Criação ilimitada de grupos',
@@ -52,73 +53,95 @@ const plans = [
 
 export function PricingSection() {
   return (
-    <section id="pricing" className="py-24 bg-gray-50">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6">
+    <section id="pricing" className="py-24 bg-dark-950 relative overflow-hidden">
+      <div className="absolute inset-0 cyber-grid-bg opacity-20" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-px h-24"
+        style={{ background: 'linear-gradient(to bottom, transparent, #00E5FF, transparent)' }} />
+
+      <div className="relative max-w-6xl mx-auto px-4 sm:px-6">
         <div className="text-center mb-16">
-          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-            Planos sem enrolação
+          <p className="text-neon-cyan text-sm font-semibold tracking-widest uppercase mb-3">Preços</p>
+          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
+            Planos <span className="gradient-text">sem enrolação</span>
           </h2>
-          <p className="text-lg text-gray-500">
-            Valores até 35% abaixo da concorrência. Cancele quando quiser.
-          </p>
+          <p className="text-gray-400">Valores até 35% abaixo da concorrência. Cancele quando quiser.</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
           {plans.map((plan) => (
-            <div
-              key={plan.name}
-              className={cn(
-                'relative rounded-2xl p-8 border',
-                plan.highlight
-                  ? 'bg-brand-600 border-brand-600 text-white shadow-2xl shadow-brand-200 scale-105'
-                  : 'bg-white border-gray-200'
-              )}
-            >
+            <div key={plan.name} className={`relative rounded-2xl p-8 transition-all ${
+              plan.highlight ? 'scale-105' : ''
+            }`}
+              style={{
+                background: plan.highlight
+                  ? 'linear-gradient(135deg, rgba(168,85,247,0.15), rgba(0,229,255,0.08))'
+                  : 'rgba(22,27,34,0.8)',
+                border: plan.highlight
+                  ? '1px solid rgba(168,85,247,0.5)'
+                  : '1px solid rgba(0,229,255,0.08)',
+                boxShadow: plan.highlight ? '0 0 40px rgba(168,85,247,0.15)' : 'none',
+              }}>
               {plan.highlight && (
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                  <span className="bg-yellow-400 text-yellow-900 text-xs font-bold px-3 py-1 rounded-full">
+                  <span className="text-xs font-bold px-3 py-1 rounded-full"
+                    style={{ background: 'linear-gradient(135deg, #00E5FF, #A855F7)', color: '#04070f' }}>
                     MAIS POPULAR
                   </span>
                 </div>
               )}
 
+              {/* Plan name */}
               <div className="mb-6">
-                <h3 className={cn('text-lg font-bold mb-1', plan.highlight ? 'text-white' : 'text-gray-900')}>
-                  {plan.name}
-                </h3>
-                <p className={cn('text-sm', plan.highlight ? 'text-brand-100' : 'text-gray-500')}>
-                  {plan.description}
-                </p>
+                <h3 className="text-lg font-bold text-white mb-1">{plan.name}</h3>
+                <p className="text-sm text-gray-500">{plan.description}</p>
               </div>
 
-              <div className="mb-8">
-                <span className={cn('text-4xl font-extrabold', plan.highlight ? 'text-white' : 'text-gray-900')}>
+              {/* Price */}
+              <div className="mb-8 flex items-end gap-1">
+                <span className="text-4xl font-extrabold"
+                  style={{ color: plan.accent }}>
                   R$ {plan.price}
                 </span>
-                <span className={cn('text-sm ml-1', plan.highlight ? 'text-brand-100' : 'text-gray-400')}>/mês</span>
+                <span className="text-sm text-gray-500 mb-1">/mês</span>
               </div>
 
+              {/* Features */}
               <ul className="space-y-3 mb-8">
                 {plan.features.map((f) => (
                   <li key={f} className="flex items-start gap-2 text-sm">
-                    <svg
-                      className={cn('w-4 h-4 mt-0.5 flex-shrink-0', plan.highlight ? 'text-brand-200' : 'text-brand-600')}
-                      fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"
-                    >
+                    <svg className="w-4 h-4 mt-0.5 flex-shrink-0"
+                      style={{ color: plan.accent }}
+                      fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                     </svg>
-                    <span className={plan.highlight ? 'text-brand-50' : 'text-gray-600'}>{f}</span>
+                    <span className="text-gray-400">{f}</span>
                   </li>
                 ))}
               </ul>
 
-              <Link href="/signup">
-                <Button
-                  className="w-full"
-                  variant={plan.highlight ? 'secondary' : 'primary'}
-                >
+              <Link href="/signup" className="block">
+                <button className="w-full py-3 rounded-xl font-semibold text-sm transition-all"
+                  style={plan.highlight ? {
+                    background: 'linear-gradient(135deg, #A855F7, #00E5FF)',
+                    color: '#04070f',
+                    fontWeight: 700,
+                  } : {
+                    background: 'transparent',
+                    border: `1px solid ${plan.accent}40`,
+                    color: plan.accent,
+                  }}
+                  onMouseEnter={e => {
+                    if (!plan.highlight) {
+                      (e.target as HTMLButtonElement).style.background = `${plan.accent}15`
+                    }
+                  }}
+                  onMouseLeave={e => {
+                    if (!plan.highlight) {
+                      (e.target as HTMLButtonElement).style.background = 'transparent'
+                    }
+                  }}>
                   {plan.cta}
-                </Button>
+                </button>
               </Link>
             </div>
           ))}

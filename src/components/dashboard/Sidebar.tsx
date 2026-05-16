@@ -32,7 +32,7 @@ export function Sidebar() {
       <div className="px-5 py-5 border-b border-gray-800">
         <div className="flex items-center gap-2.5 font-bold text-white text-base">
           <span className="w-7 h-7 rounded-lg bg-brand-600 flex items-center justify-center text-sm">G</span>
-          GrupoLink
+          Redirect Grupo
         </div>
       </div>
 

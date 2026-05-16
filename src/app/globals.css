@@ -4,5 +4,83 @@
 
 @layer base {
   html { scroll-behavior: smooth; }
-  body { @apply bg-gray-50 text-gray-900 antialiased; }
+  body {
+    @apply bg-dark-900 text-gray-100 antialiased;
+  }
+}
+
+@layer utilities {
+  .gradient-text {
+    background: linear-gradient(135deg, #00E5FF 0%, #A855F7 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .gradient-text-white {
+    background: linear-gradient(135deg, #ffffff 0%, #94a3b8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .glass {
+    background: rgba(13, 17, 23, 0.7);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(0, 229, 255, 0.1);
+  }
+
+  .glass-card {
+    background: rgba(22, 27, 34, 0.8);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(0, 229, 255, 0.08);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .glass-card:hover {
+    border-color: rgba(0, 229, 255, 0.25);
+    box-shadow: 0 0 30px rgba(0, 229, 255, 0.08);
+  }
+
+  .glow-cyan {
+    box-shadow: 0 0 20px rgba(0, 229, 255, 0.4), 0 0 60px rgba(0, 229, 255, 0.1);
+  }
+
+  .glow-purple {
+    box-shadow: 0 0 20px rgba(168, 85, 247, 0.4), 0 0 60px rgba(168, 85, 247, 0.1);
+  }
+
+  .cyber-grid-bg {
+    background-image: linear-gradient(rgba(0,229,255,0.03) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(0,229,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  .btn-neon {
+    background: linear-gradient(135deg, #00E5FF, #0097a7);
+    color: #04070f;
+    font-weight: 700;
+    transition: all 0.3s ease;
+  }
+
+  .btn-neon:hover {
+    box-shadow: 0 0 25px rgba(0, 229, 255, 0.5);
+    transform: translateY(-1px);
+  }
+
+  .btn-ghost-neon {
+    background: transparent;
+    border: 1px solid rgba(0, 229, 255, 0.4);
+    color: #00E5FF;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+
+  .btn-ghost-neon:hover {
+    background: rgba(0, 229, 255, 0.1);
+    border-color: #00E5FF;
+    box-shadow: 0 0 20px rgba(0, 229, 255, 0.2);
+  }
 }

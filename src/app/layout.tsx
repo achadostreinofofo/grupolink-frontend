@@ -5,8 +5,14 @@ import './globals.css'
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 
 export const metadata: Metadata = {
-  title: 'GrupoLink — Gerencie seus grupos WhatsApp',
-  description: 'Plataforma SaaS para afiliados gerenciarem grupos WhatsApp com redirecionamento inteligente, analytics e automação.',
+  title: 'Redirect Grupo — Automatize seus grupos WhatsApp',
+  description: 'Plataforma para afiliados gerenciarem grupos WhatsApp com redirecionamento inteligente, analytics avançado e automação de escala.',
+  metadataBase: new URL('https://www.redirectgrupo.com.br'),
+  openGraph: {
+    title: 'Redirect Grupo',
+    description: 'Um link, centenas de grupos. Distribua membros automaticamente com tecnologia de ponta.',
+    siteName: 'Redirect Grupo',
+  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

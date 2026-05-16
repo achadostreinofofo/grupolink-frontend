@@ -3,8 +3,8 @@ import { Navbar } from '@/components/landing/Navbar'
 import { Footer } from '@/components/landing/Footer'
 
 export const metadata = {
-  title: 'Política de Privacidade – GrupoLink',
-  description: 'Como a GrupoLink coleta, usa e protege seus dados pessoais, em conformidade com a LGPD.',
+  title: 'Política de Privacidade – Redirect Grupo',
+  description: 'Como a Redirect Grupo coleta, usa e protege seus dados pessoais, em conformidade com a LGPD.',
 }
 
 export default function PoliticaPrivacidadePage() {
@@ -17,15 +17,15 @@ export default function PoliticaPrivacidadePage() {
 
         <Section title="1. Quem somos">
           <p>
-            A <strong>GrupoLink</strong> ("nós", "nosso" ou "Plataforma") é uma solução SaaS para gerenciamento
+            A <strong>Redirect Grupo</strong> ("nós", "nosso" ou "Plataforma") é uma solução SaaS para gerenciamento
             de grupos WhatsApp voltada a afiliados e vendedores de e-commerce. Esta Política de Privacidade
             descreve como tratamos os dados pessoais dos usuários em conformidade com a{' '}
             <strong>Lei Geral de Proteção de Dados Pessoais (LGPD – Lei nº 13.709/2018)</strong>.
           </p>
           <p className="mt-3">
-            <strong>Controlador:</strong> GrupoLink Tecnologia Ltda. — contato:{' '}
-            <a href="mailto:privacidade@grupolink.com.br" className="text-brand-600 hover:underline">
-              privacidade@grupolink.com.br
+            <strong>Controlador:</strong> Redirect Grupo Tecnologia Ltda. — contato:{' '}
+            <a href="mailto:privacidade@redirectgrupo.com.br" className="text-brand-600 hover:underline">
+              privacidade@redirectgrupo.com.br
             </a>
           </p>
         </Section>
@@ -124,8 +124,8 @@ export default function PoliticaPrivacidadePage() {
               Configurações
             </Link>{' '}
             ou envie um e-mail para{' '}
-            <a href="mailto:privacidade@grupolink.com.br" className="text-brand-600 hover:underline">
-              privacidade@grupolink.com.br
+            <a href="mailto:privacidade@redirectgrupo.com.br" className="text-brand-600 hover:underline">
+              privacidade@redirectgrupo.com.br
             </a>
             . Respondemos em até <strong>15 dias úteis</strong>.
           </p>
@@ -162,8 +162,8 @@ export default function PoliticaPrivacidadePage() {
         <Section title="9. Encarregado de Dados (DPO)">
           <p>
             Nosso Encarregado pelo Tratamento de Dados Pessoais pode ser contatado pelo e-mail{' '}
-            <a href="mailto:privacidade@grupolink.com.br" className="text-brand-600 hover:underline">
-              privacidade@grupolink.com.br
+            <a href="mailto:privacidade@redirectgrupo.com.br" className="text-brand-600 hover:underline">
+              privacidade@redirectgrupo.com.br
             </a>
             . Também é possível registrar reclamações junto à{' '}
             <a
@@ -188,8 +188,8 @@ export default function PoliticaPrivacidadePage() {
 
         <div className="mt-12 pt-6 border-t border-gray-200 text-sm text-gray-500 text-center">
           Dúvidas?{' '}
-          <a href="mailto:privacidade@grupolink.com.br" className="text-brand-600 hover:underline">
-            privacidade@grupolink.com.br
+          <a href="mailto:privacidade@redirectgrupo.com.br" className="text-brand-600 hover:underline">
+            privacidade@redirectgrupo.com.br
           </a>
         </div>
       </main>
