@@ -59,7 +59,8 @@ export default function SignupPage() {
     try {
       const res = await api.auth.signup({ ...data })
       saveAuth(res.token)
-      router.push('/dashboard')
+      // Redireciona para confirmação de e-mail em vez do dashboard
+      router.push('/auth/verify-email-sent')
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Erro ao criar conta')
     }

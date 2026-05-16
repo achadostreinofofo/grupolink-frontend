@@ -42,6 +42,12 @@ export const api = {
       request<AuthResponse>('/auth/login', { method: 'POST', body: JSON.stringify(data) }),
 
     me: () => request<User>('/auth/me'),
+
+    verifyEmail: (token: string) =>
+      request<{ message: string }>(`/auth/verify-email?token=${encodeURIComponent(token)}`, { method: 'POST' }),
+
+    resendVerification: () =>
+      request<{ message: string }>('/auth/resend-verification', { method: 'POST' }),
   },
 
   structures: {

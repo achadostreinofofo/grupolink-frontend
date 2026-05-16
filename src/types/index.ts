@@ -13,6 +13,7 @@ export interface AuthResponse {
   email: string
   name: string
   plan: string
+  emailVerified: boolean
 }
 
 export interface Group {
