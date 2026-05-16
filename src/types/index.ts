@@ -212,4 +212,6 @@ export interface UserProfile {
   whatsappIntegrated: boolean
   hasPassword: boolean
   createdAt: string
+  trialEndsAt: string | null
+  isOnTrial: boolean
 }

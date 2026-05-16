@@ -6,30 +6,33 @@ const plans = [
   {
     name: 'Smart',
     price: 128,
+    trial: '7 dias grátis ao se cadastrar',
     description: 'Para afiliados iniciando a automação',
     highlight: false,
     accent: '#00E5FF',
     features: [
-      '1 celular conectado',
-      '80 agendamentos/mês',
+      '1 estrutura de grupos',
+      '1 conta WhatsApp conectada',
       '1 link de redirecionamento',
-      'Analytics básico',
+      'Até 40 mensagens salvas',
       'Suporte por e-mail',
     ],
-    cta: 'Começar com Smart',
+    cta: 'Começar grátis por 7 dias',
   },
   {
     name: 'Diamond',
     price: 290,
+    trial: null,
     description: 'Para afiliados em crescimento acelerado',
     highlight: true,
     accent: '#A855F7',
     features: [
-      '2 celulares conectados',
-      '4 links de redirecionamento',
-      'Monitoramento de entrada/saída',
-      'Blacklist global',
-      'Analytics avançado',
+      'Tudo do Smart +',
+      'Até 5 estruturas de grupos',
+      '2 contas WhatsApp conectadas',
+      'Cookie configurável até 30 dias',
+      'Monitoramento entrada/saída',
+      'Dashboard analytics completo',
       'Suporte prioritário',
     ],
     cta: 'Escolher Diamond',
@@ -37,15 +40,16 @@ const plans = [
   {
     name: 'Black',
     price: 453,
+    trial: null,
     description: 'Para operações profissionais e agências',
     highlight: false,
     accent: '#00E5FF',
     features: [
-      'Acesso completo à API',
-      'Criação ilimitada de grupos',
-      'Celulares ilimitados',
-      'Links ilimitados',
-      'Encurtador próprio',
+      'Tudo do Diamond +',
+      'Até 10 estruturas de grupos',
+      'Contas WhatsApp ilimitadas',
+      'Encurtador de link próprio',
+      'Mensagens ilimitadas',
       'Suporte 24/7',
       'Onboarding dedicado',
     ],
@@ -88,6 +92,13 @@ export function PricingSection() {
                   <span className="text-xs font-bold px-3 py-1 rounded-full"
                     style={{ background: 'linear-gradient(135deg, #00E5FF, #A855F7)', color: '#04070f' }}>
                     MAIS POPULAR
+                  </span>
+                </div>
+              )}
+              {plan.trial && (
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2 whitespace-nowrap">
+                  <span className="text-xs font-bold px-3 py-1 rounded-full bg-neon-green/20 text-green-400 border border-green-500/30">
+                    ✦ {plan.trial}
                   </span>
                 </div>
               )}
