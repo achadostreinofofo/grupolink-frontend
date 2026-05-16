@@ -10,7 +10,7 @@ const PUBLIC_PATHS = new Set([
   '/termos-de-uso',
 ])
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   if (
