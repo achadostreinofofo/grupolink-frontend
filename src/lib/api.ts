@@ -6,6 +6,7 @@ import type {
   Structure, StructureAnalytics, SubscriptionStatus, User,
   UserProfile, UtmAnalytics, WhatsappAccount
 } from '@/types'
+import { clearPublicKeyCache, encryptField } from './encryption'
 
 const BASE = '/api'
 
@@ -27,6 +28,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 
   if (!res.ok) {
     const body = await res.json().catch(() => ({}))
+    if (body?.error === 'ENCRYPTION_KEY_EXPIRED') clearPublicKeyCache()
     const err = new Error(body?.message ?? body?.error ?? `Erro ${res.status}`) as Error & { code?: string }
     err.code = body?.error
     throw err
@@ -37,11 +39,24 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 
 export const api = {
   auth: {
-    signup: (data: { email: string; password: string; name: string; cpf?: string }) =>
-      request<AuthResponse>('/auth/signup', { method: 'POST', body: JSON.stringify(data) }),
+    signup: async (data: { email: string; password: string; name: string; cpf?: string }) => {
+      const [encPassword, encCpf] = await Promise.all([
+        encryptField(data.password),
+        data.cpf ? encryptField(data.cpf) : Promise.resolve(undefined),
+      ])
+      return request<AuthResponse>('/auth/signup', {
+        method: 'POST',
+        body: JSON.stringify({ ...data, password: encPassword, cpf: encCpf }),
+      })
+    },
 
-    login: (data: { email: string; password: string }) =>
-      request<AuthResponse>('/auth/login', { method: 'POST', body: JSON.stringify(data) }),
+    login: async (data: { email: string; password: string }) => {
+      const encPassword = await encryptField(data.password)
+      return request<AuthResponse>('/auth/login', {
+        method: 'POST',
+        body: JSON.stringify({ ...data, password: encPassword }),
+      })
+    },
 
     me: () => request<User>('/auth/me'),
   },
