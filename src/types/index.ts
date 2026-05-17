@@ -41,7 +41,6 @@ export interface Structure {
 
 export interface CreateStructurePayload {
   name: string
-  slug: string
   description?: string
   maxMembersPerGroup?: number
   fillThreshold?: number

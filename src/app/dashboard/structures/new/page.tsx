@@ -9,18 +9,14 @@ import { api } from '@/lib/api'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Card, CardContent, CardHeader } from '@/components/ui/Card'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, Users, AlertCircle } from 'lucide-react'
 import Link from 'next/link'
 
 const schema = z.object({
-  name: z.string().min(2, 'Nome muito curto'),
-  slug: z.string()
-    .min(3, 'Mínimo 3 caracteres')
-    .max(60, 'Máximo 60 caracteres')
-    .regex(/^[a-z0-9-]+$/, 'Use apenas letras minúsculas, números e hífens'),
-  description: z.string().optional(),
+  name:              z.string().min(2, 'Nome muito curto'),
+  description:       z.string().optional(),
   maxMembersPerGroup: z.coerce.number().min(1).max(1024).default(256),
-  fillThreshold: z.coerce.number().min(0.1).max(1).default(0.8),
+  fillThresholdPct:  z.coerce.number().min(50).max(100).default(80),
 })
 
 type FormData = z.infer<typeof schema>
@@ -29,15 +25,22 @@ export default function NewStructurePage() {
   const router = useRouter()
   const [error, setError] = useState('')
 
-  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<FormData>({
+  const { register, handleSubmit, watch, formState: { errors, isSubmitting } } = useForm<FormData>({
     resolver: zodResolver(schema),
-    defaultValues: { maxMembersPerGroup: 256, fillThreshold: 0.8 },
+    defaultValues: { maxMembersPerGroup: 256, fillThresholdPct: 80 },
   })
+
+  const thresholdPct = watch('fillThresholdPct') ?? 80
 
   const onSubmit = async (data: FormData) => {
     setError('')
     try {
-      const structure = await api.structures.create(data)
+      const structure = await api.structures.create({
+        name:               data.name,
+        description:        data.description,
+        maxMembersPerGroup: data.maxMembersPerGroup,
+        fillThreshold:      data.fillThresholdPct / 100,
+      })
       router.push(`/dashboard/structures/${structure.id}`)
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Erro ao criar estrutura')
@@ -63,7 +66,8 @@ export default function NewStructurePage() {
           <p className="text-sm font-medium text-gray-700">Informações da Estrutura</p>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+
             <Input
               id="name"
               label="Nome da estrutura"
@@ -72,45 +76,75 @@ export default function NewStructurePage() {
               {...register('name')}
             />
 
-            <div>
-              <Input
-                id="slug"
-                label="Slug (URL do link)"
-                placeholder="ofertas-ml"
-                error={errors.slug?.message}
-                {...register('slug')}
-              />
-              <p className="text-xs text-gray-400 mt-1">
-                Seu smart link será: <code className="bg-gray-100 px-1 rounded">/r/seu-slug</code>
-              </p>
-            </div>
-
             <Input
               id="description"
               label="Descrição (opcional)"
-              placeholder="Grupos de ofertas do ML para afiliados"
+              placeholder="Breve descrição sobre o objetivo dessa estrutura"
               {...register('description')}
             />
 
-            <div className="grid grid-cols-2 gap-4">
-              <Input
-                id="maxMembersPerGroup"
-                type="number"
-                label="Máx. membros por grupo"
-                error={errors.maxMembersPerGroup?.message}
-                {...register('maxMembersPerGroup')}
-              />
-              <div>
+            <div>
+              <label htmlFor="maxMembersPerGroup" className="block text-sm font-medium text-gray-700 mb-1">
+                Número máximo de membros por grupo
+              </label>
+              <p className="text-xs text-gray-400 mb-2">
+                Limite de pessoas em cada grupo do WhatsApp. O padrão é 256 (máximo atual do WhatsApp).
+              </p>
+              <div className="flex items-center gap-3">
                 <Input
-                  id="fillThreshold"
+                  id="maxMembersPerGroup"
                   type="number"
-                  step="0.05"
-                  label="Threshold de preenchimento"
-                  error={errors.fillThreshold?.message}
-                  {...register('fillThreshold')}
+                  min={1}
+                  max={1024}
+                  error={errors.maxMembersPerGroup?.message}
+                  className="w-32"
+                  {...register('maxMembersPerGroup')}
                 />
-                <p className="text-xs text-gray-400 mt-1">0.8 = ativa próximo ao atingir 80%</p>
+                <div className="flex items-center gap-1 text-sm text-gray-500">
+                  <Users className="w-4 h-4" />
+                  <span>pessoas por grupo</span>
+                </div>
               </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Quando direcionar para o próximo grupo?
+              </label>
+              <p className="text-xs text-gray-400 mb-4">
+                Quando um grupo atingir essa porcentagem da capacidade, os novos membros serão
+                automaticamente direcionados para o próximo grupo disponível.
+              </p>
+
+              <div className="flex items-center gap-4">
+                <input
+                  id="fillThresholdPct"
+                  type="range"
+                  min={50}
+                  max={100}
+                  step={5}
+                  {...register('fillThresholdPct')}
+                  className="flex-1 h-2 rounded-lg appearance-none cursor-pointer accent-teal-500 bg-gray-200"
+                />
+                <div className="text-right w-16 shrink-0">
+                  <span className="text-2xl font-bold text-teal-600">{thresholdPct}%</span>
+                </div>
+              </div>
+
+              <div className="flex justify-between text-xs text-gray-400 mt-1 px-0.5">
+                <span>50%</span>
+                <span>75%</span>
+                <span>100%</span>
+              </div>
+
+              {thresholdPct === 100 && (
+                <div className="flex items-start gap-2 mt-3 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
+                  <AlertCircle className="w-4 h-4 text-amber-500 mt-0.5 shrink-0" />
+                  <p className="text-xs text-amber-700">
+                    Com 100%, o grupo só vai para o próximo quando estiver completamente lotado.
+                  </p>
+                </div>
+              )}
             </div>
 
             {error && (
