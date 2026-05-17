@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Card, CardContent, CardHeader } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
-import { Copy, Plus, ArrowLeft, ExternalLink, Download } from 'lucide-react'
+import { Copy, Plus, ArrowLeft, ExternalLink, Download, Send } from 'lucide-react'
 import Link from 'next/link'
 
 const addGroupSchema = z.object({
@@ -125,6 +125,11 @@ export default function StructureDetailPage() {
           <p className="text-sm text-gray-500 mt-0.5">{structure.description}</p>
         </div>
         <div className="flex gap-2">
+          <Link href={`/dashboard/structures/${id}/broadcast`}>
+            <Button size="sm">
+              <Send className="w-3.5 h-3.5" /> Transmitir
+            </Button>
+          </Link>
           <Button variant="secondary" size="sm" onClick={() => downloadCsv('members')}>
             <Download className="w-3.5 h-3.5" /> Membros CSV
           </Button>

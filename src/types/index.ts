@@ -212,3 +212,42 @@ export interface UserProfile {
   hasPassword: boolean
   createdAt: string
 }
+
+// ──── WhatsApp Web Sessions ────
+
+export interface WebSessionStartResponse {
+  sessionId: string
+  status: 'WAITING_SCAN' | 'AUTHENTICATED' | 'DISCONNECTED'
+}
+
+export interface WebSessionStatus {
+  sessionId: string
+  status: 'WAITING_SCAN' | 'AUTHENTICATED' | 'DISCONNECTED'
+  qrBase64: string | null
+  phone: string | null
+}
+
+// ──── Message Broadcasting ────
+
+export interface BroadcastRequest {
+  messageType?: 'TEXT' | 'IMAGE'
+  content: string
+  mediaUrl?: string
+  groupIds?: string[]
+}
+
+export interface BroadcastResponse {
+  broadcastId: string
+  status: string
+  totalGroups: number
+}
+
+export interface BroadcastStatusDetail {
+  broadcastId: string
+  status: 'QUEUED' | 'IN_PROGRESS' | 'COMPLETED' | 'FAILED' | 'SCHEDULED'
+  totalGroups: number
+  groupsProcessed: number
+  groupsSuccessful: number
+  groupsFailed: number
+  createdAt: string
+}

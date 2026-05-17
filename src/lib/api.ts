@@ -1,10 +1,12 @@
 import type {
-  AddGroupPayload, AuthResponse, BlacklistEntry, CheckoutResponse,
+  AddGroupPayload, AuthResponse, BlacklistEntry, BroadcastRequest,
+  BroadcastResponse, BroadcastStatusDetail, CheckoutResponse,
   ChurnAnalytics, ConnectWhatsappPayload, CreateMessagePayload,
   CreateShortLinkPayload, CreateStructurePayload, MessageTemplate,
   OverviewAnalytics, PendingAction, ScheduledMessage, ShortLink,
   Structure, StructureAnalytics, SubscriptionStatus, User,
-  UserProfile, UtmAnalytics, WhatsappAccount
+  UserProfile, UtmAnalytics, WebSessionStartResponse, WebSessionStatus,
+  WhatsappAccount
 } from '@/types'
 import { clearPublicKeyCache, encryptField } from './encryption'
 
@@ -138,6 +140,21 @@ export const api = {
     pendingActions: () => request<PendingAction[]>('/dashboard/pending-actions'),
     updateGroup: (structureId: string, groupId: string, data: { name?: string; inviteLink?: string; maxMembers?: number }) =>
       request(`/dashboard/structures/${structureId}/groups/${groupId}`, { method: 'PUT', body: JSON.stringify(data) }),
+  },
+
+  whatsappWeb: {
+    startSession: () => request<WebSessionStartResponse>('/whatsapp/web/sessions', { method: 'POST' }),
+    getStatus: (sessionId: string) => request<WebSessionStatus>(`/whatsapp/web/sessions/${sessionId}`),
+    listSessions: () => request<WebSessionStatus[]>('/whatsapp/web/sessions'),
+    disconnect: (sessionId: string) => request<void>(`/whatsapp/web/sessions/${sessionId}`, { method: 'DELETE' }),
+  },
+
+  broadcast: {
+    send: (structureId: string, data: BroadcastRequest) =>
+      request<BroadcastResponse>(`/structures/${structureId}/broadcast`, { method: 'POST', body: JSON.stringify(data) }),
+    getStatus: (structureId: string, broadcastId: string) =>
+      request<BroadcastStatusDetail>(`/structures/${structureId}/broadcast/${broadcastId}`),
+    list: () => request<BroadcastStatusDetail[]>('/broadcasts'),
   },
 
   users: {
