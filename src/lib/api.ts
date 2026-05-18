@@ -4,8 +4,8 @@ import type {
   ChurnAnalytics, ConnectWhatsappPayload, CreateMessagePayload,
   CreateShortLinkPayload, CreateStructurePayload, MessageTemplate,
   OverviewAnalytics, PendingAction, ScheduledMessage, ShortLink,
-  Structure, StructureAnalytics, SubscriptionStatus, User,
-  UserProfile, UtmAnalytics, WebSessionStartResponse, WebSessionStatus,
+  Structure, StructureAnalytics, SubscriptionStatus, UpdateMessagePayload,
+  User, UserProfile, UtmAnalytics, WebSessionStartResponse, WebSessionStatus,
   WhatsappAccount
 } from '@/types'
 import { clearPublicKeyCache, encryptField } from './encryption'
@@ -105,9 +105,35 @@ export const api = {
 
   messages: {
     list: () => request<ScheduledMessage[]>('/messages'),
-    create: (data: CreateMessagePayload) =>
-      request<ScheduledMessage>('/messages', { method: 'POST', body: JSON.stringify(data) }),
+    listByStructure: (structureId: string) =>
+      request<ScheduledMessage[]>(`/structures/${structureId}/messages`),
+    create: (structureId: string, data: CreateMessagePayload) =>
+      request<ScheduledMessage>(`/structures/${structureId}/messages`, { method: 'POST', body: JSON.stringify(data) }),
+    update: (id: string, data: UpdateMessagePayload) =>
+      request<ScheduledMessage>(`/messages/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+    sendNow: (id: string) =>
+      request<ScheduledMessage>(`/messages/${id}/send`, { method: 'POST' }),
+    delete: (id: string) => request<void>(`/messages/${id}`, { method: 'DELETE' }),
+    // mantido para compatibilidade
     cancel: (id: string) => request<void>(`/messages/${id}`, { method: 'DELETE' }),
+  },
+
+  upload: {
+    image: async (file: File): Promise<{ url: string }> => {
+      const form = new FormData()
+      form.append('file', file)
+      const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null
+      const res = await fetch('/api/upload/image', {
+        method: 'POST',
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        body: form,
+      })
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}))
+        throw new Error(body?.message ?? `Erro ${res.status}`)
+      }
+      return res.json()
+    },
   },
 
   blacklist: {

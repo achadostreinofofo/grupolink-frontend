@@ -120,8 +120,8 @@ export interface ScheduledMessage {
   title: string
   content: string
   mediaUrl: string | null
-  status: 'PENDING' | 'SENT' | 'FAILED' | 'CANCELLED'
-  scheduledAt: string
+  status: 'DRAFT' | 'PENDING' | 'SENT' | 'FAILED' | 'CANCELLED'
+  scheduledAt: string | null
   executedAt: string | null
   errorMessage: string | null
   structureId: string | null
@@ -133,7 +133,14 @@ export interface CreateMessagePayload {
   content: string
   mediaUrl?: string
   structureId?: string
-  scheduledAt: string
+  scheduledAt?: string    // null/omit = DRAFT
+}
+
+export interface UpdateMessagePayload {
+  title: string
+  content: string
+  mediaUrl?: string
+  scheduledAt?: string
 }
 
 export interface BlacklistEntry {
