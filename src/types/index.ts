@@ -78,6 +78,8 @@ export interface SubscriptionStatus {
   status: string
   payerEmail: string | null
   periodEndDate: string | null
+  trialEndDate: string | null
+  trialDaysLeft: number | null
 }
 
 export interface DailyClick {
