@@ -88,7 +88,7 @@ export default function NewStructurePage() {
                 Número máximo de membros por grupo
               </label>
               <p className="text-xs text-gray-400 mb-2">
-                Limite de pessoas em cada grupo do WhatsApp. O padrão é 256 (máximo atual do WhatsApp).
+                Limite de pessoas em cada grupo do WhatsApp. Máximo permitido: 1024 pessoas.
               </p>
               <div className="flex items-center gap-3">
                 <Input
