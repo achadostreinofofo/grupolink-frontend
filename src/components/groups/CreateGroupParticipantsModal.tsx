@@ -29,8 +29,9 @@ export function CreateGroupParticipantsModal({ open, groupName, onClose, onConfi
   const [selectedSessions, setSelected] = useState<Set<string>>(new Set())
 
   // Para 1 sessão: número manual
-  const [phone, setPhone]   = useState('')
+  const [phone, setPhone]         = useState('')
   const [phoneCheck, setPhoneCheck] = useState<PhoneCheck | null>(null)
+  const [reconnecting, setReconnecting] = useState(false)
 
   useEffect(() => {
     if (!open) return
@@ -61,8 +62,20 @@ export function CreateGroupParticipantsModal({ open, groupName, onClose, onConfi
     try {
       const res = await api.whatsappWeb.checkNumber(raw)
       setPhoneCheck({ raw, formatted: res.formattedPhone, jid: res.jid, exists: res.exists, checking: false, error: '' })
+      setReconnecting(false)
     } catch (e) {
-      setPhoneCheck({ raw, formatted: '', jid: '', exists: null, checking: false, error: e instanceof Error ? e.message : 'Erro' })
+      const msg = e instanceof Error ? e.message : 'Erro'
+      const isReconnecting = msg.toLowerCase().includes('reiniciada') || msg.toLowerCase().includes('reconnect')
+      setReconnecting(isReconnecting)
+      setPhoneCheck({ raw, formatted: '', jid: '', exists: null, checking: false, error: isReconnecting ? '' : msg })
+
+      // Auto-retry após 6s se estiver reconectando
+      if (isReconnecting) {
+        setTimeout(() => {
+          setReconnecting(false)
+          handleCheckPhone()
+        }, 6000)
+      }
     }
   }
 
@@ -164,7 +177,14 @@ export function CreateGroupParticipantsModal({ open, groupName, onClose, onConfi
                   </Button>
                 </div>
 
-                {phoneCheck && !phoneCheck.checking && (
+                {reconnecting && (
+                  <div className="flex items-center gap-2 mt-1.5 text-xs text-amber-600">
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    Sessão WhatsApp reconectando, tentando novamente em 6s...
+                  </div>
+                )}
+
+                {phoneCheck && !phoneCheck.checking && !reconnecting && (
                   <div className={`flex items-center gap-1.5 mt-1.5 text-xs ${phoneCheck.exists ? 'text-green-600' : 'text-red-500'}`}>
                     {phoneCheck.exists
                       ? <><CheckCircle className="w-3.5 h-3.5" /> Conta WhatsApp ativa (+55{phoneCheck.raw})</>
