@@ -363,25 +363,21 @@ export default function StructureDetailPage() {
 
                     {/* actions */}
                     <div className="flex items-center gap-1 flex-shrink-0">
-                      {(msg.status === 'DRAFT' || msg.status === 'PENDING') && (
-                        <>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="text-teal-600 hover:bg-teal-50"
-                            loading={sendingId === msg.id}
-                            onClick={() => onSendNow(msg.id)}
-                            title="Enviar agora"
-                          >
-                            <Send className="w-3.5 h-3.5" />
-                          </Button>
-                          <Link href={`/dashboard/structures/${id}/messages/${msg.id}/edit`}>
-                            <Button variant="ghost" size="sm" title="Editar">
-                              <Edit2 className="w-3.5 h-3.5" />
-                            </Button>
-                          </Link>
-                        </>
-                      )}
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-teal-600 hover:bg-teal-50"
+                        loading={sendingId === msg.id}
+                        onClick={() => onSendNow(msg.id)}
+                        title="Enviar agora"
+                      >
+                        <Send className="w-3.5 h-3.5" />
+                      </Button>
+                      <Link href={`/dashboard/structures/${id}/messages/${msg.id}/edit`}>
+                        <Button variant="ghost" size="sm" title="Editar">
+                          <Edit2 className="w-3.5 h-3.5" />
+                        </Button>
+                      </Link>
                       <Button
                         variant="ghost"
                         size="sm"
