@@ -191,7 +191,7 @@ export default function StructureDetailPage() {
     }
   }
 
-  const handleParticipantsConfirm = async (participantPhones: string[]) => {
+  const handleParticipantsConfirm = async (participantJids: string[]) => {
     if (!pendingGroupData) return
     setCreatingGroup(true)
     try {
@@ -199,7 +199,7 @@ export default function StructureDetailPage() {
         name:             pendingGroupData.name,
         startingNumber:   pendingGroupData.startingNumber,
         profilePicUrl:    pendingGroupData.profilePicUrl,
-        participantPhones,
+        participantJids,
       })
       setShowParticipantsModal(false)
       reset()

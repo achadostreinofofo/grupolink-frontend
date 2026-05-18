@@ -68,7 +68,7 @@ export const api = {
     get: (id: string) => request<Structure>(`/structures/${id}`),
     create: (data: CreateStructurePayload) =>
       request<Structure>('/structures', { method: 'POST', body: JSON.stringify(data) }),
-    addGroup: (structureId: string, data: AddGroupPayload & { participantPhones?: string[] }) =>
+    addGroup: (structureId: string, data: AddGroupPayload & { participantJids?: string[] }) =>
       request(`/structures/${structureId}/groups`, { method: 'POST', body: JSON.stringify(data) }),
   },
 
@@ -177,7 +177,7 @@ export const api = {
     listSessions: () => request<WebSessionStatus[]>('/whatsapp/web/sessions'),
     disconnect: (sessionId: string) => request<void>(`/whatsapp/web/sessions/${sessionId}`, { method: 'DELETE' }),
     checkNumber: (phone: string) =>
-      request<{ phone: string; exists: boolean; formattedPhone: string }>('/whatsapp/web/check-number', {
+      request<{ phone: string; exists: boolean; formattedPhone: string; jid: string }>('/whatsapp/web/check-number', {
         method: 'POST', body: JSON.stringify({ phone }),
       }),
   },

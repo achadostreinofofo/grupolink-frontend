@@ -10,14 +10,15 @@ interface Props {
   open: boolean
   groupName: string          // nome final ex: "Achados Treino #10"
   onClose: () => void
-  onConfirm: (participantPhones: string[]) => void
+  onConfirm: (participantJids: string[]) => void
   loading?: boolean
 }
 
 interface PhoneCheck {
-  raw: string       // digitado pelo usuário
-  formatted: string // com DDI
-  exists: boolean | null  // null = não verificado
+  raw: string
+  formatted: string
+  jid: string       // JID exato do WhatsApp (ex: "5511999998888@s.whatsapp.net")
+  exists: boolean | null
   checking: boolean
   error: string
 }
@@ -56,12 +57,12 @@ export function CreateGroupParticipantsModal({ open, groupName, onClose, onConfi
   const handleCheckPhone = async () => {
     const raw = phone.replace(/\D/g, '')
     if (raw.length < 10) return
-    setPhoneCheck({ raw, formatted: '', exists: null, checking: true, error: '' })
+    setPhoneCheck({ raw, formatted: '', jid: '', exists: null, checking: true, error: '' })
     try {
       const res = await api.whatsappWeb.checkNumber(raw)
-      setPhoneCheck({ raw, formatted: res.formattedPhone, exists: res.exists, checking: false, error: '' })
+      setPhoneCheck({ raw, formatted: res.formattedPhone, jid: res.jid, exists: res.exists, checking: false, error: '' })
     } catch (e) {
-      setPhoneCheck({ raw, formatted: '', exists: null, checking: false, error: e instanceof Error ? e.message : 'Erro' })
+      setPhoneCheck({ raw, formatted: '', jid: '', exists: null, checking: false, error: e instanceof Error ? e.message : 'Erro' })
     }
   }
 
@@ -74,19 +75,20 @@ export function CreateGroupParticipantsModal({ open, groupName, onClose, onConfi
 
   // ── Monta lista de participantes e confirma ─────────────────────
   const handleConfirm = () => {
-    const phones: string[] = []
+    const jids: string[] = []
 
-    if (hasSingleSession && phoneCheck?.exists && phoneCheck.formatted) {
-      phones.push(phoneCheck.formatted)
+    if (hasSingleSession && phoneCheck?.exists && phoneCheck.jid) {
+      // Usa o JID exato retornado pelo WhatsApp para evitar bad-request
+      jids.push(phoneCheck.jid)
     }
 
     if (hasMultiSessions) {
       sessions
         .filter(s => selectedSessions.has(s.sessionId) && s.phone)
-        .forEach(s => phones.push(`55${s.phone}`))
+        .forEach(s => jids.push(`55${s.phone}@s.whatsapp.net`))
     }
 
-    onConfirm(phones)
+    onConfirm(jids)
   }
 
   const canConfirm =
