@@ -4,109 +4,62 @@ import { useEffect, useState } from 'react'
 import { api } from '@/lib/api'
 import type { WebSessionStatus } from '@/types'
 import { Button } from '@/components/ui/Button'
-import { CheckCircle, Loader2, Phone, Smartphone, Users, X, XCircle } from 'lucide-react'
+import { AlertTriangle, CheckCircle, Loader2, Smartphone, X } from 'lucide-react'
+import Link from 'next/link'
 
 interface Props {
   open: boolean
-  groupName: string          // nome final ex: "Achados Treino #10"
+  groupName: string
   onClose: () => void
+  /** Retorna os JIDs das contas participantes (excluindo o criador — adicionado automaticamente) */
   onConfirm: (participantJids: string[]) => void
   loading?: boolean
 }
 
-interface PhoneCheck {
-  raw: string
-  formatted: string
-  jid: string       // JID exato do WhatsApp (ex: "5511999998888@s.whatsapp.net")
-  exists: boolean | null
-  checking: boolean
-  error: string
-}
-
 export function CreateGroupParticipantsModal({ open, groupName, onClose, onConfirm, loading }: Props) {
-  const [sessions, setSessions]       = useState<WebSessionStatus[]>([])
-  const [loadingSessions, setLoadingSessions] = useState(false)
-  const [selectedSessions, setSelected] = useState<Set<string>>(new Set())
-
-  // Para 1 sessão: número manual
-  const [phone, setPhone]         = useState('')
-  const [phoneCheck, setPhoneCheck] = useState<PhoneCheck | null>(null)
-  const [reconnecting, setReconnecting] = useState(false)
+  const [sessions, setSessions]   = useState<WebSessionStatus[]>([])
+  const [fetching, setFetching]   = useState(false)
+  const [selected, setSelected]   = useState<Set<string>>(new Set())
 
   useEffect(() => {
     if (!open) return
-    setPhone('')
-    setPhoneCheck(null)
+    setFetching(true)
     setSelected(new Set())
-    setLoadingSessions(true)
     api.whatsappWeb.listSessions()
       .then(s => {
-        const authenticated = s.filter(x => x.status === 'AUTHENTICATED')
-        setSessions(authenticated)
+        const auth = s.filter(x => x.status === 'AUTHENTICATED')
+        setSessions(auth)
+        // Pré-seleciona todas as contas exceto a primeira (que será o criador)
+        if (auth.length >= 2) {
+          setSelected(new Set(auth.slice(1).map(x => x.sessionId)))
+        }
       })
       .catch(console.error)
-      .finally(() => setLoadingSessions(false))
+      .finally(() => setFetching(false))
   }, [open])
 
   if (!open) return null
 
-  const hasSingleSession  = sessions.length === 1
-  const hasMultiSessions  = sessions.length >= 2
-  const noSession         = sessions.length === 0
+  const hasEnough = sessions.length >= 2
 
-  // ── Verifica número (modo 1 sessão) ─────────────────────────────
-  const handleCheckPhone = async () => {
-    const raw = phone.replace(/\D/g, '')
-    if (raw.length < 10) return
-    setPhoneCheck({ raw, formatted: '', jid: '', exists: null, checking: true, error: '' })
-    try {
-      const res = await api.whatsappWeb.checkNumber(raw)
-      setPhoneCheck({ raw, formatted: res.formattedPhone, jid: res.jid, exists: res.exists, checking: false, error: '' })
-      setReconnecting(false)
-    } catch (e) {
-      const msg = e instanceof Error ? e.message : 'Erro'
-      const isReconnecting = msg.toLowerCase().includes('reiniciada') || msg.toLowerCase().includes('reconnect')
-      setReconnecting(isReconnecting)
-      setPhoneCheck({ raw, formatted: '', jid: '', exists: null, checking: false, error: isReconnecting ? '' : msg })
-
-      // Auto-retry após 6s se estiver reconectando
-      if (isReconnecting) {
-        setTimeout(() => {
-          setReconnecting(false)
-          handleCheckPhone()
-        }, 6000)
-      }
-    }
-  }
-
-  const toggleSession = (sessionId: string) =>
+  const toggle = (sessionId: string) =>
     setSelected(prev => {
       const next = new Set(prev)
       next.has(sessionId) ? next.delete(sessionId) : next.add(sessionId)
       return next
     })
 
-  // ── Monta lista de participantes e confirma ─────────────────────
   const handleConfirm = () => {
-    const jids: string[] = []
-
-    if (hasSingleSession && phoneCheck?.exists && phoneCheck.jid) {
-      // Usa o JID exato retornado pelo WhatsApp para evitar bad-request
-      jids.push(phoneCheck.jid)
-    }
-
-    if (hasMultiSessions) {
-      sessions
-        .filter(s => selectedSessions.has(s.sessionId) && s.phone)
-        .forEach(s => jids.push(`55${s.phone}@s.whatsapp.net`))
-    }
-
+    // Monta JIDs das contas participantes (exceto o criador = sessions[0])
+    const jids = sessions
+      .filter(s => selected.has(s.sessionId) && s.phone)
+      .map(s => `55${s.phone}@s.whatsapp.net`)
     onConfirm(jids)
   }
 
-  const canConfirm =
-    (hasSingleSession && phoneCheck?.exists === true) ||
-    (hasMultiSessions && selectedSessions.size >= 1)
+  const creator = sessions[0]
+  const participants = sessions.slice(1)
+  const canConfirm = hasEnough && selected.size >= 1
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -114,110 +67,122 @@ export function CreateGroupParticipantsModal({ open, groupName, onClose, onConfi
 
       <div className="relative bg-white rounded-2xl shadow-xl w-full max-w-md">
         {/* header */}
-        <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-gray-100">
+        <div className="flex items-start justify-between px-6 pt-5 pb-4 border-b border-gray-100">
           <div>
-            <h2 className="text-base font-semibold text-gray-900">Participantes iniciais</h2>
+            <h2 className="text-base font-semibold text-gray-900">Criar grupo no WhatsApp</h2>
             <p className="text-xs text-gray-400 mt-0.5">
-              Criar grupo <span className="font-medium text-gray-600">{groupName}</span> no WhatsApp
+              Grupo: <span className="font-medium text-gray-600">{groupName}</span>
             </p>
           </div>
           {!loading && (
-            <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+            <button onClick={onClose} className="text-gray-400 hover:text-gray-600 ml-2">
               <X className="w-5 h-5" />
             </button>
           )}
         </div>
 
         <div className="px-6 py-4 space-y-4">
-          {loadingSessions ? (
+          {fetching ? (
             <div className="flex items-center justify-center py-6">
               <Loader2 className="w-5 h-5 animate-spin text-gray-400" />
             </div>
-          ) : noSession ? (
-            /* ── Sem sessão conectada ── */
-            <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 text-sm text-amber-700">
-              <p className="font-medium mb-1">Nenhuma conta WhatsApp conectada</p>
-              <p className="text-xs">Conecte uma conta via QR Code em <strong>WhatsApp → Conectar via QR Code</strong> antes de criar grupos.</p>
-            </div>
-          ) : hasSingleSession ? (
-            /* ── 1 sessão: pede número adicional ── */
+
+          ) : !hasEnough ? (
+            /* ── Menos de 2 contas ── */
             <div className="space-y-3">
-              <div className="bg-blue-50 rounded-xl px-4 py-3 text-sm text-blue-700">
-                <p className="font-medium">Conta conectada: +{sessions[0].phone}</p>
-                <p className="text-xs mt-0.5">O WhatsApp exige pelo menos 2 participantes para criar um grupo. Informe um número adicional.</p>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  <Phone className="w-3.5 h-3.5 inline mr-1 text-gray-400" />
-                  Número adicional (DDD + número)
-                </label>
+              <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
                 <div className="flex gap-2">
-                  <div className="flex-1 flex items-center border border-gray-200 rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-brand-400">
-                    <span className="pl-3 text-sm text-gray-500 select-none">+55</span>
-                    <input
-                      type="tel"
-                      value={phone}
-                      onChange={e => { setPhone(e.target.value.replace(/\D/g, '')); setPhoneCheck(null) }}
-                      onKeyDown={e => e.key === 'Enter' && handleCheckPhone()}
-                      placeholder="11999998888"
-                      maxLength={11}
-                      className="flex-1 px-2 py-2.5 text-sm outline-none bg-transparent"
-                    />
+                  <AlertTriangle className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className="text-sm font-semibold text-amber-800">
+                      Mínimo de 2 contas WhatsApp necessário
+                    </p>
+                    <p className="text-xs text-amber-700 mt-1">
+                      O WhatsApp exige pelo menos 2 participantes para criar um grupo.
+                      Além disso, a plataforma precisa de 2 contas conectadas para criar
+                      os próximos grupos automaticamente quando a capacidade for atingida.
+                    </p>
                   </div>
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    size="sm"
-                    onClick={handleCheckPhone}
-                    disabled={phone.replace(/\D/g, '').length < 10 || phoneCheck?.checking}
-                    loading={phoneCheck?.checking}
-                  >
-                    Verificar
-                  </Button>
                 </div>
-
-                {reconnecting && (
-                  <div className="flex items-center gap-2 mt-1.5 text-xs text-amber-600">
-                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                    Sessão WhatsApp reconectando, tentando novamente em 6s...
-                  </div>
-                )}
-
-                {phoneCheck && !phoneCheck.checking && !reconnecting && (
-                  <div className={`flex items-center gap-1.5 mt-1.5 text-xs ${phoneCheck.exists ? 'text-green-600' : 'text-red-500'}`}>
-                    {phoneCheck.exists
-                      ? <><CheckCircle className="w-3.5 h-3.5" /> Conta WhatsApp ativa (+55{phoneCheck.raw})</>
-                      : <><XCircle className="w-3.5 h-3.5" /> {phoneCheck.error || 'Número não encontrado no WhatsApp'}</>
-                    }
-                  </div>
-                )}
               </div>
-            </div>
-          ) : (
-            /* ── 2+ sessões: escolha quais incluir ── */
-            <div className="space-y-2">
-              <p className="text-sm text-gray-600 mb-1">
-                <Users className="w-4 h-4 inline mr-1 text-gray-400" />
-                Selecione quais contas conectadas vão participar do grupo:
-              </p>
-              {sessions.map(s => (
-                <label key={s.sessionId} className="flex items-center gap-3 p-3 rounded-xl border border-gray-100 hover:border-brand-200 cursor-pointer transition-colors">
-                  <input
-                    type="checkbox"
-                    checked={selectedSessions.has(s.sessionId)}
-                    onChange={() => toggleSession(s.sessionId)}
-                    className="accent-teal-500 w-4 h-4 flex-shrink-0"
-                  />
+
+              {sessions.length === 1 && (
+                <div className="bg-gray-50 rounded-xl p-3 flex items-center gap-3">
                   <div className="w-8 h-8 rounded-full bg-teal-100 flex items-center justify-center flex-shrink-0">
                     <Smartphone className="w-4 h-4 text-teal-600" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-gray-900">+{s.phone}</p>
-                    <p className="text-xs text-gray-400">Conta conectada</p>
+                    <p className="text-sm font-medium text-gray-900">+{sessions[0].phone}</p>
+                    <p className="text-xs text-gray-400">1 conta conectada</p>
                   </div>
-                </label>
-              ))}
+                </div>
+              )}
+
+              <div className="bg-blue-50 border border-blue-100 rounded-xl p-3 text-sm text-blue-700">
+                Conecte uma segunda conta em{' '}
+                <Link
+                  href="/dashboard/integrations"
+                  className="font-semibold underline"
+                  onClick={onClose}
+                >
+                  WhatsApp → Conectar via QR Code
+                </Link>
+                {' '}e volte aqui.
+              </div>
+            </div>
+
+          ) : (
+            /* ── 2+ contas: mostra criador + participantes ── */
+            <div className="space-y-3">
+              {/* Conta criadora (não selecionável — é sempre o admin) */}
+              <div>
+                <p className="text-xs font-medium text-gray-500 mb-1.5 uppercase tracking-wide">
+                  Conta criadora (admin)
+                </p>
+                <div className="flex items-center gap-3 p-3 rounded-xl bg-teal-50 border border-teal-200">
+                  <div className="w-8 h-8 rounded-full bg-teal-100 flex items-center justify-center flex-shrink-0">
+                    <Smartphone className="w-4 h-4 text-teal-600" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-gray-900">+{creator.phone}</p>
+                    <p className="text-xs text-gray-400">Criará o grupo e será admin</p>
+                  </div>
+                  <CheckCircle className="w-4 h-4 text-teal-500 flex-shrink-0" />
+                </div>
+              </div>
+
+              {/* Contas participantes (selecionáveis) */}
+              <div>
+                <p className="text-xs font-medium text-gray-500 mb-1.5 uppercase tracking-wide">
+                  Contas participantes
+                </p>
+                <div className="space-y-2">
+                  {participants.map(s => (
+                    <label
+                      key={s.sessionId}
+                      className="flex items-center gap-3 p-3 rounded-xl border border-gray-100 hover:border-brand-200 cursor-pointer transition-colors"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={selected.has(s.sessionId)}
+                        onChange={() => toggle(s.sessionId)}
+                        className="accent-teal-500 w-4 h-4 flex-shrink-0"
+                      />
+                      <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0">
+                        <Smartphone className="w-4 h-4 text-gray-500" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-gray-900">+{s.phone}</p>
+                        <p className="text-xs text-gray-400">Também usada em criações automáticas</p>
+                      </div>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              <p className="text-xs text-gray-400">
+                As contas selecionadas serão usadas em todos os grupos criados automaticamente nesta estrutura.
+              </p>
             </div>
           )}
         </div>
@@ -227,14 +192,21 @@ export function CreateGroupParticipantsModal({ open, groupName, onClose, onConfi
           <Button variant="secondary" className="flex-1" onClick={onClose} disabled={loading}>
             Cancelar
           </Button>
-          <Button
-            className="flex-1"
-            disabled={!canConfirm || loading || noSession}
-            loading={loading}
-            onClick={handleConfirm}
-          >
-            Criar grupo no WhatsApp
-          </Button>
+          {hasEnough && (
+            <Button
+              className="flex-1"
+              disabled={!canConfirm || loading}
+              loading={loading}
+              onClick={handleConfirm}
+            >
+              Criar grupo
+            </Button>
+          )}
+          {!hasEnough && !fetching && (
+            <Link href="/dashboard/integrations" className="flex-1" onClick={onClose}>
+              <Button className="w-full">Conectar conta</Button>
+            </Link>
+          )}
         </div>
       </div>
     </div>
