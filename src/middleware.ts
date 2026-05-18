@@ -9,6 +9,7 @@ const PUBLIC_PATHS = new Set([
   '/auth/callback',
   '/politica-de-privacidade',
   '/termos-de-uso',
+  '/contato',
 ])
 
 export function middleware(request: NextRequest) {
