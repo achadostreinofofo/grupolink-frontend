@@ -245,16 +245,9 @@ export default function StructureDetailPage() {
         <>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-sm font-semibold text-gray-700">Grupos</h2>
-            <div className="flex gap-2">
-              <Link href={`/dashboard/structures/${id}/broadcast`}>
-                <Button size="sm" variant="secondary">
-                  <Send className="w-3.5 h-3.5" /> Transmitir
-                </Button>
-              </Link>
-              <Button size="sm" onClick={() => setShowForm(!showForm)}>
-                <Plus className="w-4 h-4" /> Adicionar grupo
-              </Button>
-            </div>
+            <Button size="sm" onClick={() => setShowForm(!showForm)}>
+              <Plus className="w-4 h-4" /> Adicionar grupo
+            </Button>
           </div>
 
           {showForm && (

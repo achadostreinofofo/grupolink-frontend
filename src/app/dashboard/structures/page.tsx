@@ -7,7 +7,7 @@ import type { Structure } from '@/types'
 import { Card, CardContent } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
-import { Network, Plus, Users, Send, ChevronRight, Copy } from 'lucide-react'
+import { Network, Plus, Users, ChevronRight, Copy } from 'lucide-react'
 
 function CapacityBar({ groups }: { groups: Structure['groups'] }) {
   const active = groups.filter(g => g.status === 'ACTIVE' || g.status === 'FULL')
@@ -171,19 +171,8 @@ export default function StructuresPage() {
 
                     {/* Status badges row */}
                     {s.groups.length > 0 && (
-                      <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-50">
+                      <div className="mt-3 pt-3 border-t border-gray-50">
                         <GroupStatusSummary groups={s.groups} />
-                        <div className="flex gap-1.5">
-                          <Link
-                            href={`/dashboard/structures/${s.id}/broadcast`}
-                            onClick={e => e.stopPropagation()}
-                          >
-                            <Button variant="ghost" size="sm" className="text-xs h-7 px-2 text-gray-500 hover:text-brand-600">
-                              <Send className="w-3 h-3 mr-1" />
-                              Transmitir
-                            </Button>
-                          </Link>
-                        </div>
                       </div>
                     )}
                   </CardContent>
