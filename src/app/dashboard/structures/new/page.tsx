@@ -99,6 +99,12 @@ export default function NewStructurePage() {
                   error={errors.maxMembersPerGroup?.message}
                   className="w-32"
                   {...register('maxMembersPerGroup')}
+                  onInput={e => {
+                    const el = e.currentTarget
+                    const v = parseInt(el.value)
+                    if (v > 1024) el.value = '1024'
+                    if (v < 1) el.value = '1'
+                  }}
                 />
                 <div className="flex items-center gap-1 text-sm text-gray-500">
                   <Users className="w-4 h-4" />
