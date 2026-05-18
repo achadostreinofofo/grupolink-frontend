@@ -111,8 +111,11 @@ export const api = {
       request<ScheduledMessage>(`/structures/${structureId}/messages`, { method: 'POST', body: JSON.stringify(data) }),
     update: (id: string, data: UpdateMessagePayload) =>
       request<ScheduledMessage>(`/messages/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
-    sendNow: (id: string) =>
-      request<ScheduledMessage>(`/messages/${id}/send`, { method: 'POST' }),
+    sendNow: (id: string, groupIds?: string[]) =>
+      request<ScheduledMessage>(`/messages/${id}/send`, {
+        method: 'POST',
+        body: JSON.stringify({ groupIds: groupIds?.length ? groupIds : null }),
+      }),
     delete: (id: string) => request<void>(`/messages/${id}`, { method: 'DELETE' }),
     // mantido para compatibilidade
     cancel: (id: string) => request<void>(`/messages/${id}`, { method: 'DELETE' }),

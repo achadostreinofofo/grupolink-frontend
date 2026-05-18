@@ -17,6 +17,7 @@ import {
   Plus, Send, Trash2,
 } from 'lucide-react'
 import Link from 'next/link'
+import { SelectGroupsModal } from '@/components/messages/SelectGroupsModal'
 
 const addGroupSchema = z.object({
   name:       z.string().min(2, 'Nome obrigatório'),
@@ -85,7 +86,9 @@ export default function StructureDetailPage() {
   const [showForm,  setShowForm]  = useState(false)
   const [formError, setFormError] = useState('')
   const [copied,    setCopied]    = useState(false)
-  const [sendingId, setSendingId] = useState<string | null>(null)
+  const [sendingId, setSendingId]           = useState<string | null>(null)
+  const [showGroupModal, setShowGroupModal] = useState(false)
+  const [pendingMsgId,  setPendingMsgId]   = useState<string | null>(null)
 
   const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<AddGroupForm>({
     resolver: zodResolver(addGroupSchema),
@@ -149,15 +152,24 @@ export default function StructureDetailPage() {
     setMessages(prev => prev.filter(m => m.id !== msgId))
   }
 
-  const onSendNow = async (msgId: string) => {
-    if (!confirm('Enviar esta mensagem agora para todos os grupos?')) return
-    setSendingId(msgId)
+  const onSendNow = (msgId: string) => {
+    setPendingMsgId(msgId)
+    setShowGroupModal(true)
+  }
+
+  const handleGroupConfirm = async (groupIds: string[]) => {
+    setShowGroupModal(false)
+    if (!pendingMsgId) return
+    setSendingId(pendingMsgId)
     try {
-      const updated = await api.messages.sendNow(msgId)
-      setMessages(prev => prev.map(m => m.id === msgId ? updated : m))
+      const updated = await api.messages.sendNow(pendingMsgId, groupIds.length ? groupIds : undefined)
+      setMessages(prev => prev.map(m => m.id === pendingMsgId ? updated : m))
     } catch (e) {
       alert(e instanceof Error ? e.message : 'Erro ao enviar mensagem')
-    } finally { setSendingId(null) }
+    } finally {
+      setSendingId(null)
+      setPendingMsgId(null)
+    }
   }
 
   if (loading) {
@@ -395,6 +407,13 @@ export default function StructureDetailPage() {
           )}
         </>
       )}
+
+      <SelectGroupsModal
+        open={showGroupModal}
+        structureId={id}
+        onClose={() => { setShowGroupModal(false); setPendingMsgId(null) }}
+        onConfirm={handleGroupConfirm}
+      />
     </div>
   )
 }

@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation'
 import { api } from '@/lib/api'
 import { MessageForm, type MessageFormValues } from '@/components/messages/MessageForm'
 import { SaveMessageModal, type SaveAction } from '@/components/messages/SaveMessageModal'
+import { SelectGroupsModal } from '@/components/messages/SelectGroupsModal'
 import { Card, CardContent, CardHeader } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { ArrowLeft } from 'lucide-react'
@@ -14,22 +15,48 @@ export default function NewMessagePage() {
   const { id: structureId } = useParams<{ id: string }>()
   const router = useRouter()
 
-  const [showModal, setShowModal]       = useState(false)
-  const [saving, setSaving]             = useState(false)
-  const [error, setError]               = useState('')
-  const [pendingValues, setPendingValues] = useState<MessageFormValues | null>(null)
+  const [showSaveModal, setShowSaveModal]   = useState(false)
+  const [showGroupModal, setShowGroupModal] = useState(false)
+  const [saving, setSaving]                 = useState(false)
+  const [error, setError]                   = useState('')
 
+  const [pendingValues, setPendingValues]         = useState<MessageFormValues | null>(null)
+  const [pendingAction, setPendingAction]         = useState<SaveAction | null>(null)
+  const [pendingScheduledAt, setPendingScheduledAt] = useState<string | undefined>()
+
+  // Step 1: form submitted → open SaveMessageModal
   const handleFormSubmit = (values: MessageFormValues) => {
     setPendingValues(values)
-    setShowModal(true)
+    setShowSaveModal(true)
   }
 
-  const handleConfirm = async (action: SaveAction, scheduledAt?: string) => {
+  // Step 2: SaveMessageModal confirmed → for draft save immediately, otherwise open group selector
+  const handleSaveConfirm = (action: SaveAction, scheduledAt?: string) => {
+    setShowSaveModal(false)
+    setPendingAction(action)
+    setPendingScheduledAt(scheduledAt)
+
+    if (action === 'draft') {
+      executeSave(action, scheduledAt, [])
+    } else {
+      setShowGroupModal(true)
+    }
+  }
+
+  // Step 3: group selector confirmed → execute the full save flow
+  const handleGroupConfirm = (groupIds: string[]) => {
+    setShowGroupModal(false)
+    if (pendingAction && pendingAction !== 'draft') {
+      executeSave(pendingAction, pendingScheduledAt, groupIds)
+    }
+  }
+
+  const executeSave = async (action: SaveAction, scheduledAt: string | undefined, groupIds: string[]) => {
     if (!pendingValues) return
     setSaving(true)
     setError('')
     try {
-      // Upload image to S3 only now, after user confirmed the action
+      // Upload image to S3 only now
       let mediaUrl = pendingValues.mediaUrl
       if (pendingValues.file) {
         const { url } = await api.upload.image(pendingValues.file)
@@ -44,14 +71,12 @@ export default function NewMessagePage() {
       })
 
       if (action === 'send_now') {
-        await api.messages.sendNow(message.id)
+        await api.messages.sendNow(message.id, groupIds.length ? groupIds : undefined)
       }
 
-      setShowModal(false)
       router.push(`/dashboard/structures/${structureId}?tab=messages`)
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Erro ao salvar mensagem')
-      setShowModal(false)
     } finally {
       setSaving(false)
     }
@@ -81,15 +106,22 @@ export default function NewMessagePage() {
               {error}
             </div>
           )}
-          <MessageForm submitLabel="Salvar mensagem" onSubmit={handleFormSubmit} />
+          <MessageForm submitLabel="Salvar mensagem" onSubmit={handleFormSubmit} submitting={saving} />
         </CardContent>
       </Card>
 
       <SaveMessageModal
-        open={showModal}
-        saving={saving}
-        onClose={() => setShowModal(false)}
-        onConfirm={handleConfirm}
+        open={showSaveModal}
+        saving={false}
+        onClose={() => setShowSaveModal(false)}
+        onConfirm={handleSaveConfirm}
+      />
+
+      <SelectGroupsModal
+        open={showGroupModal}
+        structureId={structureId}
+        onClose={() => setShowGroupModal(false)}
+        onConfirm={handleGroupConfirm}
       />
     </div>
   )
