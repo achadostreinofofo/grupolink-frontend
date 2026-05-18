@@ -25,6 +25,7 @@ export interface Group {
   clickCount: number
   status: 'ACTIVE' | 'FULL' | 'INACTIVE' | 'CREATING'
   sortOrder: number
+  whatsappGroupId: string | null  // null = não vinculado ao WhatsApp real
 }
 
 export interface Structure {

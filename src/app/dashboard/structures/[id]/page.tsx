@@ -459,6 +459,11 @@ export default function StructureDetailPage() {
                       <p className="text-sm font-semibold text-gray-700">{group.clickCount.toLocaleString('pt-BR')}</p>
                       <p className="text-xs text-gray-400">cliques</p>
                     </div>
+                    {!group.whatsappGroupId && (
+                      <span title="Grupo sem vínculo WhatsApp — envio de mensagens não funciona" className="text-amber-500 flex-shrink-0">
+                        <AlertTriangle className="w-4 h-4" />
+                      </span>
+                    )}
                     {group.inviteLink && (
                       <a href={group.inviteLink} target="_blank" rel="noreferrer">
                         <Button variant="ghost" size="sm"><ExternalLink className="w-3.5 h-3.5" /></Button>
