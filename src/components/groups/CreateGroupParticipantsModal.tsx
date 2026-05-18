@@ -51,9 +51,10 @@ export function CreateGroupParticipantsModal({ open, groupName, onClose, onConfi
 
   const handleConfirm = () => {
     // Monta JIDs das contas participantes (exceto o criador = sessions[0])
+    // s.phone já contém o código do país (ex: "557181926217"), não adicionar "55"
     const jids = sessions
       .filter(s => selected.has(s.sessionId) && s.phone)
-      .map(s => `55${s.phone}@s.whatsapp.net`)
+      .map(s => `${s.phone}@s.whatsapp.net`)
     onConfirm(jids)
   }
 
