@@ -19,6 +19,7 @@ import {
 import Link from 'next/link'
 import { useRef } from 'react'
 import { SelectGroupsModal } from '@/components/messages/SelectGroupsModal'
+import { CreateGroupParticipantsModal } from '@/components/groups/CreateGroupParticipantsModal'
 
 const addGroupSchema = z.object({
   name:           z.string().min(2, 'Nome obrigatório'),
@@ -97,6 +98,11 @@ export default function StructureDetailPage() {
   const [picError, setPicError]       = useState('')
   const picRef = useRef<HTMLInputElement>(null)
 
+  // Participants modal state
+  const [showParticipantsModal, setShowParticipantsModal] = useState(false)
+  const [pendingGroupData, setPendingGroupData]           = useState<{ name: string; startingNumber: number; profilePicUrl?: string } | null>(null)
+  const [creatingGroup, setCreatingGroup]                 = useState(false)
+
   const { register, handleSubmit, reset, watch, formState: { errors, isSubmitting } } = useForm<AddGroupForm>({
     resolver: zodResolver(addGroupSchema),
     defaultValues: { startingNumber: 1 },
@@ -167,11 +173,7 @@ export default function StructureDetailPage() {
 
   const onAddGroup = async (data: AddGroupForm) => {
     setFormError('')
-    // Foto obrigatória no primeiro grupo
-    if (isFirstGroup && !picFile) {
-      setPicError('Foto de perfil obrigatória para o primeiro grupo')
-      return
-    }
+    if (isFirstGroup && !picFile) { setPicError('Foto de perfil obrigatória para o primeiro grupo'); return }
     try {
       let profilePicUrl: string | undefined
       if (picFile) {
@@ -180,18 +182,36 @@ export default function StructureDetailPage() {
         profilePicUrl = url
         setPicUploading(false)
       }
+      // Guarda os dados e abre modal de participantes
+      setPendingGroupData({ name: data.name, startingNumber: data.startingNumber, profilePicUrl })
+      setShowParticipantsModal(true)
+    } catch (e) {
+      setPicUploading(false)
+      setFormError(e instanceof Error ? e.message : 'Erro ao enviar foto')
+    }
+  }
+
+  const handleParticipantsConfirm = async (participantPhones: string[]) => {
+    if (!pendingGroupData) return
+    setCreatingGroup(true)
+    try {
       await api.structures.addGroup(id, {
-        name:           data.name,
-        startingNumber: data.startingNumber,
-        profilePicUrl,
+        name:             pendingGroupData.name,
+        startingNumber:   pendingGroupData.startingNumber,
+        profilePicUrl:    pendingGroupData.profilePicUrl,
+        participantPhones,
       })
+      setShowParticipantsModal(false)
       reset()
       setPicFile(null); setPicPreview(null)
+      setPendingGroupData(null)
       setShowForm(false)
       load()
     } catch (e) {
-      setPicUploading(false)
-      setFormError(e instanceof Error ? e.message : 'Erro ao adicionar grupo')
+      setFormError(e instanceof Error ? e.message : 'Erro ao criar grupo')
+      setShowParticipantsModal(false)
+    } finally {
+      setCreatingGroup(false)
     }
   }
 
@@ -531,6 +551,18 @@ export default function StructureDetailPage() {
           )}
         </>
       )}
+
+      <CreateGroupParticipantsModal
+        open={showParticipantsModal}
+        groupName={
+          pendingGroupData
+            ? `${pendingGroupData.name} #${pendingGroupData.startingNumber}`
+            : ''
+        }
+        onClose={() => { setShowParticipantsModal(false); setPendingGroupData(null) }}
+        onConfirm={handleParticipantsConfirm}
+        loading={creatingGroup}
+      />
 
       <SelectGroupsModal
         open={showGroupModal}
