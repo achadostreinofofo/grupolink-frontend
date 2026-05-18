@@ -214,8 +214,17 @@ export default function ConnectWhatsappWebPage() {
 
           {error && (
             <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-4 py-3 mt-4">
-              {error}
-              <Button variant="ghost" size="sm" className="ml-3" onClick={initSession}>
+              <p className="font-medium mb-1">Erro ao iniciar sessão</p>
+              <p>{error}</p>
+              {error.toLowerCase().includes('whatsapp service') || error.toLowerCase().includes('whatsapp-service') ? (
+                <div className="mt-3 bg-red-100 rounded-lg px-3 py-2 font-mono text-xs text-red-800 space-y-1">
+                  <p className="font-semibold text-red-900">Para iniciar o serviço:</p>
+                  <p>cd whatsapp-service</p>
+                  <p>npm install</p>
+                  <p>node src/index.js</p>
+                </div>
+              ) : null}
+              <Button variant="ghost" size="sm" className="mt-3" onClick={initSession}>
                 Tentar novamente
               </Button>
             </div>
