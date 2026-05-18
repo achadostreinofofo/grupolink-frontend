@@ -186,6 +186,11 @@ export const api = {
     list: () => request<BroadcastStatusDetail[]>('/broadcasts'),
   },
 
+  contact: {
+    send: (data: { name: string; email: string; message: string }) =>
+      request<{ message: string }>('/contact', { method: 'POST', body: JSON.stringify(data) }),
+  },
+
   users: {
     me:             () => request<UserProfile>('/users/me'),
     updateProfile:  (data: { name: string; email: string; cpf?: string }) =>
