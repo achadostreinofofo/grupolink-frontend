@@ -15,15 +15,14 @@ export default function EditMessagePage() {
   const { id: structureId, msgId } = useParams<{ id: string; msgId: string }>()
   const router = useRouter()
 
-  const [message, setMessage]     = useState<ScheduledMessage | null>(null)
-  const [loading, setLoading]     = useState(true)
-  const [showModal, setShowModal] = useState(false)
-  const [saving, setSaving]       = useState(false)
-  const [error, setError]         = useState('')
+  const [message, setMessage]           = useState<ScheduledMessage | null>(null)
+  const [loading, setLoading]           = useState(true)
+  const [showModal, setShowModal]       = useState(false)
+  const [saving, setSaving]             = useState(false)
+  const [error, setError]               = useState('')
   const [pendingValues, setPendingValues] = useState<MessageFormValues | null>(null)
 
   useEffect(() => {
-    // Load messages from structure and find this one
     api.messages.listByStructure(structureId)
       .then(msgs => setMessage(msgs.find(m => m.id === msgId) ?? null))
       .catch(console.error)
@@ -40,18 +39,25 @@ export default function EditMessagePage() {
     setSaving(true)
     setError('')
     try {
+      // Upload new image to S3 only now, after user confirmed the action
+      let mediaUrl = pendingValues.mediaUrl
+      if (pendingValues.file) {
+        const { url } = await api.upload.image(pendingValues.file)
+        mediaUrl = url
+      }
+
       await api.messages.update(msgId, {
         title:       pendingValues.title,
         content:     pendingValues.content,
-        mediaUrl:    pendingValues.mediaUrl,
+        mediaUrl,
         scheduledAt: action === 'schedule' ? scheduledAt : undefined,
       })
-      setShowModal(false)
 
       if (action === 'send_now') {
         await api.messages.sendNow(msgId)
       }
 
+      setShowModal(false)
       router.push(`/dashboard/structures/${structureId}?tab=messages`)
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Erro ao salvar mensagem')
@@ -70,9 +76,7 @@ export default function EditMessagePage() {
     )
   }
 
-  if (!message) {
-    return <p className="text-gray-500 text-sm">Mensagem não encontrada.</p>
-  }
+  if (!message) return <p className="text-gray-500 text-sm">Mensagem não encontrada.</p>
 
   return (
     <div className="max-w-xl">

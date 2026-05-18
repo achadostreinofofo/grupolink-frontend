@@ -14,11 +14,9 @@ export default function NewMessagePage() {
   const { id: structureId } = useParams<{ id: string }>()
   const router = useRouter()
 
-  const [showModal, setShowModal] = useState(false)
-  const [saving, setSaving]       = useState(false)
-  const [error, setError]         = useState('')
-
-  // Stores the form values while modal is open
+  const [showModal, setShowModal]       = useState(false)
+  const [saving, setSaving]             = useState(false)
+  const [error, setError]               = useState('')
   const [pendingValues, setPendingValues] = useState<MessageFormValues | null>(null)
 
   const handleFormSubmit = (values: MessageFormValues) => {
@@ -31,20 +29,25 @@ export default function NewMessagePage() {
     setSaving(true)
     setError('')
     try {
-      const payload = {
-        title:       pendingValues.title,
-        content:     pendingValues.content,
-        mediaUrl:    pendingValues.mediaUrl,
-        scheduledAt: action === 'schedule' ? scheduledAt : undefined,
+      // Upload image to S3 only now, after user confirmed the action
+      let mediaUrl = pendingValues.mediaUrl
+      if (pendingValues.file) {
+        const { url } = await api.upload.image(pendingValues.file)
+        mediaUrl = url
       }
 
-      const message = await api.messages.create(structureId, payload)
-      setShowModal(false)
+      const message = await api.messages.create(structureId, {
+        title:       pendingValues.title,
+        content:     pendingValues.content,
+        mediaUrl,
+        scheduledAt: action === 'schedule' ? scheduledAt : undefined,
+      })
 
       if (action === 'send_now') {
         await api.messages.sendNow(message.id)
       }
 
+      setShowModal(false)
       router.push(`/dashboard/structures/${structureId}?tab=messages`)
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Erro ao salvar mensagem')
@@ -78,10 +81,7 @@ export default function NewMessagePage() {
               {error}
             </div>
           )}
-          <MessageForm
-            submitLabel="Salvar mensagem"
-            onSubmit={handleFormSubmit}
-          />
+          <MessageForm submitLabel="Salvar mensagem" onSubmit={handleFormSubmit} />
         </CardContent>
       </Card>
 
