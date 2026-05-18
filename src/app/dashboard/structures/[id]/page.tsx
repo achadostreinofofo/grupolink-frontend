@@ -14,12 +14,13 @@ import { Badge } from '@/components/ui/Badge'
 import {
   ArrowLeft, CalendarClock, Copy, Download, Edit2,
   ExternalLink, Image as ImageIcon, Loader2, MessageSquare,
-  Paperclip, Plus, Send, Trash2, X,
+  Paperclip, Plus, Send, Trash2, X, AlertTriangle,
 } from 'lucide-react'
 import Link from 'next/link'
 import { useRef } from 'react'
 import { SelectGroupsModal } from '@/components/messages/SelectGroupsModal'
 import { CreateGroupParticipantsModal } from '@/components/groups/CreateGroupParticipantsModal'
+import { DeleteStructureModal } from '@/components/structures/DeleteStructureModal'
 
 const addGroupSchema = z.object({
   name:           z.string().min(2, 'Nome obrigatório'),
@@ -88,8 +89,9 @@ export default function StructureDetailPage() {
   const [formError, setFormError] = useState('')
   const [copied,    setCopied]    = useState(false)
   const [sendingId, setSendingId]           = useState<string | null>(null)
-  const [showGroupModal, setShowGroupModal] = useState(false)
-  const [pendingMsgId,  setPendingMsgId]   = useState<string | null>(null)
+  const [showGroupModal, setShowGroupModal]       = useState(false)
+  const [pendingMsgId,  setPendingMsgId]         = useState<string | null>(null)
+  const [showDeleteModal, setShowDeleteModal]     = useState(false)
 
   // Profile picture state for group creation
   const [picFile, setPicFile]         = useState<File | null>(null)
@@ -270,6 +272,14 @@ export default function StructureDetailPage() {
           </Button>
           <Button variant="secondary" size="sm" onClick={() => downloadCsv('redirects')}>
             <Download className="w-3.5 h-3.5" /> Cliques
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-red-500 hover:text-red-700 hover:bg-red-50"
+            onClick={() => setShowDeleteModal(true)}
+          >
+            <Trash2 className="w-3.5 h-3.5" />
           </Button>
         </div>
       </div>
@@ -551,6 +561,16 @@ export default function StructureDetailPage() {
           )}
         </>
       )}
+
+      <DeleteStructureModal
+        open={showDeleteModal}
+        structureName={structure?.name ?? ''}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={async () => {
+          await api.structures.delete(id)
+          router.push('/dashboard/structures')
+        }}
+      />
 
       <CreateGroupParticipantsModal
         open={showParticipantsModal}

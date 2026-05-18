@@ -7,7 +7,8 @@ import type { Structure } from '@/types'
 import { Card, CardContent } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
-import { Network, Plus, Users, ChevronRight, Copy } from 'lucide-react'
+import { Network, Plus, Users, ChevronRight, Copy, Trash2 } from 'lucide-react'
+import { DeleteStructureModal } from '@/components/structures/DeleteStructureModal'
 
 function CapacityBar({ groups }: { groups: Structure['groups'] }) {
   const active = groups.filter(g => g.status === 'ACTIVE' || g.status === 'FULL')
@@ -39,9 +40,10 @@ function GroupStatusSummary({ groups }: { groups: Structure['groups'] }) {
 }
 
 export default function StructuresPage() {
-  const [structures, setStructures] = useState<Structure[]>([])
-  const [loading, setLoading]       = useState(true)
-  const [copied, setCopied]         = useState<string | null>(null)
+  const [structures, setStructures]             = useState<Structure[]>([])
+  const [loading, setLoading]                   = useState(true)
+  const [copied, setCopied]                     = useState<string | null>(null)
+  const [deletingStructure, setDeletingStructure] = useState<Structure | null>(null)
 
   useEffect(() => {
     api.structures.list()
@@ -165,7 +167,14 @@ export default function StructuresPage() {
                         )}
                       </div>
 
-                      {/* Arrow */}
+                      {/* Delete button + Arrow */}
+                      <button
+                        onClick={e => { e.preventDefault(); setDeletingStructure(s) }}
+                        className="p-1.5 rounded-lg text-gray-300 hover:text-red-500 hover:bg-red-50 transition-colors flex-shrink-0 self-center"
+                        title="Excluir estrutura"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
                       <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-brand-400 transition-colors flex-shrink-0 self-center" />
                     </div>
 
@@ -182,6 +191,18 @@ export default function StructuresPage() {
           })}
         </div>
       )}
+
+      <DeleteStructureModal
+        open={!!deletingStructure}
+        structureName={deletingStructure?.name ?? ''}
+        onClose={() => setDeletingStructure(null)}
+        onConfirm={async () => {
+          if (!deletingStructure) return
+          await api.structures.delete(deletingStructure.id)
+          setStructures(prev => prev.filter(s => s.id !== deletingStructure.id))
+          setDeletingStructure(null)
+        }}
+      />
     </div>
   )
 }

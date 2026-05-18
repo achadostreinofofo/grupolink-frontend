@@ -68,6 +68,7 @@ export const api = {
     get: (id: string) => request<Structure>(`/structures/${id}`),
     create: (data: CreateStructurePayload) =>
       request<Structure>('/structures', { method: 'POST', body: JSON.stringify(data) }),
+    delete: (id: string) => request<void>(`/structures/${id}`, { method: 'DELETE' }),
     addGroup: (structureId: string, data: AddGroupPayload & { participantJids?: string[] }) =>
       request(`/structures/${structureId}/groups`, { method: 'POST', body: JSON.stringify(data) }),
   },
