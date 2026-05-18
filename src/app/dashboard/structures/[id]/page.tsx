@@ -13,16 +13,16 @@ import { Card, CardContent, CardHeader } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
 import {
   ArrowLeft, CalendarClock, Copy, Download, Edit2,
-  ExternalLink, Image as ImageIcon, MessageSquare,
-  Plus, Send, Trash2,
+  ExternalLink, Image as ImageIcon, Loader2, MessageSquare,
+  Paperclip, Plus, Send, Trash2, X,
 } from 'lucide-react'
 import Link from 'next/link'
+import { useRef } from 'react'
 import { SelectGroupsModal } from '@/components/messages/SelectGroupsModal'
 
 const addGroupSchema = z.object({
-  name:       z.string().min(2, 'Nome obrigatório'),
-  inviteLink: z.string().url('URL inválida').optional().or(z.literal('')),
-  maxMembers: z.coerce.number().min(1).max(1024).default(256),
+  name:           z.string().min(2, 'Nome obrigatório'),
+  startingNumber: z.coerce.number().min(1, 'Número deve ser ≥ 1').default(1),
 })
 type AddGroupForm = z.infer<typeof addGroupSchema>
 
@@ -90,10 +90,20 @@ export default function StructureDetailPage() {
   const [showGroupModal, setShowGroupModal] = useState(false)
   const [pendingMsgId,  setPendingMsgId]   = useState<string | null>(null)
 
-  const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<AddGroupForm>({
+  // Profile picture state for group creation
+  const [picFile, setPicFile]         = useState<File | null>(null)
+  const [picPreview, setPicPreview]   = useState<string | null>(null)
+  const [picUploading, setPicUploading] = useState(false)
+  const [picError, setPicError]       = useState('')
+  const picRef = useRef<HTMLInputElement>(null)
+
+  const { register, handleSubmit, reset, watch, formState: { errors, isSubmitting } } = useForm<AddGroupForm>({
     resolver: zodResolver(addGroupSchema),
-    defaultValues: { maxMembers: 256 },
+    defaultValues: { startingNumber: 1 },
   })
+
+  const watchedName   = watch('name') ?? ''
+  const watchedNumber = watch('startingNumber') ?? 1
 
   const load = () => {
     setLoading(true)
@@ -136,14 +146,53 @@ export default function StructureDetailPage() {
     URL.revokeObjectURL(url)
   }
 
+  const handlePicFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setPicError('')
+    if (file.size > 5 * 1024 * 1024) { setPicError('Máximo 5 MB'); return }
+    if (!file.type.startsWith('image/')) { setPicError('Somente imagens'); return }
+    if (picPreview) URL.revokeObjectURL(picPreview)
+    setPicFile(file)
+    setPicPreview(URL.createObjectURL(file))
+    if (picRef.current) picRef.current.value = ''
+  }
+
+  const removePic = () => {
+    if (picPreview) URL.revokeObjectURL(picPreview)
+    setPicFile(null); setPicPreview(null); setPicError('')
+  }
+
+  const isFirstGroup = !structure?.groupNamePrefix
+
   const onAddGroup = async (data: AddGroupForm) => {
     setFormError('')
+    // Foto obrigatória no primeiro grupo
+    if (isFirstGroup && !picFile) {
+      setPicError('Foto de perfil obrigatória para o primeiro grupo')
+      return
+    }
     try {
+      let profilePicUrl: string | undefined
+      if (picFile) {
+        setPicUploading(true)
+        const { url } = await api.upload.image(picFile)
+        profilePicUrl = url
+        setPicUploading(false)
+      }
       await api.structures.addGroup(id, {
-        name: data.name, inviteLink: data.inviteLink || undefined, maxMembers: data.maxMembers,
+        name:           data.name,
+        startingNumber: data.startingNumber,
+        profilePicUrl,
       })
-      reset(); setShowForm(false); load()
-    } catch (e) { setFormError(e instanceof Error ? e.message : 'Erro ao adicionar grupo') }
+      reset()
+      setPicFile(null); setPicPreview(null)
+      setShowForm(false)
+      load()
+    } catch (e) {
+      setPicUploading(false)
+      setFormError(e instanceof Error ? e.message : 'Erro ao adicionar grupo')
+    }
   }
 
   const onDeleteMessage = async (msgId: string) => {
@@ -252,18 +301,100 @@ export default function StructureDetailPage() {
 
           {showForm && (
             <Card className="mb-4 border-brand-200">
-              <CardHeader><p className="text-sm font-medium text-gray-700">Novo Grupo</p></CardHeader>
+              <CardHeader>
+                <p className="text-sm font-medium text-gray-700">
+                  {isFirstGroup ? 'Primeiro Grupo da Estrutura' : 'Adicionar Grupo'}
+                </p>
+              </CardHeader>
               <CardContent>
-                <form onSubmit={handleSubmit(onAddGroup)} className="space-y-3">
+                <form onSubmit={handleSubmit(onAddGroup)} className="space-y-4">
+
+                  {/* Nome base + número inicial */}
                   <div className="grid grid-cols-2 gap-3">
-                    <Input label="Nome do grupo" placeholder="Grupo Promos #1" error={errors.name?.message} {...register('name')} />
-                    <Input type="number" label="Máx. membros" error={errors.maxMembers?.message} {...register('maxMembers')} />
+                    <div>
+                      <Input
+                        label={isFirstGroup ? 'Nome base dos grupos' : 'Nome base'}
+                        placeholder="Grupo Promos"
+                        error={errors.name?.message}
+                        {...register('name')}
+                        disabled={!isFirstGroup}
+                        defaultValue={structure?.groupNamePrefix ?? ''}
+                      />
+                    </div>
+                    <div>
+                      <Input
+                        type="number"
+                        label="Número inicial"
+                        min={1}
+                        error={errors.startingNumber?.message}
+                        {...register('startingNumber')}
+                        disabled={!isFirstGroup}
+                        defaultValue={isFirstGroup ? 1 : structure?.nextGroupNumber}
+                      />
+                    </div>
                   </div>
-                  <Input label="Link de convite (opcional)" placeholder="https://chat.whatsapp.com/..." error={errors.inviteLink?.message} {...register('inviteLink')} />
+
+                  {/* Preview do nome gerado */}
+                  {(watchedName || structure?.groupNamePrefix) && (
+                    <div className="bg-gray-50 rounded-lg px-3 py-2 text-sm text-gray-600">
+                      <span className="text-gray-400 text-xs">Nome do grupo: </span>
+                      <span className="font-semibold text-gray-900">
+                        {isFirstGroup
+                          ? `${watchedName || '…'} #${watchedNumber}`
+                          : `${structure?.groupNamePrefix} #${structure?.nextGroupNumber}`
+                        }
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Foto de perfil */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Foto de perfil {isFirstGroup && <span className="text-red-500">*</span>}
+                    </label>
+                    <p className="text-xs text-gray-400 mb-2">
+                      {isFirstGroup
+                        ? 'Usada neste e em todos os grupos criados automaticamente. Máx. 5 MB.'
+                        : 'Deixe em branco para usar a mesma foto da estrutura.'}
+                    </p>
+
+                    <input ref={picRef} type="file" accept="image/*" className="hidden" onChange={handlePicFile} />
+
+                    <div className="flex items-center gap-3">
+                      {picPreview ? (
+                        <div className="relative flex-shrink-0">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={picPreview} alt="Preview" className="w-14 h-14 rounded-full object-cover border-2 border-brand-200" />
+                          <button type="button" onClick={removePic}
+                            className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center shadow">
+                            <X className="w-3 h-3" />
+                          </button>
+                        </div>
+                      ) : structure?.groupProfilePicUrl && !isFirstGroup ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={structure.groupProfilePicUrl} alt="Foto atual" className="w-14 h-14 rounded-full object-cover border-2 border-gray-100 opacity-60" title="Foto atual da estrutura" />
+                      ) : null}
+
+                      <button type="button" onClick={() => picRef.current?.click()}
+                        disabled={picUploading}
+                        className="flex items-center gap-2 px-3 py-2 rounded-xl border-2 border-dashed border-gray-200 text-sm text-gray-500 hover:border-brand-400 hover:text-brand-600 transition-colors disabled:opacity-50">
+                        {picUploading
+                          ? <><Loader2 className="w-4 h-4 animate-spin" /> Enviando...</>
+                          : <><Paperclip className="w-4 h-4" /> {picPreview ? 'Trocar foto' : 'Selecionar foto'}</>
+                        }
+                      </button>
+                    </div>
+                    {picError && <p className="text-xs text-red-500 mt-1">{picError}</p>}
+                  </div>
+
                   {formError && <p className="text-sm text-red-600">{formError}</p>}
                   <div className="flex gap-2">
-                    <Button type="submit" size="sm" loading={isSubmitting}>Adicionar</Button>
-                    <Button type="button" size="sm" variant="ghost" onClick={() => setShowForm(false)}>Cancelar</Button>
+                    <Button type="submit" size="sm" loading={isSubmitting || picUploading}>
+                      {isFirstGroup ? 'Criar primeiro grupo' : 'Adicionar grupo'}
+                    </Button>
+                    <Button type="button" size="sm" variant="ghost" onClick={() => { setShowForm(false); removePic() }}>
+                      Cancelar
+                    </Button>
                   </div>
                 </form>
               </CardContent>

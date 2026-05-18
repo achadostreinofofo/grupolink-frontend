@@ -37,6 +37,9 @@ export interface Structure {
   active: boolean
   groups: Group[]
   smartLink: string
+  groupNamePrefix: string | null
+  nextGroupNumber: number
+  groupProfilePicUrl: string | null
 }
 
 export interface CreateStructurePayload {
@@ -48,8 +51,8 @@ export interface CreateStructurePayload {
 
 export interface AddGroupPayload {
   name: string
-  inviteLink?: string
-  maxMembers?: number
+  startingNumber?: number
+  profilePicUrl?: string
 }
 
 export interface WhatsappAccount {
