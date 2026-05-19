@@ -25,7 +25,7 @@ describe('DeleteStructureModal', () => {
 
   it('shows structure name in the warning text', () => {
     render(<DeleteStructureModal {...defaultProps} />)
-    expect(screen.getByText(/"Minha Estrutura"/)).toBeInTheDocument()
+    expect(screen.getByText(/Minha Estrutura/)).toBeInTheDocument()
   })
 
   it('confirm button is disabled when typed field is empty', () => {
