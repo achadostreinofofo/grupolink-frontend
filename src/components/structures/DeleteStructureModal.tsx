@@ -67,7 +67,7 @@ export function DeleteStructureModal({ open, structureName, onClose, onConfirm }
           <div className="bg-red-50 border border-red-100 rounded-xl p-4 text-sm text-red-700 space-y-1">
             <p className="font-semibold">Você está prestes a excluir permanentemente:</p>
             <ul className="list-disc list-inside space-y-0.5 text-red-600">
-              <li>A estrutura <strong>"{structureName}"</strong></li>
+              <li>A estrutura <strong>&ldquo;{structureName}&rdquo;</strong></li>
               <li>Todos os grupos associados</li>
               <li>Todo o histórico de cliques e redirecionamentos</li>
               <li>Todas as mensagens agendadas desta estrutura</li>
