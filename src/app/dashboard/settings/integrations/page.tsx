@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { api } from '@/lib/api'
 import type { MlStatus } from '@/types'
@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
 import { Loader, Check, AlertCircle } from 'lucide-react'
 
-export default function IntegrationsPage() {
+function IntegrationsContent() {
   const searchParams = useSearchParams()
   const [mlStatus, setMlStatus] = useState<MlStatus | null>(null)
   const [loading, setLoading] = useState(true)
@@ -180,5 +180,13 @@ export default function IntegrationsPage() {
         </p>
       </div>
     </div>
+  )
+}
+
+export default function IntegrationsPage() {
+  return (
+    <Suspense fallback={<div className="max-w-xl"><div className="h-40 bg-gray-100 rounded-xl animate-pulse" /></div>}>
+      <IntegrationsContent />
+    </Suspense>
   )
 }
