@@ -19,3 +19,6 @@ dist/
 *.pem
 npm-debug.log*
 .eslintcache
+
+# test coverage
+coverage/
