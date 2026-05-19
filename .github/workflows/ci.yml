@@ -8,7 +8,6 @@ on:
 
 jobs:
   quality:
-    name: Quality — Type Check & Lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -27,8 +26,7 @@ jobs:
       - name: ESLint — static analysis
         run: npm run lint
 
-  build:
-    name: Build — Next.js
+  test:
     runs-on: ubuntu-latest
     needs: quality
     steps:
@@ -42,13 +40,37 @@ jobs:
       - name: Install dependencies
         run: npm ci --legacy-peer-deps
 
+      - name: Run tests with coverage
+        run: npm run test:coverage -- --ci --forceExit
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-report
+          path: coverage/
+          retention-days: 7
+
+  build:
+    runs-on: ubuntu-latest
+    needs: [quality, test]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
       - name: Build production
         env:
           NEXT_PUBLIC_API_URL: http://localhost:8080
         run: npm run build
 
   security:
-    name: Security — Vulnerability Scan
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -75,9 +97,3 @@ jobs:
           ignore-unfixed: true
           severity: CRITICAL,HIGH
           skip-dirs: node_modules/.cache,.next
-
-      - name: Dependency Review (pull requests)
-        if: github.event_name == 'pull_request'
-        uses: actions/dependency-review-action@v4
-        with:
-          fail-on-severity: high

@@ -7,7 +7,7 @@ import { Card, CardContent } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
 import { cn } from '@/lib/utils'
-import { Check, Crown, Zap, Star } from 'lucide-react'
+import { AlertTriangle, Check, Clock, Crown, Star, Zap } from 'lucide-react'
 
 const plans = [
   {
@@ -113,8 +113,77 @@ export default function BillingPage() {
         <p className="text-sm text-gray-500 mt-1">Gerencie seu plano e pagamentos</p>
       </div>
 
-      {/* Status atual */}
-      {!loading && subscription && (
+      {/* Trial banner — shown only for FREE users */}
+      {!loading && subscription?.plan === 'FREE' && (
+        (() => {
+          const days = subscription.trialDaysLeft ?? 0
+          const expired = days === 0
+          return (
+            <div className={`mb-6 rounded-2xl border-2 px-5 py-4 flex flex-col sm:flex-row sm:items-center gap-4 ${
+              expired
+                ? 'border-red-200 bg-red-50'
+                : days <= 2
+                  ? 'border-amber-300 bg-amber-50'
+                  : 'border-teal-200 bg-teal-50'
+            }`}>
+              <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
+                expired ? 'bg-red-100' : days <= 2 ? 'bg-amber-100' : 'bg-teal-100'
+              }`}>
+                {expired
+                  ? <AlertTriangle className="w-5 h-5 text-red-500" />
+                  : <Clock className={`w-5 h-5 ${days <= 2 ? 'text-amber-500' : 'text-teal-600'}`} />
+                }
+              </div>
+
+              <div className="flex-1">
+                {expired ? (
+                  <>
+                    <p className="font-semibold text-red-700 text-sm">Período de teste encerrado</p>
+                    <p className="text-xs text-red-600 mt-0.5">
+                      Seu acesso gratuito expirou. Assine um plano para continuar usando todas as funcionalidades.
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <p className={`font-semibold text-sm ${days <= 2 ? 'text-amber-700' : 'text-teal-800'}`}>
+                      {days === 1 ? 'Último dia de teste gratuito!' : `${days} dias restantes no teste gratuito`}
+                    </p>
+                    <p className={`text-xs mt-0.5 ${days <= 2 ? 'text-amber-600' : 'text-teal-700'}`}>
+                      Teste encerra em{' '}
+                      {subscription.trialEndDate
+                        ? new Date(subscription.trialEndDate).toLocaleDateString('pt-BR', {
+                            day: '2-digit', month: 'long', year: 'numeric',
+                          })
+                        : '—'
+                      }. Inclui: 1 estrutura · 1 conta WhatsApp · 80 agendamentos/mês.
+                    </p>
+                  </>
+                )}
+
+                {/* Progress bar */}
+                {!expired && (
+                  <div className="mt-2 w-full max-w-xs">
+                    <div className="w-full bg-white/60 rounded-full h-1.5">
+                      <div
+                        className={`h-1.5 rounded-full transition-all ${days <= 2 ? 'bg-amber-400' : 'bg-teal-500'}`}
+                        style={{ width: `${(days / 7) * 100}%` }}
+                      />
+                    </div>
+                    <p className="text-xs text-gray-400 mt-0.5">{7 - days} de 7 dias utilizados</p>
+                  </div>
+                )}
+              </div>
+
+              <p className="text-xs text-gray-500 sm:text-right flex-shrink-0">
+                Plano atual: <span className="font-semibold text-gray-700">Free Trial</span>
+              </p>
+            </div>
+          )
+        })()
+      )}
+
+      {/* Status atual — planos pagos */}
+      {!loading && subscription && subscription.plan !== 'FREE' && (
         <Card className="mb-8">
           <CardContent className="flex flex-col sm:flex-row sm:items-center gap-4">
             <div className="flex-1">
@@ -129,7 +198,7 @@ export default function BillingPage() {
                 </p>
               )}
             </div>
-            {isActive && currentPlan !== 'FREE' && (
+            {isActive && (
               <Button variant="danger" size="sm" onClick={handleCancel}>
                 Cancelar assinatura
               </Button>

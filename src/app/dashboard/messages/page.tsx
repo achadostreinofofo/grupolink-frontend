@@ -10,7 +10,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Badge } from '@/components/ui/Badge'
-import { Plus, MessageSquare, X, Image, Calendar } from 'lucide-react'
+import { Plus, MessageSquare, X, Image, Calendar, Clock } from 'lucide-react'
 
 const schema = z.object({
   title:       z.string().min(2, 'Título obrigatório'),
@@ -22,14 +22,16 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>
 
-function statusInfo(status: ScheduledMessage['status']): { label: string; variant: 'green' | 'yellow' | 'red' | 'gray' } {
-  const map = {
-    PENDING:   { label: 'Agendado',  variant: 'yellow' as const },
-    SENT:      { label: 'Enviado',   variant: 'green'  as const },
-    FAILED:    { label: 'Falhou',    variant: 'red'    as const },
-    CANCELLED: { label: 'Cancelado', variant: 'gray'   as const },
-  }
-  return map[status]
+const STATUS_INFO: Record<ScheduledMessage['status'], { label: string; variant: 'green' | 'yellow' | 'red' | 'gray' }> = {
+  DRAFT:     { label: 'Rascunho',  variant: 'gray'   },
+  PENDING:   { label: 'Agendado',  variant: 'yellow' },
+  SENT:      { label: 'Enviado',   variant: 'green'  },
+  FAILED:    { label: 'Falhou',    variant: 'red'    },
+  CANCELLED: { label: 'Cancelado', variant: 'gray'   },
+}
+
+function statusInfo(status: ScheduledMessage['status']) {
+  return STATUS_INFO[status]
 }
 
 function formatDateTime(iso: string) {
@@ -39,7 +41,6 @@ function formatDateTime(iso: string) {
   })
 }
 
-// Mínimo de data/hora para o input datetime-local (agora + 5 min)
 function minDateTimeLocal() {
   const d = new Date(Date.now() + 5 * 60 * 1000)
   return d.toISOString().slice(0, 16)
@@ -52,6 +53,11 @@ export default function MessagesPage() {
   const [loading, setLoading]       = useState(true)
   const [showForm, setShowForm]     = useState(false)
   const [formError, setFormError]   = useState('')
+
+  // Modal de reagendamento
+  const [reschedulingMsg, setReschedulingMsg]   = useState<ScheduledMessage | null>(null)
+  const [rescheduleDate, setRescheduleDate]     = useState('')
+  const [rescheduleLoading, setRescheduleLoading] = useState(false)
 
   const { register, handleSubmit, reset, setValue, formState: { errors, isSubmitting } } = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -78,11 +84,10 @@ export default function MessagesPage() {
   const onCreate = async (data: FormData) => {
     setFormError('')
     try {
-      await api.messages.create({
+      await api.messages.create(data.structureId || '', {
         title:       data.title,
         content:     data.content,
         mediaUrl:    data.mediaUrl || undefined,
-        structureId: data.structureId || undefined,
         scheduledAt: new Date(data.scheduledAt).toISOString(),
       })
       reset()
@@ -97,6 +102,31 @@ export default function MessagesPage() {
     if (!confirm('Cancelar este agendamento?')) return
     await api.messages.cancel(id).catch(console.error)
     load()
+  }
+
+  const onReschedule = async () => {
+    if (!reschedulingMsg || !rescheduleDate) return
+    setRescheduleLoading(true)
+    try {
+      await api.messages.update(reschedulingMsg.id, {
+        title:       reschedulingMsg.title,
+        content:     reschedulingMsg.content,
+        mediaUrl:    reschedulingMsg.mediaUrl ?? undefined,
+        scheduledAt: new Date(rescheduleDate).toISOString(),
+      })
+      setReschedulingMsg(null)
+      setRescheduleDate('')
+      load()
+    } catch (e) {
+      alert(e instanceof Error ? e.message : 'Erro ao reagendar mensagem')
+    } finally {
+      setRescheduleLoading(false)
+    }
+  }
+
+  const closeModal = () => {
+    setReschedulingMsg(null)
+    setRescheduleDate('')
   }
 
   const pending = messages.filter(m => m.status === 'PENDING')
@@ -229,7 +259,7 @@ export default function MessagesPage() {
                         </div>
                         <p className="text-xs text-gray-500 mt-0.5 truncate">{msg.content}</p>
                         <div className="flex items-center gap-3 mt-1 text-xs text-gray-400">
-                          <span>Envio: {formatDateTime(msg.scheduledAt)}</span>
+                          <span>Envio: {formatDateTime(msg.scheduledAt!)}</span>
                           {msg.structureName && <span>· {msg.structureName}</span>}
                         </div>
                       </div>
@@ -267,10 +297,19 @@ export default function MessagesPage() {
                             <p className="text-xs text-red-500 mt-0.5">{msg.errorMessage}</p>
                           )}
                           <p className="text-xs text-gray-400 mt-0.5">
-                            {msg.executedAt ? `Executado: ${formatDateTime(msg.executedAt)}` : formatDateTime(msg.scheduledAt)}
+                            {msg.executedAt ? `Executado: ${formatDateTime(msg.executedAt)}` : msg.scheduledAt ? formatDateTime(msg.scheduledAt) : '—'}
                             {msg.structureName && ` · ${msg.structureName}`}
                           </p>
                         </div>
+                        {msg.status === 'SENT' && (
+                          <button
+                            title="Reagendar mensagem"
+                            className="flex-shrink-0 p-1.5 rounded-lg hover:bg-yellow-50 transition-colors"
+                            onClick={() => { setReschedulingMsg(msg); setRescheduleDate('') }}
+                          >
+                            <Clock className="w-5 h-5 text-yellow-500" />
+                          </button>
+                        )}
                       </CardContent>
                     </Card>
                   )
@@ -289,6 +328,58 @@ export default function MessagesPage() {
             </Card>
           )}
         </>
+      )}
+
+      {/* Modal de reagendamento */}
+      {reschedulingMsg && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4"
+          onClick={e => { if (e.target === e.currentTarget) closeModal() }}
+        >
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6">
+            <div className="flex items-center justify-between mb-5">
+              <div className="flex items-center gap-2">
+                <div className="w-9 h-9 rounded-xl bg-yellow-50 flex items-center justify-center">
+                  <Clock className="w-5 h-5 text-yellow-500" />
+                </div>
+                <h2 className="text-base font-semibold text-gray-900">Reagendar envio</h2>
+              </div>
+              <button
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+                onClick={closeModal}
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <p className="text-sm text-gray-500 mb-1">Mensagem</p>
+            <p className="text-sm font-medium text-gray-800 mb-5 truncate">{reschedulingMsg.title}</p>
+
+            <label className="text-sm font-medium text-gray-700 block mb-1.5">Nova data e hora de envio</label>
+            <input
+              type="datetime-local"
+              min={minDateTimeLocal()}
+              value={rescheduleDate}
+              onChange={e => setRescheduleDate(e.target.value)}
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 mb-6"
+            />
+
+            <div className="flex gap-2">
+              <Button
+                className="flex-1"
+                loading={rescheduleLoading}
+                disabled={!rescheduleDate}
+                onClick={onReschedule}
+              >
+                <Calendar className="w-4 h-4" />
+                Agendar
+              </Button>
+              <Button variant="ghost" onClick={closeModal}>
+                Cancelar
+              </Button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   )

@@ -17,9 +17,9 @@ export function Footer() {
             <Link href="/politica-de-privacidade" className="hover:text-white transition-colors">
               Política de Privacidade
             </Link>
-            <a href="mailto:suporte@grupolink.com.br" className="hover:text-white transition-colors">
+            <Link href="/contato" className="hover:text-white transition-colors">
               Contato
-            </a>
+            </Link>
           </nav>
 
           <p className="text-xs text-gray-500">

@@ -1,11 +1,15 @@
 import type {
-  AddGroupPayload, AuthResponse, BlacklistEntry, CheckoutResponse,
+  AddGroupPayload, AuthResponse, AvailableGroup, BlacklistEntry, BroadcastRequest,
+  BroadcastResponse, BroadcastStatusDetail, CheckoutResponse,
   ChurnAnalytics, ConnectWhatsappPayload, CreateMessagePayload,
-  CreateShortLinkPayload, CreateStructurePayload, MessageTemplate,
-  OverviewAnalytics, PendingAction, ScheduledMessage, ShortLink,
-  Structure, StructureAnalytics, SubscriptionStatus, User,
-  UserProfile, UtmAnalytics, WhatsappAccount
+  CreateMonitoredGroupPayload, CreateShortLinkPayload, CreateStructurePayload,
+  MessageTemplate, MlStatus, MonitoredGroup, OverviewAnalytics, PendingAction,
+  ScheduledMessage, ShortLink, Structure, StructureAnalytics,
+  SubscriptionStatus, UpdateMessagePayload, UpdateMonitoredGroupPayload,
+  User, UserProfile, UtmAnalytics, WebSessionStartResponse, WebSessionStatus,
+  WhatsappAccount
 } from '@/types'
+import { clearPublicKeyCache, encryptField } from './encryption'
 
 const BASE = '/api'
 
@@ -27,19 +31,38 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 
   if (!res.ok) {
     const body = await res.json().catch(() => ({}))
-    throw new Error(body?.error ?? `Erro ${res.status}`)
+    if (body?.error === 'ENCRYPTION_KEY_EXPIRED') clearPublicKeyCache()
+    const err = new Error(body?.message ?? body?.error ?? `Erro ${res.status}`) as Error & { code?: string }
+    err.code = body?.error
+    throw err
   }
 
+  if (res.status === 204 || res.headers.get('content-length') === '0') {
+    return undefined as T
+  }
   return res.json() as Promise<T>
 }
 
 export const api = {
   auth: {
-    signup: (data: { email: string; password: string; name: string; cpf?: string }) =>
-      request<AuthResponse>('/auth/signup', { method: 'POST', body: JSON.stringify(data) }),
+    signup: async (data: { email: string; password: string; name: string; cpf?: string }) => {
+      const [encPassword, encCpf] = await Promise.all([
+        encryptField(data.password),
+        data.cpf ? encryptField(data.cpf) : Promise.resolve(undefined),
+      ])
+      return request<AuthResponse>('/auth/signup', {
+        method: 'POST',
+        body: JSON.stringify({ ...data, password: encPassword, cpf: encCpf }),
+      })
+    },
 
-    login: (data: { email: string; password: string }) =>
-      request<AuthResponse>('/auth/login', { method: 'POST', body: JSON.stringify(data) }),
+    login: async (data: { email: string; password: string }) => {
+      const encPassword = await encryptField(data.password)
+      return request<AuthResponse>('/auth/login', {
+        method: 'POST',
+        body: JSON.stringify({ ...data, password: encPassword }),
+      })
+    },
 
     me: () => request<User>('/auth/me'),
   },
@@ -49,7 +72,8 @@ export const api = {
     get: (id: string) => request<Structure>(`/structures/${id}`),
     create: (data: CreateStructurePayload) =>
       request<Structure>('/structures', { method: 'POST', body: JSON.stringify(data) }),
-    addGroup: (structureId: string, data: AddGroupPayload) =>
+    delete: (id: string) => request<void>(`/structures/${id}`, { method: 'DELETE' }),
+    addGroup: (structureId: string, data: AddGroupPayload & { participantJids?: string[] }) =>
       request(`/structures/${structureId}/groups`, { method: 'POST', body: JSON.stringify(data) }),
   },
 
@@ -86,9 +110,38 @@ export const api = {
 
   messages: {
     list: () => request<ScheduledMessage[]>('/messages'),
-    create: (data: CreateMessagePayload) =>
-      request<ScheduledMessage>('/messages', { method: 'POST', body: JSON.stringify(data) }),
+    listByStructure: (structureId: string) =>
+      request<ScheduledMessage[]>(`/structures/${structureId}/messages`),
+    create: (structureId: string, data: CreateMessagePayload) =>
+      request<ScheduledMessage>(`/structures/${structureId}/messages`, { method: 'POST', body: JSON.stringify(data) }),
+    update: (id: string, data: UpdateMessagePayload) =>
+      request<ScheduledMessage>(`/messages/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+    sendNow: (id: string, groupIds?: string[]) =>
+      request<ScheduledMessage>(`/messages/${id}/send`, {
+        method: 'POST',
+        body: JSON.stringify({ groupIds: groupIds?.length ? groupIds : null }),
+      }),
+    delete: (id: string) => request<void>(`/messages/${id}`, { method: 'DELETE' }),
+    // mantido para compatibilidade
     cancel: (id: string) => request<void>(`/messages/${id}`, { method: 'DELETE' }),
+  },
+
+  upload: {
+    image: async (file: File): Promise<{ url: string }> => {
+      const form = new FormData()
+      form.append('file', file)
+      const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null
+      const res = await fetch('/api/upload/image', {
+        method: 'POST',
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        body: form,
+      })
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}))
+        throw new Error(body?.message ?? `Erro ${res.status}`)
+      }
+      return res.json()
+    },
   },
 
   blacklist: {
@@ -123,6 +176,41 @@ export const api = {
       request(`/dashboard/structures/${structureId}/groups/${groupId}`, { method: 'PUT', body: JSON.stringify(data) }),
   },
 
+  whatsappWeb: {
+    startSession: () => request<WebSessionStartResponse>('/whatsapp/web/sessions', { method: 'POST' }),
+    getStatus: (sessionId: string) => request<WebSessionStatus>(`/whatsapp/web/sessions/${sessionId}`),
+    listSessions: () => request<WebSessionStatus[]>('/whatsapp/web/sessions'),
+    disconnect: (sessionId: string) => request<void>(`/whatsapp/web/sessions/${sessionId}`, { method: 'DELETE' }),
+    checkNumber: (phone: string) =>
+      request<{ phone: string; exists: boolean; formattedPhone: string; jid: string }>('/whatsapp/web/check-number', {
+        method: 'POST', body: JSON.stringify({ phone }),
+      }),
+  },
+
+  broadcast: {
+    send: (structureId: string, data: BroadcastRequest) =>
+      request<BroadcastResponse>(`/structures/${structureId}/broadcast`, { method: 'POST', body: JSON.stringify(data) }),
+    getStatus: (structureId: string, broadcastId: string) =>
+      request<BroadcastStatusDetail>(`/structures/${structureId}/broadcast/${broadcastId}`),
+    list: () => request<BroadcastStatusDetail[]>('/broadcasts'),
+  },
+
+  contact: {
+    send: (data: { name: string; email: string; message: string }) =>
+      request<{ message: string }>('/contact', { method: 'POST', body: JSON.stringify(data) }),
+  },
+
+  monitoredGroups: {
+    list:           () => request<MonitoredGroup[]>('/monitored-groups'),
+    listAvailable:  (sessionId: string) =>
+      request<AvailableGroup[]>(`/monitored-groups/available?sessionId=${encodeURIComponent(sessionId)}`),
+    create:         (data: CreateMonitoredGroupPayload) =>
+      request<MonitoredGroup>('/monitored-groups', { method: 'POST', body: JSON.stringify(data) }),
+    update:         (id: string, data: UpdateMonitoredGroupPayload) =>
+      request<MonitoredGroup>(`/monitored-groups/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+    delete:         (id: string) => request<void>(`/monitored-groups/${id}`, { method: 'DELETE' }),
+  },
+
   users: {
     me:             () => request<UserProfile>('/users/me'),
     updateProfile:  (data: { name: string; email: string; cpf?: string }) =>
@@ -131,5 +219,11 @@ export const api = {
       request<void>('/users/me/password', { method: 'PUT', body: JSON.stringify(data) }),
     setPassword:    (newPassword: string) =>
       request<void>('/users/me/set-password', { method: 'POST', body: JSON.stringify({ newPassword }) }),
+  },
+
+  mercadolivre: {
+    getStatus:  () => request<MlStatus>('/ml/status'),
+    startOAuth: () => request<{ authorizationUrl: string }>('/ml/oauth/start'),
+    disconnect: () => request<void>('/ml/disconnect', { method: 'DELETE' }),
   },
 }

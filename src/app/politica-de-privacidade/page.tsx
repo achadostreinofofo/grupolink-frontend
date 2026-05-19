@@ -17,7 +17,7 @@ export default function PoliticaPrivacidadePage() {
 
         <Section title="1. Quem somos">
           <p>
-            A <strong>GrupoLink</strong> ("nós", "nosso" ou "Plataforma") é uma solução SaaS para gerenciamento
+            A <strong>GrupoLink</strong> (&ldquo;nós&rdquo;, &ldquo;nosso&rdquo; ou &ldquo;Plataforma&rdquo;) é uma solução SaaS para gerenciamento
             de grupos WhatsApp voltada a afiliados e vendedores de e-commerce. Esta Política de Privacidade
             descreve como tratamos os dados pessoais dos usuários em conformidade com a{' '}
             <strong>Lei Geral de Proteção de Dados Pessoais (LGPD – Lei nº 13.709/2018)</strong>.

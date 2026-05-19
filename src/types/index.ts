@@ -25,6 +25,7 @@ export interface Group {
   clickCount: number
   status: 'ACTIVE' | 'FULL' | 'INACTIVE' | 'CREATING'
   sortOrder: number
+  whatsappGroupId: string | null  // null = não vinculado ao WhatsApp real
 }
 
 export interface Structure {
@@ -37,11 +38,13 @@ export interface Structure {
   active: boolean
   groups: Group[]
   smartLink: string
+  groupNamePrefix: string | null
+  nextGroupNumber: number
+  groupProfilePicUrl: string | null
 }
 
 export interface CreateStructurePayload {
   name: string
-  slug: string
   description?: string
   maxMembersPerGroup?: number
   fillThreshold?: number
@@ -49,8 +52,8 @@ export interface CreateStructurePayload {
 
 export interface AddGroupPayload {
   name: string
-  inviteLink?: string
-  maxMembers?: number
+  startingNumber?: number
+  profilePicUrl?: string
 }
 
 export interface WhatsappAccount {
@@ -79,6 +82,8 @@ export interface SubscriptionStatus {
   status: string
   payerEmail: string | null
   periodEndDate: string | null
+  trialEndDate: string | null
+  trialDaysLeft: number | null
 }
 
 export interface DailyClick {
@@ -121,8 +126,8 @@ export interface ScheduledMessage {
   title: string
   content: string
   mediaUrl: string | null
-  status: 'PENDING' | 'SENT' | 'FAILED' | 'CANCELLED'
-  scheduledAt: string
+  status: 'DRAFT' | 'PENDING' | 'SENT' | 'FAILED' | 'CANCELLED'
+  scheduledAt: string | null
   executedAt: string | null
   errorMessage: string | null
   structureId: string | null
@@ -134,7 +139,14 @@ export interface CreateMessagePayload {
   content: string
   mediaUrl?: string
   structureId?: string
-  scheduledAt: string
+  scheduledAt?: string    // null/omit = DRAFT
+}
+
+export interface UpdateMessagePayload {
+  title: string
+  content: string
+  mediaUrl?: string
+  scheduledAt?: string
 }
 
 export interface BlacklistEntry {
@@ -212,4 +224,85 @@ export interface UserProfile {
   whatsappIntegrated: boolean
   hasPassword: boolean
   createdAt: string
+}
+
+// ──── WhatsApp Web Sessions ────
+
+export interface WebSessionStartResponse {
+  sessionId: string
+  status: 'WAITING_SCAN' | 'AUTHENTICATED' | 'DISCONNECTED'
+}
+
+export interface WebSessionStatus {
+  sessionId: string
+  status: 'WAITING_SCAN' | 'AUTHENTICATED' | 'DISCONNECTED'
+  qrBase64: string | null
+  phone: string | null
+}
+
+// ──── Message Broadcasting ────
+
+export interface BroadcastRequest {
+  messageType?: 'TEXT' | 'IMAGE'
+  content: string
+  mediaUrl?: string
+  groupIds?: string[]
+}
+
+export interface BroadcastResponse {
+  broadcastId: string
+  status: string
+  totalGroups: number
+}
+
+export interface BroadcastStatusDetail {
+  broadcastId: string
+  status: 'QUEUED' | 'IN_PROGRESS' | 'COMPLETED' | 'FAILED' | 'SCHEDULED'
+  totalGroups: number
+  groupsProcessed: number
+  groupsSuccessful: number
+  groupsFailed: number
+  createdAt: string
+}
+
+// ──── Monitoramento de grupos WhatsApp ────
+
+export interface MonitoredGroup {
+  id: string
+  sessionId: string
+  whatsappGroupId: string
+  whatsappGroupName: string | null
+  structureId: string
+  structureName: string
+  messagePrefix: string | null
+  active: boolean
+  createdAt: string
+}
+
+export interface AvailableGroup {
+  groupId: string
+  name: string
+  participants: number
+  alreadyMonitored: boolean
+}
+
+export interface CreateMonitoredGroupPayload {
+  sessionId: string
+  whatsappGroupId: string
+  whatsappGroupName?: string
+  structureId: string
+  messagePrefix?: string
+}
+
+export interface UpdateMonitoredGroupPayload {
+  structureId?: string
+  messagePrefix?: string
+  active?: boolean
+}
+
+// ──── Mercado Livre Integration ────
+
+export interface MlStatus {
+  connected: boolean
+  nickname: string | null
 }
