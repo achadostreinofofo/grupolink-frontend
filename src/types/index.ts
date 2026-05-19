@@ -264,3 +264,45 @@ export interface BroadcastStatusDetail {
   groupsFailed: number
   createdAt: string
 }
+
+// ──── Monitoramento de grupos WhatsApp ────
+
+export interface MonitoredGroup {
+  id: string
+  sessionId: string
+  whatsappGroupId: string
+  whatsappGroupName: string | null
+  structureId: string
+  structureName: string
+  messagePrefix: string | null
+  active: boolean
+  createdAt: string
+}
+
+export interface AvailableGroup {
+  groupId: string
+  name: string
+  participants: number
+  alreadyMonitored: boolean
+}
+
+export interface CreateMonitoredGroupPayload {
+  sessionId: string
+  whatsappGroupId: string
+  whatsappGroupName?: string
+  structureId: string
+  messagePrefix?: string
+}
+
+export interface UpdateMonitoredGroupPayload {
+  structureId?: string
+  messagePrefix?: string
+  active?: boolean
+}
+
+// ──── Mercado Livre Integration ────
+
+export interface MlStatus {
+  connected: boolean
+  nickname: string | null
+}

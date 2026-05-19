@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Badge } from '@/components/ui/Badge'
 import { useRouter } from 'next/navigation'
-import { User, Lock, LogOut, Check } from 'lucide-react'
+import { User, Lock, LogOut, Check, Zap } from 'lucide-react'
 
 // ---- schemas ----
 function validateCpf(cpf: string): boolean {
@@ -288,6 +288,19 @@ export default function SettingsPage() {
             <LogOut className="w-3.5 h-3.5" />
             Sair
           </Button>
+        </div>
+      </SectionCard>
+
+      {/* Integrações */}
+      <SectionCard title="Integrações" icon={Zap}>
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-sm text-gray-700 font-medium">Conectar serviços</p>
+            <p className="text-xs text-gray-400 mt-0.5">Gerenciar integrações com Mercado Livre e outros serviços</p>
+          </div>
+          <a href="/dashboard/settings/integrations" className="text-sm text-brand-600 hover:underline font-medium">
+            Gerenciar →
+          </a>
         </div>
       </SectionCard>
     </div>

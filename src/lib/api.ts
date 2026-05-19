@@ -1,10 +1,11 @@
 import type {
-  AddGroupPayload, AuthResponse, BlacklistEntry, BroadcastRequest,
+  AddGroupPayload, AuthResponse, AvailableGroup, BlacklistEntry, BroadcastRequest,
   BroadcastResponse, BroadcastStatusDetail, CheckoutResponse,
   ChurnAnalytics, ConnectWhatsappPayload, CreateMessagePayload,
-  CreateShortLinkPayload, CreateStructurePayload, MessageTemplate,
-  OverviewAnalytics, PendingAction, ScheduledMessage, ShortLink,
-  Structure, StructureAnalytics, SubscriptionStatus, UpdateMessagePayload,
+  CreateMonitoredGroupPayload, CreateShortLinkPayload, CreateStructurePayload,
+  MessageTemplate, MlStatus, MonitoredGroup, OverviewAnalytics, PendingAction,
+  ScheduledMessage, ShortLink, Structure, StructureAnalytics,
+  SubscriptionStatus, UpdateMessagePayload, UpdateMonitoredGroupPayload,
   User, UserProfile, UtmAnalytics, WebSessionStartResponse, WebSessionStatus,
   WhatsappAccount
 } from '@/types'
@@ -199,6 +200,17 @@ export const api = {
       request<{ message: string }>('/contact', { method: 'POST', body: JSON.stringify(data) }),
   },
 
+  monitoredGroups: {
+    list:           () => request<MonitoredGroup[]>('/monitored-groups'),
+    listAvailable:  (sessionId: string) =>
+      request<AvailableGroup[]>(`/monitored-groups/available?sessionId=${encodeURIComponent(sessionId)}`),
+    create:         (data: CreateMonitoredGroupPayload) =>
+      request<MonitoredGroup>('/monitored-groups', { method: 'POST', body: JSON.stringify(data) }),
+    update:         (id: string, data: UpdateMonitoredGroupPayload) =>
+      request<MonitoredGroup>(`/monitored-groups/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+    delete:         (id: string) => request<void>(`/monitored-groups/${id}`, { method: 'DELETE' }),
+  },
+
   users: {
     me:             () => request<UserProfile>('/users/me'),
     updateProfile:  (data: { name: string; email: string; cpf?: string }) =>
@@ -207,5 +219,11 @@ export const api = {
       request<void>('/users/me/password', { method: 'PUT', body: JSON.stringify(data) }),
     setPassword:    (newPassword: string) =>
       request<void>('/users/me/set-password', { method: 'POST', body: JSON.stringify({ newPassword }) }),
+  },
+
+  mercadolivre: {
+    getStatus:  () => request<MlStatus>('/ml/status'),
+    startOAuth: () => request<{ authorizationUrl: string }>('/ml/oauth/start'),
+    disconnect: () => request<void>('/ml/disconnect', { method: 'DELETE' }),
   },
 }
