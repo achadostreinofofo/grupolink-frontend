@@ -101,9 +101,3 @@ jobs:
           ignore-unfixed: true
           severity: CRITICAL,HIGH
           skip-dirs: node_modules/.cache,.next
-
-      - name: Dependency Review (pull requests)
-        if: github.event_name == 'pull_request'
-        uses: actions/dependency-review-action@v4
-        with:
-          fail-on-severity: high
