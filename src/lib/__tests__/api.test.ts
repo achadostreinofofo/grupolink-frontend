@@ -12,7 +12,7 @@ global.fetch = mockFetch
 const mockLocalStorage = (() => {
   let store: Record<string, string> = {}
   return {
-    getItem: jest.fn((key: string) => store[key] ?? null),
+    getItem: jest.fn((_key: string): string | null => store[_key] ?? null),
     setItem: jest.fn((key: string, value: string) => { store[key] = value }),
     removeItem: jest.fn((key: string) => { delete store[key] }),
     clear: jest.fn(() => { store = {} }),

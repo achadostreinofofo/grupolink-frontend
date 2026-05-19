@@ -22,13 +22,16 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>
 
-function statusInfo(status: ScheduledMessage['status']): { label: string; variant: 'green' | 'yellow' | 'red' | 'gray' } {
-  return {
-    PENDING:   { label: 'Agendado',  variant: 'yellow' },
-    SENT:      { label: 'Enviado',   variant: 'green' },
-    FAILED:    { label: 'Falhou',    variant: 'red' },
-    CANCELLED: { label: 'Cancelado', variant: 'gray' },
-  }[status]
+const STATUS_INFO: Record<ScheduledMessage['status'], { label: string; variant: 'green' | 'yellow' | 'red' | 'gray' }> = {
+  DRAFT:     { label: 'Rascunho',  variant: 'gray'   },
+  PENDING:   { label: 'Agendado',  variant: 'yellow' },
+  SENT:      { label: 'Enviado',   variant: 'green'  },
+  FAILED:    { label: 'Falhou',    variant: 'red'    },
+  CANCELLED: { label: 'Cancelado', variant: 'gray'   },
+}
+
+function statusInfo(status: ScheduledMessage['status']) {
+  return STATUS_INFO[status]
 }
 
 function formatDateTime(iso: string) {
@@ -81,11 +84,10 @@ export default function MessagesPage() {
   const onCreate = async (data: FormData) => {
     setFormError('')
     try {
-      await api.messages.create({
+      await api.messages.create(data.structureId || '', {
         title:       data.title,
         content:     data.content,
         mediaUrl:    data.mediaUrl || undefined,
-        structureId: data.structureId || undefined,
         scheduledAt: new Date(data.scheduledAt).toISOString(),
       })
       reset()
