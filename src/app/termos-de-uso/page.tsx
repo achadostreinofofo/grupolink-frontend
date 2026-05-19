@@ -21,8 +21,8 @@ export default function TermosDeUsoPage() {
             nossos serviços.
           </p>
           <p className="mt-2">
-            Estes Termos constituem um contrato vinculante entre você ("Usuário") e a{' '}
-            <strong>GrupoLink Tecnologia Ltda.</strong> ("GrupoLink", "nós" ou "Empresa").
+            Estes Termos constituem um contrato vinculante entre você (&ldquo;Usuário&rdquo;) e a{' '}
+            <strong>GrupoLink Tecnologia Ltda.</strong> (&ldquo;GrupoLink&rdquo;, &ldquo;nós&rdquo; ou &ldquo;Empresa&rdquo;).
           </p>
         </Section>
 

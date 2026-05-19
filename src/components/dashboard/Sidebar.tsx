@@ -4,18 +4,18 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import { clearAuth } from '@/lib/auth'
-import { LayoutDashboard, Network, MessageSquare, Smartphone, CreditCard, BarChart2, Link2, FileText, Settings, LogOut } from 'lucide-react'
+import { LayoutDashboard, Network, Smartphone, CreditCard, BarChart2, Link2, FileText, Settings, LogOut, Radio } from 'lucide-react'
 
 const nav = [
-  { href: '/dashboard',               label: 'Visão Geral',  icon: LayoutDashboard },
-  { href: '/dashboard/structures',    label: 'Estruturas',   icon: Network },
-  { href: '/dashboard/analytics',     label: 'Analytics',    icon: BarChart2 },
-  { href: '/dashboard/messages',      label: 'Mensagens',    icon: MessageSquare },
-  { href: '/dashboard/templates',     label: 'Templates',    icon: FileText },
-  { href: '/dashboard/links',         label: 'Links',        icon: Link2 },
-  { href: '/dashboard/integrations',  label: 'WhatsApp',     icon: Smartphone },
-  { href: '/dashboard/billing',       label: 'Plano',        icon: CreditCard },
-  { href: '/dashboard/settings',      label: 'Configurações', icon: Settings },
+  { href: '/dashboard',                    label: 'Visão Geral',       icon: LayoutDashboard },
+  { href: '/dashboard/structures',         label: 'Estruturas',        icon: Network },
+  { href: '/dashboard/analytics',          label: 'Analytics',         icon: BarChart2 },
+  { href: '/dashboard/templates',          label: 'Templates',         icon: FileText },
+  { href: '/dashboard/links',              label: 'Links',             icon: Link2 },
+  { href: '/dashboard/integrations',       label: 'WhatsApp',          icon: Smartphone },
+  { href: '/dashboard/monitored-groups',   label: 'Grupos Monitorados',icon: Radio },
+  { href: '/dashboard/billing',            label: 'Plano',             icon: CreditCard },
+  { href: '/dashboard/settings',           label: 'Configurações',     icon: Settings },
 ]
 
 export function Sidebar() {
