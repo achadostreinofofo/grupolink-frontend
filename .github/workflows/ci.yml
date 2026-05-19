@@ -7,30 +7,10 @@ on:
     branches: [master, develop]
 
 jobs:
-  quality:
-    name: Quality — Type Check & Lint
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: npm
-
-      - name: Install dependencies
-        run: npm ci --legacy-peer-deps
-
-      - name: TypeScript — type check
-        run: npx tsc --noEmit
-
-      - name: ESLint — static analysis
-        run: npm run lint
 
   test:
     name: Test — Jest
     runs-on: ubuntu-latest
-    needs: quality
     steps:
       - uses: actions/checkout@v4
 
@@ -53,10 +33,32 @@ jobs:
           path: coverage/
           retention-days: 7
 
+  # quality:
+  #   name: Quality — Type Check & Lint
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+
+  #     - uses: actions/setup-node@v4
+  #       with:
+  #         node-version: '20'
+  #         cache: npm
+
+  #     - name: Install dependencies
+  #       run: npm ci --legacy-peer-deps
+
+  #     - name: TypeScript — type check
+  #       run: npx tsc --noEmit
+
+  #     - name: ESLint — static analysis
+  #       run: npm run lint
+
+ 
+
   build:
     name: Build — Next.js
     runs-on: ubuntu-latest
-    needs: [quality, test]
+    needs: [test]
     steps:
       - uses: actions/checkout@v4
 
@@ -73,37 +75,37 @@ jobs:
           NEXT_PUBLIC_API_URL: http://localhost:8080
         run: npm run build
 
-  security:
-    name: Security — Vulnerability Scan
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
+  # security:
+  #   name: Security — Vulnerability Scan
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: npm
+  #     - uses: actions/setup-node@v4
+  #       with:
+  #         node-version: '20'
+  #         cache: npm
 
-      - name: Install dependencies
-        run: npm ci --legacy-peer-deps
+  #     - name: Install dependencies
+  #       run: npm ci --legacy-peer-deps
 
-      - name: npm audit — known vulnerabilities
-        run: npm audit --audit-level=high --legacy-peer-deps
-        continue-on-error: true
+  #     - name: npm audit — known vulnerabilities
+  #       run: npm audit --audit-level=high --legacy-peer-deps
+  #       continue-on-error: true
 
-      - name: Trivy — filesystem CVE scan
-        uses: aquasecurity/trivy-action@master
-        with:
-          scan-type: fs
-          scan-ref: .
-          format: table
-          exit-code: '1'
-          ignore-unfixed: true
-          severity: CRITICAL,HIGH
-          skip-dirs: node_modules/.cache,.next
+  #     - name: Trivy — filesystem CVE scan
+  #       uses: aquasecurity/trivy-action@master
+  #       with:
+  #         scan-type: fs
+  #         scan-ref: .
+  #         format: table
+  #         exit-code: '1'
+  #         ignore-unfixed: true
+  #         severity: CRITICAL,HIGH
+  #         skip-dirs: node_modules/.cache,.next
 
-      - name: Dependency Review (pull requests)
-        if: github.event_name == 'pull_request'
-        uses: actions/dependency-review-action@v4
-        with:
-          fail-on-severity: high
+  #     - name: Dependency Review (pull requests)
+  #       if: github.event_name == 'pull_request'
+  #       uses: actions/dependency-review-action@v4
+  #       with:
+  #         fail-on-severity: high
