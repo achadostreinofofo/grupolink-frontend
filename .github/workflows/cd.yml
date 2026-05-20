@@ -41,10 +41,25 @@ jobs:
 
       - name: Trigger Amplify deployment (master branch)
         run: |
+          APP_ID="${{ secrets.AMPLIFY_APP_ID }}"
+          BRANCH="master"
+
+          # Cancel any running or pending job on this branch before starting a new one
+          RUNNING=$(aws amplify list-jobs \
+            --app-id "$APP_ID" --branch-name "$BRANCH" \
+            --query "jobSummaries[?status=='RUNNING' || status=='PENDING'].jobId | [0]" \
+            --output text)
+
+          if [ "$RUNNING" != "None" ] && [ -n "$RUNNING" ]; then
+            echo "Canceling in-progress job: $RUNNING"
+            aws amplify stop-job --app-id "$APP_ID" --branch-name "$BRANCH" --job-id "$RUNNING" || true
+            sleep 5
+          fi
+
           JOB_ID=$(aws amplify start-job \
-            --app-id ${{ secrets.AMPLIFY_APP_ID }} \
-            --branch-name master \
+            --app-id "$APP_ID" \
+            --branch-name "$BRANCH" \
             --job-type RELEASE \
             --query "jobSummary.jobId" --output text)
           echo "Amplify job started: $JOB_ID"
-          echo "Track: https://us-east-1.console.aws.amazon.com/amplify/home#/${{ secrets.AMPLIFY_APP_ID }}/master"
+          echo "Track: https://us-east-1.console.aws.amazon.com/amplify/home#/$APP_ID/$BRANCH"
