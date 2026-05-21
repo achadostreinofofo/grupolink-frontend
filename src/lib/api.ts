@@ -184,8 +184,19 @@ export const api = {
     startSession: () => request<WebSessionStartResponse>('/whatsapp/web/sessions', { method: 'POST' }),
     getStatus: (sessionId: string) => request<WebSessionStatus>(`/whatsapp/web/sessions/${sessionId}`),
     listSessions: () => request<WebSessionStatus[]>('/whatsapp/web/sessions'),
-    listGroups: (sessionId: string) =>
-      request<{ groupId: string; name: string; participants: number }[]>(`/whatsapp/web/sessions/${sessionId}/groups`),
+    listGroups: async (sessionId: string): Promise<{ groupId: string; name: string; participants: number }[]> => {
+      // Chamada direta ao backend — evita timeout de 10s do Amplify Lambda
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? ''
+      const token = getToken()
+      const res = await fetch(`${apiUrl}/api/whatsapp/web/sessions/${sessionId}/groups`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      })
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}))
+        throw new Error(body?.message ?? `Erro ${res.status}`)
+      }
+      return res.json()
+    },
     disconnect: (sessionId: string) => request<void>(`/whatsapp/web/sessions/${sessionId}`, { method: 'DELETE' }),
     checkNumber: (phone: string) =>
       request<{ phone: string; exists: boolean; formattedPhone: string; jid: string }>('/whatsapp/web/check-number', {
