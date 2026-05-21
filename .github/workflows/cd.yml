@@ -44,16 +44,27 @@ jobs:
           APP_ID="${{ secrets.AMPLIFY_APP_ID }}"
           BRANCH="master"
 
-          # Cancel any running or pending job on this branch before starting a new one
+          # Pega apenas o primeiro job ID numérico (--output text pode retornar "ID\nNone")
           RUNNING=$(aws amplify list-jobs \
             --app-id "$APP_ID" --branch-name "$BRANCH" \
             --query "jobSummaries[?status=='RUNNING' || status=='PENDING'].jobId | [0]" \
-            --output text)
+            --output text | grep -E '^[0-9]+$' || true)
 
-          if [ "$RUNNING" != "None" ] && [ -n "$RUNNING" ]; then
+          if [ -n "$RUNNING" ]; then
             echo "Canceling in-progress job: $RUNNING"
             aws amplify stop-job --app-id "$APP_ID" --branch-name "$BRANCH" --job-id "$RUNNING" || true
-            sleep 5
+
+            # Aguarda o job parar antes de iniciar novo (Amplify permite apenas 1 job por branch)
+            for i in $(seq 1 12); do
+              sleep 5
+              STATUS=$(aws amplify get-job \
+                --app-id "$APP_ID" --branch-name "$BRANCH" --job-id "$RUNNING" \
+                --query "job.summary.status" --output text 2>/dev/null || echo "DONE")
+              echo "Job $RUNNING status: $STATUS"
+              if [[ "$STATUS" != "RUNNING" && "$STATUS" != "PENDING" && "$STATUS" != "CANCELLING" ]]; then
+                break
+              fi
+            done
           fi
 
           JOB_ID=$(aws amplify start-job \
