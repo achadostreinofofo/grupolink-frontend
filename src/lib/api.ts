@@ -198,6 +198,7 @@ export const api = {
       return res.json()
     },
     disconnect: (sessionId: string) => request<void>(`/whatsapp/web/sessions/${sessionId}`, { method: 'DELETE' }),
+    reconnect: (sessionId: string) => request<WebSessionStatus>(`/whatsapp/web/sessions/${sessionId}/reconnect`, { method: 'POST' }),
     checkNumber: (phone: string) =>
       request<{ phone: string; exists: boolean; formattedPhone: string; jid: string }>('/whatsapp/web/check-number', {
         method: 'POST', body: JSON.stringify({ phone }),

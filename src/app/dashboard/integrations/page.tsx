@@ -12,7 +12,7 @@ import { Input } from '@/components/ui/Input'
 import { Badge } from '@/components/ui/Badge'
 import {
   CheckCircle, ExternalLink, Plus, QrCode,
-  Smartphone, Trash2, Wifi, WifiOff,
+  RefreshCw, Smartphone, Trash2, Wifi, WifiOff,
 } from 'lucide-react'
 import Link from 'next/link'
 
@@ -37,6 +37,7 @@ export default function IntegrationsPage() {
   // ── WhatsApp Web (QR) state ──
   const [sessions, setSessions]       = useState<WebSessionStatus[]>([])
   const [loadingSessions, setLoadingSessions] = useState(true)
+  const [reconnectingId, setReconnectingId] = useState<string | null>(null)
 
   const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -85,6 +86,18 @@ export default function IntegrationsPage() {
     if (!confirm('Desconectar esta sessão WhatsApp Web?')) return
     await api.whatsappWeb.disconnect(sessionId).catch(console.error)
     loadSessions()
+  }
+
+  const onReconnectSession = async (sessionId: string) => {
+    setReconnectingId(sessionId)
+    try {
+      await api.whatsappWeb.reconnect(sessionId)
+      loadSessions()
+    } catch (e) {
+      console.error(e)
+    } finally {
+      setReconnectingId(null)
+    }
   }
 
   return (
@@ -177,14 +190,28 @@ export default function IntegrationsPage() {
                           {session.sessionId}
                         </p>
                       </div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="text-red-500 hover:text-red-700 hover:bg-red-50"
-                        onClick={() => onDisconnectSession(session.sessionId)}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
+                      <div className="flex items-center gap-1">
+                        {session.status !== 'AUTHENTICATED' && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="text-teal-600 hover:text-teal-800 hover:bg-teal-50"
+                            onClick={() => onReconnectSession(session.sessionId)}
+                            disabled={reconnectingId === session.sessionId}
+                            title="Reconectar sessão"
+                          >
+                            <RefreshCw className={`w-4 h-4 ${reconnectingId === session.sessionId ? 'animate-spin' : ''}`} />
+                          </Button>
+                        )}
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                          onClick={() => onDisconnectSession(session.sessionId)}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
                     </CardContent>
                   </Card>
                 ))}
