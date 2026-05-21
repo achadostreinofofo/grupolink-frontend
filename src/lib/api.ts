@@ -75,6 +75,8 @@ export const api = {
     delete: (id: string) => request<void>(`/structures/${id}`, { method: 'DELETE' }),
     addGroup: (structureId: string, data: AddGroupPayload & { participantJids?: string[] }) =>
       request(`/structures/${structureId}/groups`, { method: 'POST', body: JSON.stringify(data) }),
+    importGroup: (structureId: string, data: { whatsappGroupId: string; inviteLink?: string }) =>
+      request(`/structures/${structureId}/groups/import`, { method: 'POST', body: JSON.stringify(data) }),
   },
 
   whatsapp: {
@@ -182,6 +184,8 @@ export const api = {
     startSession: () => request<WebSessionStartResponse>('/whatsapp/web/sessions', { method: 'POST' }),
     getStatus: (sessionId: string) => request<WebSessionStatus>(`/whatsapp/web/sessions/${sessionId}`),
     listSessions: () => request<WebSessionStatus[]>('/whatsapp/web/sessions'),
+    listGroups: (sessionId: string) =>
+      request<{ groupId: string; name: string; participants: number }[]>(`/whatsapp/web/sessions/${sessionId}/groups`),
     disconnect: (sessionId: string) => request<void>(`/whatsapp/web/sessions/${sessionId}`, { method: 'DELETE' }),
     checkNumber: (phone: string) =>
       request<{ phone: string; exists: boolean; formattedPhone: string; jid: string }>('/whatsapp/web/check-number', {

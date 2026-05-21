@@ -20,6 +20,7 @@ import Link from 'next/link'
 import { useRef } from 'react'
 import { SelectGroupsModal } from '@/components/messages/SelectGroupsModal'
 import { CreateGroupParticipantsModal } from '@/components/groups/CreateGroupParticipantsModal'
+import { ImportGroupModal } from '@/components/groups/ImportGroupModal'
 import { DeleteStructureModal } from '@/components/structures/DeleteStructureModal'
 
 const addGroupSchema = z.object({
@@ -92,6 +93,7 @@ export default function StructureDetailPage() {
   const [showGroupModal, setShowGroupModal]       = useState(false)
   const [pendingMsgId,  setPendingMsgId]         = useState<string | null>(null)
   const [showDeleteModal, setShowDeleteModal]     = useState(false)
+  const [showImportModal, setShowImportModal]     = useState(false)
 
   // Profile picture state for group creation
   const [picFile, setPicFile]         = useState<File | null>(null)
@@ -324,9 +326,16 @@ export default function StructureDetailPage() {
         <>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-sm font-semibold text-gray-700">Grupos</h2>
-            <Button size="sm" onClick={() => setShowForm(!showForm)}>
-              <Plus className="w-4 h-4" /> Adicionar grupo
-            </Button>
+            <div className="flex gap-2">
+              {isFirstGroup && (
+                <Button size="sm" variant="ghost" onClick={() => setShowImportModal(true)}>
+                  <Download className="w-4 h-4" /> Importar grupo
+                </Button>
+              )}
+              <Button size="sm" onClick={() => setShowForm(!showForm)}>
+                <Plus className="w-4 h-4" /> Adicionar grupo
+              </Button>
+            </div>
           </div>
 
           {showForm && (
@@ -565,6 +574,15 @@ export default function StructureDetailPage() {
             </div>
           )}
         </>
+      )}
+
+      {showImportModal && structure && (
+        <ImportGroupModal
+          structureId={id}
+          structureName={structure.name}
+          onSuccess={load}
+          onClose={() => setShowImportModal(false)}
+        />
       )}
 
       <DeleteStructureModal
