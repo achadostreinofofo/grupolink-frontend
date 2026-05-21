@@ -220,8 +220,21 @@ export const api = {
 
   monitoredGroups: {
     list:           () => request<MonitoredGroup[]>('/monitored-groups'),
-    listAvailable:  (sessionId: string) =>
-      request<AvailableGroup[]>(`/monitored-groups/available?sessionId=${encodeURIComponent(sessionId)}`),
+    listAvailable:  async (sessionId: string): Promise<AvailableGroup[]> => {
+      // Chamada direta ao backend — evita timeout de 10s do Amplify Lambda
+      // groupFetchAllParticipating() pode demorar 15-30s em contas com muitos grupos
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? ''
+      const token = getToken()
+      const res = await fetch(
+        `${apiUrl}/api/monitored-groups/available?sessionId=${encodeURIComponent(sessionId)}`,
+        { headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) } }
+      )
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}))
+        throw new Error(body?.message ?? `Erro ${res.status}`)
+      }
+      return res.json()
+    },
     create:         (data: CreateMonitoredGroupPayload) =>
       request<MonitoredGroup>('/monitored-groups', { method: 'POST', body: JSON.stringify(data) }),
     update:         (id: string, data: UpdateMonitoredGroupPayload) =>
