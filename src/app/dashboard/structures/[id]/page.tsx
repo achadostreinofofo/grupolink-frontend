@@ -326,16 +326,16 @@ export default function StructureDetailPage() {
         <>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-sm font-semibold text-gray-700">Grupos</h2>
-            <div className="flex gap-2">
-              {isFirstGroup && (
+            {isFirstGroup && (
+              <div className="flex gap-2">
                 <Button size="sm" variant="ghost" onClick={() => setShowImportModal(true)}>
                   <Download className="w-4 h-4" /> Importar grupo
                 </Button>
-              )}
-              <Button size="sm" onClick={() => setShowForm(!showForm)}>
-                <Plus className="w-4 h-4" /> Adicionar grupo
-              </Button>
-            </div>
+                <Button size="sm" onClick={() => setShowForm(!showForm)}>
+                  <Plus className="w-4 h-4" /> Adicionar grupo
+                </Button>
+              </div>
+            )}
           </div>
 
           {showForm && (
