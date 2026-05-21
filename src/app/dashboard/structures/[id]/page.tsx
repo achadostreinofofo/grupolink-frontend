@@ -286,24 +286,26 @@ export default function StructureDetailPage() {
         </div>
       </div>
 
-      {/* Smart Link */}
-      <Card className="mb-5">
-        <CardContent className="flex items-center gap-4">
-          <div className="flex-1 min-w-0">
-            <p className="text-xs text-gray-500 mb-1">Smart Link</p>
-            <p className="text-sm font-mono text-gray-800 truncate">{structure.smartLink}</p>
-          </div>
-          <div className="flex gap-2 flex-shrink-0">
-            <Button variant="secondary" size="sm" onClick={copyLink}>
-              <Copy className="w-3.5 h-3.5" />
-              {copied ? 'Copiado!' : 'Copiar'}
-            </Button>
-            <a href={structure.smartLink} target="_blank" rel="noreferrer">
-              <Button variant="ghost" size="sm"><ExternalLink className="w-3.5 h-3.5" /></Button>
-            </a>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Smart Link — apenas quando há grupo ativo */}
+      {structure.groups.some(g => g.status === 'ACTIVE') && (
+        <Card className="mb-5">
+          <CardContent className="flex items-center gap-4">
+            <div className="flex-1 min-w-0">
+              <p className="text-xs text-gray-500 mb-1">Smart Link</p>
+              <p className="text-sm font-mono text-gray-800 truncate">{structure.smartLink}</p>
+            </div>
+            <div className="flex gap-2 flex-shrink-0">
+              <Button variant="secondary" size="sm" onClick={copyLink}>
+                <Copy className="w-3.5 h-3.5" />
+                {copied ? 'Copiado!' : 'Copiar'}
+              </Button>
+              <a href={structure.smartLink} target="_blank" rel="noreferrer">
+                <Button variant="ghost" size="sm"><ExternalLink className="w-3.5 h-3.5" /></Button>
+              </a>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Tabs */}
       <div className="flex gap-1 bg-gray-100 rounded-xl p-1 mb-5">
