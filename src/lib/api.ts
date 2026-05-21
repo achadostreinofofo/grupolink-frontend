@@ -133,7 +133,9 @@ export const api = {
       const form = new FormData()
       form.append('file', file)
       const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null
-      const res = await fetch('/api/upload/image', {
+      // Upload direto ao backend para evitar limite de 6MB do Lambda/Amplify proxy
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? ''
+      const res = await fetch(`${apiUrl}/api/upload/image`, {
         method: 'POST',
         headers: token ? { Authorization: `Bearer ${token}` } : {},
         body: form,
