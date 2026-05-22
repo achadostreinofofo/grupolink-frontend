@@ -6,7 +6,7 @@ import { api } from '@/lib/api'
 import type { WebSessionStatus } from '@/types'
 import { Card, CardContent, CardHeader } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
-import { ArrowLeft, CheckCircle, RefreshCw, Smartphone, Wifi, WifiOff } from 'lucide-react'
+import { AlertTriangle, ArrowLeft, CheckCircle, RefreshCw, Smartphone, Wifi, WifiOff } from 'lucide-react'
 import Link from 'next/link'
 
 const POLL_INTERVAL = 2000   // 2 s
@@ -117,6 +117,23 @@ export default function ConnectWhatsappWebPage() {
           <p className="text-sm text-gray-500">Escaneie com seu WhatsApp para conectar</p>
         </div>
       </div>
+
+      {/* Warning — número dedicado */}
+      <Card className="mb-4 border-amber-200 bg-amber-50">
+        <CardContent className="py-4">
+          <div className="flex items-start gap-3">
+            <AlertTriangle className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
+            <div>
+              <p className="text-sm font-semibold text-amber-900 mb-1">Use um número dedicado à plataforma</p>
+              <ul className="text-sm text-amber-800 space-y-1 list-disc list-inside">
+                <li>O número conectado <strong>não pode ser seu WhatsApp pessoal principal</strong></li>
+                <li>Não abra o <strong>WhatsApp Web</strong> com este número em outros dispositivos — isso derruba a sessão</li>
+                <li>Mantenha o celular com bateria e internet para evitar expiração da sessão</li>
+              </ul>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Instructions */}
       <Card className="mb-5 border-blue-100 bg-blue-50">
