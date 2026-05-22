@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Badge } from '@/components/ui/Badge'
 import {
-  CheckCircle, ExternalLink, Plus, QrCode,
+  AlertTriangle, CheckCircle, ExternalLink, Plus, QrCode,
   RefreshCw, Smartphone, Trash2, Wifi, WifiOff,
 } from 'lucide-react'
 import Link from 'next/link'
@@ -35,9 +35,10 @@ export default function IntegrationsPage() {
   const [formError, setFormError]   = useState('')
 
   // ── WhatsApp Web (QR) state ──
-  const [sessions, setSessions]       = useState<WebSessionStatus[]>([])
+  const [sessions, setSessions]           = useState<WebSessionStatus[]>([])
   const [loadingSessions, setLoadingSessions] = useState(true)
-  const [reconnectingId, setReconnectingId] = useState<string | null>(null)
+  const [reconnectingId, setReconnectingId]   = useState<string | null>(null)
+  const [liveStatuses, setLiveStatuses]       = useState<Record<string, string>>({})
 
   const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -54,9 +55,24 @@ export default function IntegrationsPage() {
   const loadSessions = () => {
     setLoadingSessions(true)
     api.whatsappWeb.listSessions()
-      .then(setSessions)
+      .then(list => {
+        setSessions(list)
+        // Verifica status live de cada sessão em background
+        list.forEach(s => {
+          api.whatsappWeb.getStatus(s.sessionId)
+            .then(live => setLiveStatuses(prev => ({ ...prev, [s.sessionId]: live.status })))
+            .catch(() => {})
+        })
+      })
       .catch(console.error)
       .finally(() => setLoadingSessions(false))
+  }
+
+  const getDisplayStatus = (session: WebSessionStatus) => {
+    const live = liveStatuses[session.sessionId] ?? session.status
+    if (live === 'AUTHENTICATED') return 'AUTHENTICATED'
+    if (session.phone) return 'EXPIRED'   // tinha número → sessão expirou
+    return 'WAITING_SCAN'
   }
 
   useEffect(() => {
@@ -166,55 +182,68 @@ export default function IntegrationsPage() {
           ) : (
             <>
               <div className="space-y-3">
-                {sessions.map(session => (
-                  <Card key={session.sessionId}>
-                    <CardContent className="flex items-center gap-4">
-                      <div className="w-10 h-10 rounded-xl bg-teal-100 flex items-center justify-center flex-shrink-0">
-                        {session.status === 'AUTHENTICATED'
-                          ? <Wifi className="w-5 h-5 text-teal-600" />
-                          : <WifiOff className="w-5 h-5 text-gray-400" />
-                        }
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          {session.phone
-                            ? <p className="font-medium text-gray-900 text-sm">+{session.phone}</p>
-                            : <p className="font-medium text-gray-400 text-sm">Aguardando autenticação</p>
-                          }
-                          {session.status === 'AUTHENTICATED'
-                            ? <Badge variant="green"><CheckCircle className="w-3 h-3 mr-1 inline" />Conectado</Badge>
-                            : <Badge variant="yellow">Desconectado</Badge>
+                {sessions.map(session => {
+                  const displayStatus = getDisplayStatus(session)
+                  const isConnected   = displayStatus === 'AUTHENTICATED'
+                  const isExpired     = displayStatus === 'EXPIRED'
+
+                  return (
+                    <Card key={session.sessionId}>
+                      <CardContent className="flex items-center gap-4">
+                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
+                          isConnected ? 'bg-teal-100' : isExpired ? 'bg-amber-50' : 'bg-gray-100'
+                        }`}>
+                          {isConnected
+                            ? <Wifi className="w-5 h-5 text-teal-600" />
+                            : <WifiOff className={`w-5 h-5 ${isExpired ? 'text-amber-400' : 'text-gray-400'}`} />
                           }
                         </div>
-                        <p className="text-xs text-gray-400 font-mono mt-0.5 truncate">
-                          {session.sessionId}
-                        </p>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        {session.status !== 'AUTHENTICATED' && (
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            {session.phone
+                              ? <p className="font-medium text-gray-900 text-sm">+{session.phone}</p>
+                              : <p className="font-medium text-gray-400 text-sm">Aguardando autenticação</p>
+                            }
+                            {isConnected && (
+                              <Badge variant="green"><CheckCircle className="w-3 h-3 mr-1 inline" />Conectado</Badge>
+                            )}
+                            {isExpired && (
+                              <Badge variant="yellow"><AlertTriangle className="w-3 h-3 mr-1 inline" />Expirada</Badge>
+                            )}
+                            {!isConnected && !isExpired && (
+                              <Badge variant="gray">Aguardando scan</Badge>
+                            )}
+                          </div>
+                          <p className="text-xs text-gray-400 font-mono mt-0.5 truncate">
+                            {session.sessionId}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          {isExpired && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="text-amber-600 hover:text-amber-800 hover:bg-amber-50"
+                              onClick={() => onReconnectSession(session.sessionId)}
+                              disabled={reconnectingId === session.sessionId}
+                              title="Reconectar sessão"
+                            >
+                              <RefreshCw className={`w-4 h-4 ${reconnectingId === session.sessionId ? 'animate-spin' : ''}`} />
+                            </Button>
+                          )}
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="text-teal-600 hover:text-teal-800 hover:bg-teal-50"
-                            onClick={() => onReconnectSession(session.sessionId)}
-                            disabled={reconnectingId === session.sessionId}
-                            title="Reconectar sessão"
+                            className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                            onClick={() => onDisconnectSession(session.sessionId)}
                           >
-                            <RefreshCw className={`w-4 h-4 ${reconnectingId === session.sessionId ? 'animate-spin' : ''}`} />
+                            <Trash2 className="w-4 h-4" />
                           </Button>
-                        )}
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="text-red-500 hover:text-red-700 hover:bg-red-50"
-                          onClick={() => onDisconnectSession(session.sessionId)}
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )
+                })}
               </div>
 
               <Link href="/dashboard/whatsapp/connect">
