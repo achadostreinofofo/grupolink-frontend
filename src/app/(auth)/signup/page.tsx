@@ -221,7 +221,7 @@ export default function SignupPage() {
             />
             <Input
               id="phone"
-              label={<>Telefone <span className="text-gray-400 font-normal">(opcional)</span></>}
+              label="Telefone (opcional)"
               placeholder="(00) 00000-0000"
               maxLength={15}
               error={errors.phone?.message}
