@@ -35,10 +35,18 @@ function maskCpf(value: string): string {
   return `${d.slice(0,3)}.${d.slice(3,6)}.${d.slice(6,9)}-${d.slice(9)}`
 }
 
+function maskPhone(value: string): string {
+  const d = value.replace(/\D/g, '').slice(0, 11)
+  if (d.length <= 2) return d.length ? `(${d}` : d
+  if (d.length <= 7) return `(${d.slice(0,2)}) ${d.slice(2)}`
+  return `(${d.slice(0,2)}) ${d.slice(2,7)}-${d.slice(7)}`
+}
+
 const schema = z.object({
   name:     z.string().min(2, 'Nome muito curto'),
   email:    z.string().email('E-mail inválido'),
   cpf:      z.string().min(14, 'CPF inválido').refine(validateCpf, 'CPF inválido'),
+  phone:    z.string().min(14, 'Telefone inválido').optional().or(z.literal('')),
   password: z.string().min(8, 'Mínimo 8 caracteres'),
 })
 
@@ -113,8 +121,9 @@ function ConflictModal({
 
 export default function SignupPage() {
   const router = useRouter()
-  const [error, setError] = useState('')
+  const [error, setError]       = useState('')
   const [conflict, setConflict] = useState<ConflictType>(null)
+  const [emailSent, setEmailSent] = useState('')
 
   const { register, handleSubmit, setValue, watch, resetField, formState: { errors, isSubmitting } } = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -123,9 +132,8 @@ export default function SignupPage() {
   const onSubmit = async (data: FormData) => {
     setError('')
     try {
-      const res = await api.auth.signup({ ...data })
-      saveAuth(res.token)
-      router.push('/dashboard')
+      const res = await api.auth.signup({ ...data, phone: data.phone || undefined })
+      setEmailSent(res.email)
     } catch (e) {
       const err = e as Error & { code?: string }
       if (err.code === 'EMAIL_ALREADY_EXISTS') {
@@ -136,6 +144,29 @@ export default function SignupPage() {
         setError(err.message || 'Erro ao criar conta')
       }
     }
+  }
+
+  if (emailSent) {
+    return (
+      <Card>
+        <CardContent className="pt-8 pb-8 text-center">
+          <div className="w-16 h-16 rounded-full bg-teal-100 flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-teal-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+            </svg>
+          </div>
+          <h2 className="text-xl font-bold text-gray-900 mb-2">Verifique seu e-mail</h2>
+          <p className="text-sm text-gray-500 mb-1">Enviamos um link de ativação para</p>
+          <p className="text-sm font-semibold text-gray-800 mb-4">{emailSent}</p>
+          <p className="text-xs text-gray-400 mb-6">
+            Clique no botão do e-mail para ativar sua conta.<br/>O link expira em 24 horas.
+          </p>
+          <button onClick={() => router.push('/login')} className="text-sm text-teal-600 hover:underline font-medium">
+            Já ativei minha conta → Entrar
+          </button>
+        </CardContent>
+      </Card>
+    )
   }
 
   const handleCloseConflict = () => {
@@ -185,6 +216,19 @@ export default function SignupPage() {
               onChange={e => {
                 const masked = maskCpf(e.target.value)
                 setValue('cpf', masked, { shouldValidate: !!watch('cpf') })
+                e.target.value = masked
+              }}
+            />
+            <Input
+              id="phone"
+              label={<>Telefone <span className="text-gray-400 font-normal">(opcional)</span></>}
+              placeholder="(00) 00000-0000"
+              maxLength={15}
+              error={errors.phone?.message}
+              {...register('phone')}
+              onChange={e => {
+                const masked = maskPhone(e.target.value)
+                setValue('phone', masked, { shouldValidate: !!watch('phone') })
                 e.target.value = masked
               }}
             />

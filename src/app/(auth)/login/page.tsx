@@ -36,7 +36,12 @@ function LoginForm() {
       const redirect = params.get('redirect') ?? '/dashboard'
       router.push(redirect)
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Erro ao fazer login')
+      const err = e as Error & { code?: string }
+      if (err.message === 'EMAIL_NOT_VERIFIED') {
+        setError('EMAIL_NOT_VERIFIED')
+      } else {
+        setError(err.message || 'Erro ao fazer login')
+      }
     }
   }
 
@@ -64,15 +69,26 @@ function LoginForm() {
             {...register('password')}
           />
 
-          {error && (
+          {error === 'EMAIL_NOT_VERIFIED' ? (
+            <div className="bg-amber-50 border border-amber-200 text-amber-800 text-sm rounded-lg px-4 py-3">
+              <p className="font-medium mb-1">E-mail não verificado</p>
+              <p>Verifique sua caixa de entrada e clique no link de ativação que enviamos.</p>
+            </div>
+          ) : error ? (
             <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-4 py-3">
               {error}
             </div>
-          )}
+          ) : null}
 
           <Button type="submit" className="w-full" loading={isSubmitting}>
             Entrar
           </Button>
+
+          <div className="text-center">
+            <Link href="/forgot-password" className="text-sm text-teal-600 hover:underline">
+              Esqueceu sua senha?
+            </Link>
+          </div>
         </form>
 
         <div className="mt-4 relative">

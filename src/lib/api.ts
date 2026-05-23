@@ -45,12 +45,12 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 
 export const api = {
   auth: {
-    signup: async (data: { email: string; password: string; name: string; cpf?: string }) => {
+    signup: async (data: { email: string; password: string; name: string; cpf?: string; phone?: string }) => {
       const [encPassword, encCpf] = await Promise.all([
         encryptField(data.password),
         data.cpf ? encryptField(data.cpf) : Promise.resolve(undefined),
       ])
-      return request<AuthResponse>('/auth/signup', {
+      return request<{ email: string; message: string }>('/auth/signup', {
         method: 'POST',
         body: JSON.stringify({ ...data, password: encPassword, cpf: encCpf }),
       })
@@ -65,6 +65,21 @@ export const api = {
     },
 
     me: () => request<User>('/auth/me'),
+
+    verifyEmail: (token: string) =>
+      request<AuthResponse>(`/auth/verify-email?token=${encodeURIComponent(token)}`),
+
+    forgotPassword: (data: { email: string; cpf: string }) =>
+      request<{ message: string }>('/auth/forgot-password', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
+
+    resetPassword: (data: { token: string; newPassword: string }) =>
+      request<{ message: string }>('/auth/reset-password', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
   },
 
   structures: {
