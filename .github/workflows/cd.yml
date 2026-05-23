@@ -39,6 +39,15 @@ jobs:
           echo "AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY" >> "$GITHUB_ENV"
           echo "AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION"       >> "$GITHUB_ENV"
 
+      - name: Fix Amplify platform and redirect rules
+        run: |
+          APP_ID="${{ secrets.AMPLIFY_APP_ID }}"
+          aws amplify update-app \
+            --app-id "$APP_ID" \
+            --platform WEB_COMPUTE \
+            --region us-east-1 \
+            --custom-rules '[]' || true
+
       - name: Trigger Amplify deployment (master branch)
         run: |
           APP_ID="${{ secrets.AMPLIFY_APP_ID }}"
