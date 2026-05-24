@@ -1,7 +1,7 @@
 'use client'
 
-import { useCallback, useEffect, useRef, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { Suspense, useCallback, useEffect, useRef, useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { api } from '@/lib/api'
 import type { WebSessionStatus } from '@/types'
 import { Card, CardContent, CardHeader } from '@/components/ui/Card'
@@ -12,8 +12,10 @@ import Link from 'next/link'
 const POLL_INTERVAL = 2000   // 2 s
 const QR_TTL       = 60      // seconds before QR expires
 
-export default function ConnectWhatsappWebPage() {
+function ConnectWhatsappWebContent() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const forceNewSession = searchParams.get('new') === 'true'
 
   const [sessionId, setSessionId]     = useState<string | null>(null)
   const [status, setStatus]           = useState<WebSessionStatus['status'] | null>(null)
@@ -65,13 +67,13 @@ export default function ConnectWhatsappWebPage() {
     }, 1000)
   }, [])
 
-  const initSession = useCallback(async () => {
+  const initSession = useCallback(async (force = false) => {
     setLoading(true)
     setError('')
     setQrBase64(null)
     setStatus(null)
     try {
-      const res = await api.whatsappWeb.startSession()
+      const res = await api.whatsappWeb.startSession(force)
       setSessionId(res.sessionId)
       setStatus(res.status as WebSessionStatus['status'])
 
@@ -86,9 +88,9 @@ export default function ConnectWhatsappWebPage() {
   }, [startPolling])
 
   useEffect(() => {
-    initSession()
+    initSession(forceNewSession)
     return stopPolling
-  }, [initSession])
+  }, [initSession, forceNewSession])
 
   const handleDisconnect = async () => {
     if (!sessionId) return
@@ -101,7 +103,8 @@ export default function ConnectWhatsappWebPage() {
     if (!sessionId) return
     stopPolling()
     await api.whatsappWeb.disconnect(sessionId).catch(console.error)
-    await initSession()
+    // Sempre força criação após refresh manual — a sessão acabou de ser apagada
+    await initSession(true)
   }
 
   return (
@@ -222,7 +225,7 @@ export default function ConnectWhatsappWebPage() {
             <div className="flex flex-col items-center py-10 gap-4">
               <WifiOff className="w-10 h-10 text-gray-300" />
               <p className="text-sm text-gray-500">Sessão desconectada</p>
-              <Button onClick={initSession}>
+              <Button onClick={() => initSession(true)}>
                 <RefreshCw className="w-4 h-4 mr-1" />
                 Reconectar
               </Button>
@@ -233,7 +236,7 @@ export default function ConnectWhatsappWebPage() {
             <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-4 py-3 mt-4">
               <p className="font-medium mb-1">Não foi possível gerar o QR Code</p>
               <p className="text-red-600">{error}</p>
-              <Button variant="ghost" size="sm" className="mt-3" onClick={initSession}>
+              <Button variant="ghost" size="sm" className="mt-3" onClick={() => initSession(forceNewSession)}>
                 <RefreshCw className="w-4 h-4 mr-1" />
                 Tentar novamente
               </Button>
@@ -242,5 +245,13 @@ export default function ConnectWhatsappWebPage() {
         </CardContent>
       </Card>
     </div>
+  )
+}
+
+export default function ConnectWhatsappWebPage() {
+  return (
+    <Suspense>
+      <ConnectWhatsappWebContent />
+    </Suspense>
   )
 }
