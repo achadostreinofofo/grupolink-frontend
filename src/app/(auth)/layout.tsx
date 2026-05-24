@@ -1,11 +1,20 @@
+import { Logo } from '@/components/brand/Logo'
+
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-brand-50 to-white flex items-center justify-center px-4">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <a href="/" className="inline-flex items-center gap-2 font-bold text-xl text-gray-900">
-            <span className="w-9 h-9 rounded-xl bg-brand-600 flex items-center justify-center text-white font-bold">G</span>
-            GrupoLink
+    <div className="relative min-h-screen bg-night-800 flex items-center justify-center px-4 overflow-hidden">
+      <div
+        aria-hidden
+        className="absolute inset-0 bg-grid-night bg-grid-32 opacity-40 [mask-image:radial-gradient(ellipse_at_center,black_30%,transparent_75%)]"
+      />
+      <div
+        aria-hidden
+        className="absolute top-[-200px] left-1/2 -translate-x-1/2 w-[640px] h-[640px] rounded-full bg-brand-500/15 blur-3xl"
+      />
+      <div className="relative w-full max-w-md">
+        <div className="flex flex-col items-center mb-8">
+          <a href="/" aria-label="Redirect Grupo — Início" className="inline-flex">
+            <Logo variant="vertical" tone="neon" size="lg" />
           </a>
         </div>
         {children}

@@ -124,14 +124,14 @@ export default function BillingPage() {
                 ? 'border-red-200 bg-red-50'
                 : days <= 2
                   ? 'border-amber-300 bg-amber-50'
-                  : 'border-teal-200 bg-teal-50'
+                  : 'border-brand-200 bg-brand-50'
             }`}>
               <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
-                expired ? 'bg-red-100' : days <= 2 ? 'bg-amber-100' : 'bg-teal-100'
+                expired ? 'bg-red-100' : days <= 2 ? 'bg-amber-100' : 'bg-brand-100'
               }`}>
                 {expired
                   ? <AlertTriangle className="w-5 h-5 text-red-500" />
-                  : <Clock className={`w-5 h-5 ${days <= 2 ? 'text-amber-500' : 'text-teal-600'}`} />
+                  : <Clock className={`w-5 h-5 ${days <= 2 ? 'text-amber-500' : 'text-brand-600'}`} />
                 }
               </div>
 
@@ -145,10 +145,10 @@ export default function BillingPage() {
                   </>
                 ) : (
                   <>
-                    <p className={`font-semibold text-sm ${days <= 2 ? 'text-amber-700' : 'text-teal-800'}`}>
+                    <p className={`font-semibold text-sm ${days <= 2 ? 'text-amber-700' : 'text-brand-800'}`}>
                       {days === 1 ? 'Último dia de teste gratuito!' : `${days} dias restantes no teste gratuito`}
                     </p>
-                    <p className={`text-xs mt-0.5 ${days <= 2 ? 'text-amber-600' : 'text-teal-700'}`}>
+                    <p className={`text-xs mt-0.5 ${days <= 2 ? 'text-amber-600' : 'text-brand-700'}`}>
                       Teste encerra em{' '}
                       {subscription.trialEndDate
                         ? new Date(subscription.trialEndDate).toLocaleDateString('pt-BR', {
@@ -165,7 +165,7 @@ export default function BillingPage() {
                   <div className="mt-2 w-full max-w-xs">
                     <div className="w-full bg-white/60 rounded-full h-1.5">
                       <div
-                        className={`h-1.5 rounded-full transition-all ${days <= 2 ? 'bg-amber-400' : 'bg-teal-500'}`}
+                        className={`h-1.5 rounded-full transition-all ${days <= 2 ? 'bg-amber-400' : 'bg-brand-500'}`}
                         style={{ width: `${(days / 7) * 100}%` }}
                       />
                     </div>

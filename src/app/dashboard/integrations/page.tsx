@@ -152,10 +152,10 @@ export default function IntegrationsPage() {
       {/* ── WhatsApp Web (QR) Tab ── */}
       {tab === 'qrcode' && (
         <div className="space-y-4">
-          <Card className="border-teal-100 bg-teal-50">
+          <Card className="border-brand-100 bg-brand-50">
             <CardContent className="py-4">
-              <p className="text-sm font-semibold text-teal-800 mb-1">Conexão via QR Code</p>
-              <p className="text-sm text-teal-700">
+              <p className="text-sm font-semibold text-brand-800 mb-1">Conexão via QR Code</p>
+              <p className="text-sm text-brand-700">
                 Conecte qualquer número WhatsApp escaneando um QR Code, da mesma forma que o WhatsApp Web.
                 Permite criar grupos e enviar mensagens em massa para suas estruturas.
               </p>
@@ -191,10 +191,10 @@ export default function IntegrationsPage() {
                     <Card key={session.sessionId}>
                       <CardContent className="flex items-center gap-4">
                         <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
-                          isConnected ? 'bg-teal-100' : isExpired ? 'bg-amber-50' : 'bg-gray-100'
+                          isConnected ? 'bg-brand-100' : isExpired ? 'bg-amber-50' : 'bg-gray-100'
                         }`}>
                           {isConnected
-                            ? <Wifi className="w-5 h-5 text-teal-600" />
+                            ? <Wifi className="w-5 h-5 text-brand-600" />
                             : <WifiOff className={`w-5 h-5 ${isExpired ? 'text-amber-400' : 'text-gray-400'}`} />
                           }
                         </div>

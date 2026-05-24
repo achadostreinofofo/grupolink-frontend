@@ -33,13 +33,13 @@ const features = [
 
 export function FeaturesSection() {
   return (
-    <section id="features" className="py-24 bg-white">
+    <section id="features" className="py-24 bg-night-900">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="text-center mb-16">
-          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+          <h2 className="font-display text-3xl sm:text-4xl font-bold text-white mb-4 uppercase tracking-wide">
             Tudo que você precisa para escalar
           </h2>
-          <p className="text-lg text-gray-500 max-w-2xl mx-auto">
+          <p className="text-lg text-night-100 max-w-2xl mx-auto">
             Desenvolvido especificamente para afiliados do Mercado Livre, Amazon e Shopee que precisam
             gerenciar dezenas de grupos sem complicação.
           </p>
@@ -49,11 +49,11 @@ export function FeaturesSection() {
           {features.map((f) => (
             <div
               key={f.title}
-              className="group p-6 rounded-2xl border border-gray-100 hover:border-brand-200 hover:bg-brand-50/30 transition-all"
+              className="group p-6 rounded-2xl border border-night-700 bg-night-800 hover:border-brand-500/60 hover:shadow-neon transition-all"
             >
               <div className="text-3xl mb-4">{f.icon}</div>
-              <h3 className="font-semibold text-gray-900 mb-2">{f.title}</h3>
-              <p className="text-sm text-gray-500 leading-relaxed">{f.description}</p>
+              <h3 className="font-semibold text-white mb-2">{f.title}</h3>
+              <p className="text-sm text-night-100 leading-relaxed">{f.description}</p>
             </div>
           ))}
         </div>

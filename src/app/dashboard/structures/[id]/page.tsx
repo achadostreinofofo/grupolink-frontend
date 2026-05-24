@@ -548,7 +548,7 @@ export default function StructureDetailPage() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="text-teal-600 hover:bg-teal-50"
+                        className="text-brand-600 hover:bg-brand-50"
                         loading={sendingId === msg.id}
                         onClick={() => onSendNow(msg.id)}
                         title="Enviar agora"

@@ -43,17 +43,17 @@ export default function ContatoPage() {
     <>
       <Navbar />
 
-      <main className="min-h-screen bg-gray-50">
+      <main className="min-h-screen bg-night-800">
         <div className="max-w-2xl mx-auto px-4 sm:px-6 py-20">
 
           {/* Header */}
           <div className="text-center mb-10">
-            <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-teal-100 mb-4">
-              <Mail className="w-7 h-7 text-teal-600" />
+            <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-brand-500/10 border border-brand-500/30 mb-4 shadow-neon">
+              <Mail className="w-7 h-7 text-brand-500" />
             </div>
-            <h1 className="text-3xl font-bold text-gray-900">Fale Conosco</h1>
-            <p className="text-gray-500 mt-2 text-base">
-              Tem alguma dúvida, sugestão ou quer saber mais sobre o GrupoLink?
+            <h1 className="font-display text-3xl font-bold text-white uppercase tracking-wide">Fale Conosco</h1>
+            <p className="text-night-100 mt-2 text-base">
+              Tem alguma dúvida, sugestão ou quer saber mais sobre a Redirect Grupo?
               Preencha o formulário abaixo e responderemos em até 24 horas.
             </p>
           </div>
@@ -70,7 +70,7 @@ export default function ContatoPage() {
               </p>
               <button
                 onClick={() => setSent(false)}
-                className="mt-6 text-sm text-teal-600 hover:underline"
+                className="mt-6 text-sm text-brand-500 hover:underline"
               >
                 Enviar outra mensagem
               </button>
@@ -125,7 +125,7 @@ export default function ContatoPage() {
                     id="message"
                     rows={6}
                     placeholder="Descreva sua dúvida ou mensagem..."
-                    className={`w-full rounded-xl border px-4 py-3 text-sm text-gray-900 resize-y focus:outline-none focus:ring-2 focus:ring-teal-400 transition-colors ${
+                    className={`w-full rounded-xl border px-4 py-3 text-sm text-gray-900 resize-y focus:outline-none focus:ring-2 focus:ring-brand-500 transition-colors ${
                       errors.message ? 'border-red-400 bg-red-50' : 'border-gray-200 bg-white'
                     }`}
                     {...register('message')}
@@ -154,7 +154,7 @@ export default function ContatoPage() {
 
               <p className="text-xs text-center text-gray-400 mt-5">
                 Você também pode nos contatar diretamente em{' '}
-                <a href="mailto:contato@redirectgrupo.com.br" className="text-teal-600 hover:underline">
+                <a href="mailto:contato@redirectgrupo.com.br" className="text-brand-500 hover:underline">
                   contato@redirectgrupo.com.br
                 </a>
               </p>

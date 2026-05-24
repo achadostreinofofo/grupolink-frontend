@@ -4,5 +4,25 @@
 
 @layer base {
   html { scroll-behavior: smooth; }
-  body { @apply bg-gray-50 text-gray-900 antialiased; }
+  body {
+    @apply bg-night-800 text-night-50 antialiased;
+  }
+
+  /* Selection */
+  ::selection {
+    background-color: rgba(0, 255, 200, 0.35);
+    color: #ffffff;
+  }
+}
+
+@layer utilities {
+  .text-neon {
+    color: #00FFC8;
+    text-shadow: 0 0 18px rgba(0, 255, 200, 0.55);
+  }
+
+  .border-neon {
+    border-color: rgba(0, 255, 200, 0.5);
+    box-shadow: 0 0 18px rgba(0, 255, 200, 0.25);
+  }
 }

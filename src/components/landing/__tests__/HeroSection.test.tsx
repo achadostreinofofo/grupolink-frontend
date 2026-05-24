@@ -13,7 +13,8 @@ jest.mock('next/link', () => {
 describe('HeroSection', () => {
   it('renders the main heading', () => {
     render(<HeroSection />)
-    expect(screen.getByText('Gerencie seus grupos')).toBeInTheDocument()
+    expect(screen.getByText(/redirecione seus/i)).toBeInTheDocument()
+    expect(screen.getByText(/grupos de afiliados/i)).toBeInTheDocument()
   })
 
   it('renders "Criar conta grátis" CTA', () => {

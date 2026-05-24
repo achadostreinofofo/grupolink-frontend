@@ -130,10 +130,10 @@ export default function NewStructurePage() {
                   max={100}
                   step={5}
                   {...register('fillThresholdPct')}
-                  className="flex-1 h-2 rounded-lg appearance-none cursor-pointer accent-teal-500 bg-gray-200"
+                  className="flex-1 h-2 rounded-lg appearance-none cursor-pointer accent-brand-500 bg-gray-200"
                 />
                 <div className="text-right w-16 shrink-0">
-                  <span className="text-2xl font-bold text-teal-600">{thresholdPct}%</span>
+                  <span className="text-2xl font-bold text-brand-600">{thresholdPct}%</span>
                 </div>
               </div>
 

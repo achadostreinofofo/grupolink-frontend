@@ -109,8 +109,8 @@ export function CreateGroupParticipantsModal({ open, groupName, onClose, onConfi
 
               {sessions.length === 1 && (
                 <div className="bg-gray-50 rounded-xl p-3 flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-teal-100 flex items-center justify-center flex-shrink-0">
-                    <Smartphone className="w-4 h-4 text-teal-600" />
+                  <div className="w-8 h-8 rounded-full bg-brand-100 flex items-center justify-center flex-shrink-0">
+                    <Smartphone className="w-4 h-4 text-brand-600" />
                   </div>
                   <div>
                     <p className="text-sm font-medium text-gray-900">+{sessions[0].phone}</p>
@@ -140,15 +140,15 @@ export function CreateGroupParticipantsModal({ open, groupName, onClose, onConfi
                 <p className="text-xs font-medium text-gray-500 mb-1.5 uppercase tracking-wide">
                   Conta criadora (admin)
                 </p>
-                <div className="flex items-center gap-3 p-3 rounded-xl bg-teal-50 border border-teal-200">
-                  <div className="w-8 h-8 rounded-full bg-teal-100 flex items-center justify-center flex-shrink-0">
-                    <Smartphone className="w-4 h-4 text-teal-600" />
+                <div className="flex items-center gap-3 p-3 rounded-xl bg-brand-50 border border-brand-200">
+                  <div className="w-8 h-8 rounded-full bg-brand-100 flex items-center justify-center flex-shrink-0">
+                    <Smartphone className="w-4 h-4 text-brand-600" />
                   </div>
                   <div className="flex-1">
                     <p className="text-sm font-medium text-gray-900">+{creator.phone}</p>
                     <p className="text-xs text-gray-400">Criará o grupo e será admin</p>
                   </div>
-                  <CheckCircle className="w-4 h-4 text-teal-500 flex-shrink-0" />
+                  <CheckCircle className="w-4 h-4 text-brand-500 flex-shrink-0" />
                 </div>
               </div>
 
@@ -167,7 +167,7 @@ export function CreateGroupParticipantsModal({ open, groupName, onClose, onConfi
                         type="checkbox"
                         checked={selected.has(s.sessionId)}
                         onChange={() => toggle(s.sessionId)}
-                        className="accent-teal-500 w-4 h-4 flex-shrink-0"
+                        className="accent-brand-500 w-4 h-4 flex-shrink-0"
                       />
                       <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0">
                         <Smartphone className="w-4 h-4 text-gray-500" />

@@ -56,7 +56,7 @@ export function SaveMessageModal({ open, saving, onClose, onConfirm }: Props) {
       icon: <Send className="w-5 h-5" />,
       title: 'Enviar agora',
       desc: 'Dispara a mensagem imediatamente para todos os grupos da estrutura.',
-      color: 'border-teal-100 hover:border-teal-400 data-[sel=true]:border-teal-500 data-[sel=true]:bg-teal-50',
+      color: 'border-brand-100 hover:border-brand-400 data-[sel=true]:border-brand-500 data-[sel=true]:bg-brand-50',
     },
   ]
 

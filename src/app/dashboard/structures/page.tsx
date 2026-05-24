@@ -16,7 +16,7 @@ function CapacityBar({ groups }: { groups: Structure['groups'] }) {
   const totalMembers = active.reduce((a, g) => a + g.memberCount, 0)
   const totalMax     = active.reduce((a, g) => a + g.maxMembers, 0)
   const pct = totalMax > 0 ? Math.min((totalMembers / totalMax) * 100, 100) : 0
-  const color = pct >= 90 ? 'bg-red-400' : pct >= 75 ? 'bg-yellow-400' : 'bg-teal-500'
+  const color = pct >= 90 ? 'bg-red-400' : pct >= 75 ? 'bg-yellow-400' : 'bg-brand-500'
   return (
     <div className="w-full bg-gray-100 rounded-full h-1.5">
       <div className={`${color} h-1.5 rounded-full transition-all`} style={{ width: `${pct}%` }} />
@@ -139,7 +139,7 @@ export default function StructuresPage() {
                             <Copy className="w-3.5 h-3.5" />
                           </button>
                           {copied === s.id && (
-                            <span className="text-xs text-teal-500 font-medium">Copiado!</span>
+                            <span className="text-xs text-brand-500 font-medium">Copiado!</span>
                           )}
                         </div>
 
