@@ -49,7 +49,7 @@ function LoginForm() {
     <Card>
       <CardContent className="pt-6">
         <h1 className="text-2xl font-bold text-gray-900 mb-1">Bem-vindo de volta</h1>
-        <p className="text-sm text-gray-500 mb-6">Entre na sua conta GrupoLink</p>
+        <p className="text-sm text-gray-500 mb-6">Entre na sua conta Redirect Grupo</p>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <Input
@@ -85,7 +85,7 @@ function LoginForm() {
           </Button>
 
           <div className="text-center">
-            <Link href="/forgot-password" className="text-sm text-teal-600 hover:underline">
+            <Link href="/forgot-password" className="text-sm text-brand-600 hover:underline">
               Esqueceu sua senha?
             </Link>
           </div>

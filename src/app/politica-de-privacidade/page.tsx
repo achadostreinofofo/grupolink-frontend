@@ -3,8 +3,8 @@ import { Navbar } from '@/components/landing/Navbar'
 import { Footer } from '@/components/landing/Footer'
 
 export const metadata = {
-  title: 'Política de Privacidade – GrupoLink',
-  description: 'Como a GrupoLink coleta, usa e protege seus dados pessoais, em conformidade com a LGPD.',
+  title: 'Política de Privacidade – Redirect Grupo',
+  description: 'Como a Redirect Grupo coleta, usa e protege seus dados pessoais, em conformidade com a LGPD.',
 }
 
 export default function PoliticaPrivacidadePage() {
@@ -12,20 +12,20 @@ export default function PoliticaPrivacidadePage() {
     <>
       <Navbar />
       <main className="max-w-3xl mx-auto px-4 sm:px-6 py-16">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Política de Privacidade</h1>
+        <h1 className="font-display text-3xl font-bold text-white mb-2 uppercase tracking-wide">Política de Privacidade</h1>
         <p className="text-sm text-gray-500 mb-10">Última atualização: maio de 2026</p>
 
         <Section title="1. Quem somos">
           <p>
-            A <strong>GrupoLink</strong> (&ldquo;nós&rdquo;, &ldquo;nosso&rdquo; ou &ldquo;Plataforma&rdquo;) é uma solução SaaS para gerenciamento
+            A <strong>Redirect Grupo</strong> (&ldquo;nós&rdquo;, &ldquo;nosso&rdquo; ou &ldquo;Plataforma&rdquo;) é uma solução SaaS para gerenciamento
             de grupos WhatsApp voltada a afiliados e vendedores de e-commerce. Esta Política de Privacidade
             descreve como tratamos os dados pessoais dos usuários em conformidade com a{' '}
             <strong>Lei Geral de Proteção de Dados Pessoais (LGPD – Lei nº 13.709/2018)</strong>.
           </p>
           <p className="mt-3">
-            <strong>Controlador:</strong> GrupoLink Tecnologia Ltda. — contato:{' '}
-            <a href="mailto:privacidade@grupolink.com.br" className="text-brand-600 hover:underline">
-              privacidade@grupolink.com.br
+            <strong>Controlador:</strong> Redirect Grupo Tecnologia Ltda. — contato:{' '}
+            <a href="mailto:privacidade@redirectgrupo.com.br" className="text-brand-500 hover:underline">
+              privacidade@redirectgrupo.com.br
             </a>
           </p>
         </Section>
@@ -120,12 +120,12 @@ export default function PoliticaPrivacidadePage() {
           </ul>
           <p className="mt-3">
             Para exercer esses direitos, acesse{' '}
-            <Link href="/dashboard/settings" className="text-brand-600 hover:underline">
+            <Link href="/dashboard/settings" className="text-brand-500 hover:underline">
               Configurações
             </Link>{' '}
             ou envie um e-mail para{' '}
-            <a href="mailto:privacidade@grupolink.com.br" className="text-brand-600 hover:underline">
-              privacidade@grupolink.com.br
+            <a href="mailto:privacidade@redirectgrupo.com.br" className="text-brand-500 hover:underline">
+              privacidade@redirectgrupo.com.br
             </a>
             . Respondemos em até <strong>15 dias úteis</strong>.
           </p>
@@ -162,15 +162,15 @@ export default function PoliticaPrivacidadePage() {
         <Section title="9. Encarregado de Dados (DPO)">
           <p>
             Nosso Encarregado pelo Tratamento de Dados Pessoais pode ser contatado pelo e-mail{' '}
-            <a href="mailto:privacidade@grupolink.com.br" className="text-brand-600 hover:underline">
-              privacidade@grupolink.com.br
+            <a href="mailto:privacidade@redirectgrupo.com.br" className="text-brand-500 hover:underline">
+              privacidade@redirectgrupo.com.br
             </a>
             . Também é possível registrar reclamações junto à{' '}
             <a
               href="https://www.gov.br/anpd"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-brand-600 hover:underline"
+              className="text-brand-500 hover:underline"
             >
               Autoridade Nacional de Proteção de Dados (ANPD)
             </a>
@@ -186,10 +186,10 @@ export default function PoliticaPrivacidadePage() {
           </p>
         </Section>
 
-        <div className="mt-12 pt-6 border-t border-gray-200 text-sm text-gray-500 text-center">
+        <div className="mt-12 pt-6 border-t border-night-700 text-sm text-night-100 text-center">
           Dúvidas?{' '}
-          <a href="mailto:privacidade@grupolink.com.br" className="text-brand-600 hover:underline">
-            privacidade@grupolink.com.br
+          <a href="mailto:privacidade@redirectgrupo.com.br" className="text-brand-500 hover:underline">
+            privacidade@redirectgrupo.com.br
           </a>
         </div>
       </main>
@@ -201,8 +201,8 @@ export default function PoliticaPrivacidadePage() {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="mb-10">
-      <h2 className="text-lg font-semibold text-gray-900 mb-3">{title}</h2>
-      <div className="text-gray-700 leading-relaxed space-y-2">{children}</div>
+      <h2 className="text-lg font-semibold text-brand-500 mb-3">{title}</h2>
+      <div className="text-night-100 leading-relaxed space-y-2">{children}</div>
     </section>
   )
 }
@@ -210,11 +210,11 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 function Table({ headers, rows }: { headers: string[]; rows: string[][] }) {
   return (
     <div className="overflow-x-auto mt-3">
-      <table className="w-full text-sm border border-gray-200 rounded-lg overflow-hidden">
-        <thead className="bg-gray-50">
+      <table className="w-full text-sm border border-night-700 rounded-lg overflow-hidden">
+        <thead className="bg-night-900">
           <tr>
             {headers.map(h => (
-              <th key={h} className="px-4 py-2 text-left font-medium text-gray-700 border-b border-gray-200">
+              <th key={h} className="px-4 py-2 text-left font-medium text-brand-500 border-b border-night-700">
                 {h}
               </th>
             ))}
@@ -222,9 +222,9 @@ function Table({ headers, rows }: { headers: string[]; rows: string[][] }) {
         </thead>
         <tbody>
           {rows.map((row, i) => (
-            <tr key={i} className={i % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+            <tr key={i} className={i % 2 === 0 ? 'bg-night-800' : 'bg-night-900'}>
               {row.map((cell, j) => (
-                <td key={j} className="px-4 py-2 text-gray-600 border-b border-gray-100">
+                <td key={j} className="px-4 py-2 text-night-100 border-b border-night-700">
                   {cell}
                 </td>
               ))}

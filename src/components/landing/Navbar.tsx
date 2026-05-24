@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/Button'
+import { Logo } from '@/components/brand/Logo'
 
 export function Navbar() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
@@ -12,16 +13,15 @@ export function Navbar() {
   }, [])
 
   return (
-    <header className="sticky top-0 z-50 bg-white/80 backdrop-blur border-b border-gray-100">
+    <header className="sticky top-0 z-50 bg-night-800/80 backdrop-blur border-b border-night-700">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2 font-bold text-lg text-gray-900">
-          <span className="w-8 h-8 rounded-lg bg-brand-600 flex items-center justify-center text-white text-sm">G</span>
-          GrupoLink
+        <Link href="/" className="flex items-center" aria-label="Redirect Grupo — Início">
+          <Logo variant="horizontal" size="md" priority />
         </Link>
 
-        <nav className="hidden md:flex items-center gap-8 text-sm text-gray-600">
-          <a href="#features" className="hover:text-gray-900 transition-colors">Recursos</a>
-          <a href="#pricing" className="hover:text-gray-900 transition-colors">Preços</a>
+        <nav className="hidden md:flex items-center gap-8 text-sm text-night-100">
+          <a href="#features" className="hover:text-brand-500 transition-colors">Recursos</a>
+          <a href="#pricing" className="hover:text-brand-500 transition-colors">Preços</a>
         </nav>
 
         <div className="flex items-center gap-3">

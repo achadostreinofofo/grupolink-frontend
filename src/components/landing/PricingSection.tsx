@@ -52,13 +52,13 @@ const plans = [
 
 export function PricingSection() {
   return (
-    <section id="pricing" className="py-24 bg-gray-50">
+    <section id="pricing" className="py-24 bg-night-800 border-t border-night-700">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="text-center mb-16">
-          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+          <h2 className="font-display text-3xl sm:text-4xl font-bold text-white mb-4 uppercase tracking-wide">
             Planos sem enrolação
           </h2>
-          <p className="text-lg text-gray-500">
+          <p className="text-lg text-night-100">
             Valores até 35% abaixo da concorrência. Cancele quando quiser.
           </p>
         </div>
@@ -68,46 +68,46 @@ export function PricingSection() {
             <div
               key={plan.name}
               className={cn(
-                'relative rounded-2xl p-8 border',
+                'relative rounded-2xl p-8 border transition-all',
                 plan.highlight
-                  ? 'bg-brand-600 border-brand-600 text-white shadow-2xl shadow-brand-200 scale-105'
-                  : 'bg-white border-gray-200'
+                  ? 'bg-night-900 border-brand-500/60 shadow-neon-lg scale-105'
+                  : 'bg-night-900 border-night-700 hover:border-brand-500/30'
               )}
             >
               {plan.highlight && (
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                  <span className="bg-yellow-400 text-yellow-900 text-xs font-bold px-3 py-1 rounded-full">
+                  <span className="bg-brand-500 text-night-900 text-xs font-bold px-3 py-1 rounded-full shadow-neon">
                     MAIS POPULAR
                   </span>
                 </div>
               )}
 
               <div className="mb-6">
-                <h3 className={cn('text-lg font-bold mb-1', plan.highlight ? 'text-white' : 'text-gray-900')}>
+                <h3 className={cn('text-lg font-bold mb-1 uppercase tracking-wide', plan.highlight ? 'text-brand-500' : 'text-white')}>
                   {plan.name}
                 </h3>
-                <p className={cn('text-sm', plan.highlight ? 'text-brand-100' : 'text-gray-500')}>
+                <p className="text-sm text-night-100">
                   {plan.description}
                 </p>
               </div>
 
               <div className="mb-8">
-                <span className={cn('text-4xl font-extrabold', plan.highlight ? 'text-white' : 'text-gray-900')}>
+                <span className="text-4xl font-extrabold text-white">
                   R$ {plan.price}
                 </span>
-                <span className={cn('text-sm ml-1', plan.highlight ? 'text-brand-100' : 'text-gray-400')}>/mês</span>
+                <span className="text-sm ml-1 text-night-200">/mês</span>
               </div>
 
               <ul className="space-y-3 mb-8">
                 {plan.features.map((f) => (
                   <li key={f} className="flex items-start gap-2 text-sm">
                     <svg
-                      className={cn('w-4 h-4 mt-0.5 flex-shrink-0', plan.highlight ? 'text-brand-200' : 'text-brand-600')}
+                      className="w-4 h-4 mt-0.5 flex-shrink-0 text-brand-500"
                       fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"
                     >
                       <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                     </svg>
-                    <span className={plan.highlight ? 'text-brand-50' : 'text-gray-600'}>{f}</span>
+                    <span className="text-night-100">{f}</span>
                   </li>
                 ))}
               </ul>
@@ -115,7 +115,7 @@ export function PricingSection() {
               <Link href="/signup">
                 <Button
                   className="w-full"
-                  variant={plan.highlight ? 'secondary' : 'primary'}
+                  variant={plan.highlight ? 'primary' : 'secondary'}
                 >
                   {plan.cta}
                 </Button>

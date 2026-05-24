@@ -100,7 +100,7 @@ function ResetPasswordHandler() {
 export default function ResetPasswordPage() {
   return (
     <Suspense fallback={<Card><CardContent className="py-14 text-center">
-      <div className="w-10 h-10 border-2 border-teal-500 border-t-transparent rounded-full animate-spin mx-auto" />
+      <div className="w-10 h-10 border-2 border-brand-500 border-t-transparent rounded-full animate-spin mx-auto" />
     </CardContent></Card>}>
       <ResetPasswordHandler />
     </Suspense>

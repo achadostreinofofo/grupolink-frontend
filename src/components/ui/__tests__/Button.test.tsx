@@ -11,19 +11,19 @@ describe('Button', () => {
 
   it('applies primary variant classes by default', () => {
     render(<Button>Primary</Button>)
-    expect(screen.getByRole('button')).toHaveClass('bg-brand-600')
+    expect(screen.getByRole('button')).toHaveClass('bg-brand-500')
   })
 
   it('applies secondary variant classes', () => {
     render(<Button variant="secondary">Secondary</Button>)
     const btn = screen.getByRole('button')
-    expect(btn).toHaveClass('bg-white')
-    expect(btn).toHaveClass('border-gray-300')
+    expect(btn).toHaveClass('bg-night-700')
+    expect(btn).toHaveClass('border-night-500')
   })
 
   it('applies ghost variant classes', () => {
     render(<Button variant="ghost">Ghost</Button>)
-    expect(screen.getByRole('button')).toHaveClass('text-gray-600')
+    expect(screen.getByRole('button')).toHaveClass('text-night-100')
   })
 
   it('applies danger variant classes', () => {

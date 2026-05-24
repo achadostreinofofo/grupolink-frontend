@@ -29,9 +29,9 @@ beforeEach(() => {
 })
 
 describe('Sidebar', () => {
-  it('renders the GrupoLink brand name', () => {
+  it('renders the Redirect Grupo brand', () => {
     render(<Sidebar />)
-    expect(screen.getByText('GrupoLink')).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: /redirect grupo/i })).toBeInTheDocument()
   })
 
   it('renders all navigation links', () => {
@@ -56,21 +56,21 @@ describe('Sidebar', () => {
     mockPathname.mockReturnValue('/dashboard')
     render(<Sidebar />)
     const dashboardLink = screen.getByRole('link', { name: /visão geral/i })
-    expect(dashboardLink).toHaveClass('bg-brand-600', 'text-white')
+    expect(dashboardLink).toHaveClass('text-brand-500')
   })
 
   it('does not apply active class to /dashboard when on another route', () => {
     mockPathname.mockReturnValue('/dashboard/structures')
     render(<Sidebar />)
     const dashboardLink = screen.getByRole('link', { name: /visão geral/i })
-    expect(dashboardLink).not.toHaveClass('bg-brand-600')
+    expect(dashboardLink).not.toHaveClass('text-brand-500')
   })
 
   it('applies active class to /dashboard/structures when pathname starts with it', () => {
     mockPathname.mockReturnValue('/dashboard/structures/abc')
     render(<Sidebar />)
     const structuresLink = screen.getByRole('link', { name: /estruturas/i })
-    expect(structuresLink).toHaveClass('bg-brand-600', 'text-white')
+    expect(structuresLink).toHaveClass('text-brand-500')
   })
 
   it('calls clearAuth and redirects to / on logout', async () => {

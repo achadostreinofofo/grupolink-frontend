@@ -36,9 +36,9 @@ describe('FeaturesSection', () => {
 })
 
 describe('Navbar', () => {
-  it('renders the GrupoLink brand', () => {
+  it('renders the Redirect Grupo brand', () => {
     render(<Navbar />)
-    expect(screen.getAllByText('GrupoLink').length).toBeGreaterThan(0)
+    expect(screen.getByRole('img', { name: /redirect grupo/i })).toBeInTheDocument()
   })
 
   it('renders Entrar and Começar grátis buttons', () => {

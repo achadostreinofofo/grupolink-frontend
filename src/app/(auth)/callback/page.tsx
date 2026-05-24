@@ -21,10 +21,10 @@ function CallbackContent() {
   }, [params, router])
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-brand-50">
+    <div className="min-h-screen flex items-center justify-center bg-night-800">
       <div className="text-center">
-        <div className="w-10 h-10 border-4 border-brand-600 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-        <p className="text-gray-600 text-sm">Autenticando com Google…</p>
+        <div className="w-10 h-10 border-4 border-brand-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+        <p className="text-night-100 text-sm">Autenticando com Google…</p>
       </div>
     </div>
   )
