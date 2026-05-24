@@ -14,7 +14,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       <div className="relative w-full max-w-md">
         <div className="flex flex-col items-center mb-8">
           <a href="/" aria-label="Redirect Grupo — Início" className="inline-flex">
-            <Logo variant="vertical" tone="neon" size="lg" />
+            <Logo variant="vertical" size="lg" priority />
           </a>
         </div>
         {children}

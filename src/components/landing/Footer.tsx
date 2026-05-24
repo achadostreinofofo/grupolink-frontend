@@ -6,7 +6,7 @@ export function Footer() {
     <footer className="bg-night-900 text-night-100 py-12 border-t border-night-700">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-6 text-sm">
-          <Logo variant="horizontal" tone="neon" size="md" />
+          <Logo variant="horizontal" size="md" />
 
           <nav className="flex items-center gap-6 text-sm">
             <Link href="/termos-de-uso" className="hover:text-brand-500 transition-colors">

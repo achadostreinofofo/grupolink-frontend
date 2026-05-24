@@ -16,7 +16,7 @@ export function Navbar() {
     <header className="sticky top-0 z-50 bg-night-800/80 backdrop-blur border-b border-night-700">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
         <Link href="/" className="flex items-center" aria-label="Redirect Grupo — Início">
-          <Logo variant="horizontal" tone="neon" size="md" />
+          <Logo variant="horizontal" size="md" priority />
         </Link>
 
         <nav className="hidden md:flex items-center gap-8 text-sm text-night-100">

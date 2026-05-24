@@ -32,7 +32,7 @@ export function Sidebar() {
     <aside className="flex flex-col w-60 min-h-screen bg-night-900 text-night-100 fixed left-0 top-0 border-r border-night-700">
       <div className="px-5 py-5 border-b border-night-700">
         <Link href="/dashboard" aria-label="Redirect Grupo">
-          <Logo variant="horizontal" tone="neon" size="md" />
+          <Logo variant="horizontal" size="md" priority />
         </Link>
       </div>
 
