@@ -246,7 +246,7 @@ export default function IntegrationsPage() {
                 })}
               </div>
 
-              <Link href="/dashboard/whatsapp/connect">
+              <Link href="/dashboard/whatsapp/connect?new=true">
                 <Button variant="secondary" className="w-full">
                   <Plus className="w-4 h-4 mr-1" />
                   Adicionar nova sessão

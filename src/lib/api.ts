@@ -196,7 +196,8 @@ export const api = {
   },
 
   whatsappWeb: {
-    startSession: () => request<WebSessionStartResponse>('/whatsapp/web/sessions', { method: 'POST' }),
+    startSession: (force = false) =>
+      request<WebSessionStartResponse>(`/whatsapp/web/sessions${force ? '?force=true' : ''}`, { method: 'POST' }),
     getStatus: (sessionId: string) => request<WebSessionStatus>(`/whatsapp/web/sessions/${sessionId}`),
     listSessions: () => request<WebSessionStatus[]>('/whatsapp/web/sessions'),
     listGroups: async (sessionId: string): Promise<{ groupId: string; name: string; participants: number }[]> => {
