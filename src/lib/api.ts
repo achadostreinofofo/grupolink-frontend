@@ -272,5 +272,10 @@ export const api = {
     getStatus:  () => request<MlStatus>('/ml/status'),
     startOAuth: () => request<{ authorizationUrl: string }>('/ml/oauth/start'),
     disconnect: () => request<void>('/ml/disconnect', { method: 'DELETE' }),
+    saveAffiliateParams: (mattWord: string, mattTool: string) =>
+      request<void>('/ml/affiliate-params', {
+        method: 'PUT',
+        body: JSON.stringify({ mattWord, mattTool }),
+      }),
   },
 }

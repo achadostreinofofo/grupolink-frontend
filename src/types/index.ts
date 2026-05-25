@@ -305,4 +305,8 @@ export interface UpdateMonitoredGroupPayload {
 export interface MlStatus {
   connected: boolean
   nickname: string | null
+  tokenValid?: boolean
+  tokenExpired?: boolean
+  affiliateConfigured?: boolean
+  error?: string | null
 }
