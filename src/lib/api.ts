@@ -277,5 +277,7 @@ export const api = {
         method: 'PUT',
         body: JSON.stringify({ mattWord, mattTool }),
       }),
+    resolveAffiliateParams: (url: string) =>
+      request<{ mattWord: string; mattTool: string }>(`/ml/resolve-affiliate?url=${encodeURIComponent(url)}`),
   },
 }

@@ -32,12 +32,35 @@ function AffiliateParamsModal({
   const [link, setLink] = useState('')
   const [parsed, setParsed] = useState<{ mattWord: string; mattTool: string } | null>(null)
   const [saving, setSaving] = useState(false)
+  const [resolving, setResolving] = useState(false)
   const [error, setError] = useState('')
 
-  const handleLinkChange = (value: string) => {
+  const handleLinkChange = async (value: string) => {
     setLink(value)
     setError('')
-    setParsed(extractAffiliateParams(value))
+
+    const direct = extractAffiliateParams(value)
+    if (direct) {
+      setParsed(direct)
+      return
+    }
+
+    setParsed(null)
+
+    // For short links (meli.la) or full URLs without visible params, ask the backend to
+    // follow redirect hops server-side until it finds matt_word / matt_tool
+    const trimmed = value.trim()
+    if (!trimmed || !trimmed.startsWith('http')) return
+
+    setResolving(true)
+    try {
+      const result = await api.mercadolivre.resolveAffiliateParams(trimmed)
+      setParsed(result)
+    } catch {
+      setError('Parâmetros de afiliado não encontrados neste link. Tente um link gerado em afiliados.mercadolivre.com.br.')
+    } finally {
+      setResolving(false)
+    }
   }
 
   const handleSave = async () => {
@@ -75,6 +98,7 @@ function AffiliateParamsModal({
         <div className="p-6 space-y-4">
           <p className="text-sm text-gray-600">
             Para ativar a substituição automática, cole qualquer link de afiliado gerado pelo seu painel Mercado Livre.
+            Links curtos <span className="font-mono text-xs">meli.la/...</span> também são aceitos.
           </p>
 
           <div className="p-3 bg-blue-50 border border-blue-100 rounded-lg space-y-1">
@@ -90,14 +114,21 @@ function AffiliateParamsModal({
             <label className="block text-xs font-medium text-gray-700 mb-1">
               Link de afiliado
             </label>
-            <input
-              type="text"
-              value={link}
-              onChange={e => handleLinkChange(e.target.value)}
-              placeholder="https://www.mercadolivre.com.br/produto?matt_word=seunome&matt_tool=12345"
-              className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
-            />
+            <div className="relative">
+              <input
+                type="text"
+                value={link}
+                onChange={e => handleLinkChange(e.target.value)}
+                placeholder="https://meli.la/... ou https://www.mercadolivre.com.br/produto?matt_word=..."
+                className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent pr-8"
+                disabled={resolving || saving}
+              />
+              {resolving && (
+                <Loader className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 animate-spin" />
+              )}
+            </div>
             {error && <p className="text-xs text-red-600 mt-1">{error}</p>}
+            {resolving && <p className="text-xs text-gray-500 mt-1">Resolvendo link...</p>}
           </div>
 
           {parsed && (
@@ -114,13 +145,13 @@ function AffiliateParamsModal({
         <div className="flex gap-2 p-6 pt-0">
           <Button
             onClick={handleSave}
-            disabled={!parsed || saving}
+            disabled={!parsed || saving || resolving}
             loading={saving}
             className="flex-1"
           >
             Salvar e ativar
           </Button>
-          <Button variant="ghost" onClick={onSkip} disabled={saving}>
+          <Button variant="ghost" onClick={onSkip} disabled={saving || resolving}>
             Configurar depois
           </Button>
         </div>
