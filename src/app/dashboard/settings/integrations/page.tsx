@@ -29,30 +29,42 @@ function AffiliateParamsModal({
   onSave: (mattWord: string, mattTool: string) => Promise<void>
   onSkip: () => void
 }) {
-  const [link, setLink] = useState('')
-  const [parsed, setParsed] = useState<{ mattWord: string; mattTool: string } | null>(null)
+  const [mattWord, setMattWord] = useState('')
+  const [mattTool, setMattTool] = useState('')
+  const [pasteLink, setPasteLink] = useState('')
+  const [showPaste, setShowPaste] = useState(false)
+  const [pasteError, setPasteError] = useState('')
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
 
-  const handleLinkChange = (value: string) => {
-    setLink(value)
-    setError('')
-    setParsed(extractAffiliateParams(value))
+  const handlePasteLinkChange = (value: string) => {
+    setPasteLink(value)
+    setPasteError('')
+    const parsed = extractAffiliateParams(value)
+    if (parsed) {
+      setMattWord(parsed.mattWord)
+      setMattTool(parsed.mattTool)
+    } else if (value.trim()) {
+      setPasteError('Parâmetros não encontrados neste link. Use os campos abaixo para inserir manualmente.')
+    }
   }
 
   const handleSave = async () => {
-    if (!parsed) {
-      setError('Não foi possível extrair os parâmetros. Verifique se o link contém ?matt_word=... e &matt_tool=...')
+    if (!mattWord.trim() || !mattTool.trim()) {
+      setError('Preencha os dois campos.')
       return
     }
     setSaving(true)
+    setError('')
     try {
-      await onSave(parsed.mattWord, parsed.mattTool)
+      await onSave(mattWord.trim(), mattTool.trim())
     } catch {
       setError('Erro ao salvar. Tente novamente.')
       setSaving(false)
     }
   }
+
+  const canSave = mattWord.trim().length > 0 && mattTool.trim().length > 0
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
@@ -73,48 +85,71 @@ function AffiliateParamsModal({
         </div>
 
         <div className="p-6 space-y-4">
-          <p className="text-sm text-gray-600">
-            Para ativar a substituição automática, cole qualquer link de afiliado gerado pelo seu painel Mercado Livre.
-          </p>
-
           <div className="p-3 bg-blue-50 border border-blue-100 rounded-lg space-y-1">
-            <p className="text-xs font-medium text-blue-800">Como obter seu link:</p>
+            <p className="text-xs font-medium text-blue-800">Como encontrar seus parâmetros:</p>
             <ol className="text-xs text-blue-700 list-decimal list-inside space-y-0.5">
               <li>Acesse <a href="https://afiliados.mercadolivre.com.br" target="_blank" rel="noreferrer" className="underline inline-flex items-center gap-0.5">afiliados.mercadolivre.com.br <ExternalLink className="w-3 h-3" /></a></li>
-              <li>Vá em <strong>Criar link</strong> e gere o link de qualquer produto</li>
-              <li>Cole o link gerado aqui</li>
+              <li>Vá em <strong>Criar link</strong> e gere um link de qualquer produto</li>
+              <li>Copie a URL longa gerada (que contém <code className="bg-blue-100 px-0.5 rounded">matt_word</code> e <code className="bg-blue-100 px-0.5 rounded">matt_tool</code>)</li>
             </ol>
           </div>
 
-          <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">
-              Link de afiliado
-            </label>
-            <input
-              type="text"
-              value={link}
-              onChange={e => handleLinkChange(e.target.value)}
-              placeholder="https://www.mercadolivre.com.br/produto?matt_word=seunome&matt_tool=12345"
-              className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
-            />
-            {error && <p className="text-xs text-red-600 mt-1">{error}</p>}
-          </div>
+          {/* Optional: paste link for auto-fill */}
+          <button
+            onClick={() => setShowPaste(v => !v)}
+            className="text-xs text-blue-600 hover:underline flex items-center gap-1"
+          >
+            <LinkIcon className="w-3 h-3" />
+            {showPaste ? 'Ocultar' : 'Colar link para preencher automaticamente'}
+          </button>
 
-          {parsed && (
-            <div className="p-3 bg-green-50 border border-green-200 rounded-lg space-y-1">
-              <p className="text-xs font-medium text-green-800 flex items-center gap-1">
-                <Check className="w-3.5 h-3.5" /> Parâmetros identificados
-              </p>
-              <p className="text-xs text-green-700 font-mono">matt_word: <strong>{parsed.mattWord}</strong></p>
-              <p className="text-xs text-green-700 font-mono">matt_tool: <strong>{parsed.mattTool}</strong></p>
+          {showPaste && (
+            <div>
+              <input
+                type="text"
+                value={pasteLink}
+                onChange={e => handlePasteLinkChange(e.target.value)}
+                placeholder="https://www.mercadolivre.com.br/produto?matt_word=seunome&matt_tool=12345"
+                className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
+              />
+              {pasteError && <p className="text-xs text-amber-600 mt-1">{pasteError}</p>}
             </div>
           )}
+
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">
+                ID de afiliado <span className="text-gray-400">(matt_word)</span>
+              </label>
+              <input
+                type="text"
+                value={mattWord}
+                onChange={e => { setMattWord(e.target.value); setError('') }}
+                placeholder="Ex: seunome"
+                className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">
+                ID da ferramenta <span className="text-gray-400">(matt_tool)</span>
+              </label>
+              <input
+                type="text"
+                value={mattTool}
+                onChange={e => { setMattTool(e.target.value); setError('') }}
+                placeholder="Ex: 57009805"
+                className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
+              />
+            </div>
+          </div>
+
+          {error && <p className="text-xs text-red-600">{error}</p>}
         </div>
 
         <div className="flex gap-2 p-6 pt-0">
           <Button
             onClick={handleSave}
-            disabled={!parsed || saving}
+            disabled={!canSave || saving}
             loading={saving}
             className="flex-1"
           >
