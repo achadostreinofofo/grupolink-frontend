@@ -35,15 +35,15 @@ export default function DashboardPage() {
     { label: 'Grupos',          value: overview?.totalGroups ?? 0,                     icon: Network,           color: 'text-blue-600 bg-blue-50' },
     { label: 'Membros',         value: overview?.totalMembers ?? 0,                    icon: Users,             color: 'text-purple-600 bg-purple-50' },
     { label: 'Cliques (7d)',    value: overview?.clicksLast7Days ?? 0,                 icon: MousePointerClick, color: 'text-orange-600 bg-orange-50' },
-    { label: 'Cliques Total',   value: overview?.totalClicks ?? 0,                     icon: TrendingUp,        color: 'text-gray-600 bg-gray-50' },
+    { label: 'Cliques Total',   value: overview?.totalClicks ?? 0,                     icon: TrendingUp,        color: 'text-night-200 bg-night-700' },
   ]
 
   return (
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Visão Geral</h1>
-          <p className="text-sm text-gray-500 mt-1">Acompanhe o desempenho das suas estruturas</p>
+          <h1 className="text-2xl font-bold text-night-50">Visão Geral</h1>
+          <p className="text-sm text-night-300 mt-1">Acompanhe o desempenho das suas estruturas</p>
         </div>
         <Link href="/dashboard/structures/new">
           <Button>
@@ -65,8 +65,8 @@ export default function DashboardPage() {
                 <Icon className="w-4 h-4" />
               </div>
               <div>
-                <p className="text-lg font-bold text-gray-900 leading-tight">{loading ? '—' : value.toLocaleString('pt-BR')}</p>
-                <p className="text-xs text-gray-400">{label}</p>
+                <p className="text-lg font-bold text-night-50 leading-tight">{loading ? '—' : value.toLocaleString('pt-BR')}</p>
+                <p className="text-xs text-night-400">{label}</p>
               </div>
             </CardContent>
           </Card>
@@ -77,7 +77,7 @@ export default function DashboardPage() {
       {overview && overview.clicksByDay.length > 0 && (
         <Card className="mb-8">
           <CardHeader className="flex items-center justify-between">
-            <p className="text-sm font-semibold text-gray-700">Cliques — últimos 7 dias</p>
+            <p className="text-sm font-semibold text-night-200">Cliques — últimos 7 dias</p>
             <Link href="/dashboard/analytics" className="text-xs text-brand-600 hover:underline">Ver analytics completo →</Link>
           </CardHeader>
           <CardContent>
@@ -88,18 +88,18 @@ export default function DashboardPage() {
 
       {/* Estruturas recentes */}
       <div>
-        <h2 className="text-base font-semibold text-gray-700 mb-4">Suas Estruturas</h2>
+        <h2 className="text-base font-semibold text-night-200 mb-4">Suas Estruturas</h2>
         {loading ? (
           <div className="space-y-3">
             {[1, 2, 3].map(i => (
-              <div key={i} className="h-16 rounded-xl bg-gray-100 animate-pulse" />
+              <div key={i} className="h-16 rounded-xl bg-night-700 animate-pulse" />
             ))}
           </div>
         ) : structures.length === 0 ? (
           <Card>
             <CardContent className="py-12 text-center">
-              <Network className="w-10 h-10 text-gray-300 mx-auto mb-3" />
-              <p className="text-gray-500 text-sm mb-4">Nenhuma estrutura criada ainda</p>
+              <Network className="w-10 h-10 text-night-400 mx-auto mb-3" />
+              <p className="text-night-300 text-sm mb-4">Nenhuma estrutura criada ainda</p>
               <Link href="/dashboard/structures/new">
                 <Button size="sm">Criar primeira estrutura</Button>
               </Link>
@@ -112,10 +112,10 @@ export default function DashboardPage() {
                 <Card className="hover:border-brand-200 transition-colors cursor-pointer">
                   <CardContent className="flex items-center justify-between">
                     <div>
-                      <p className="font-medium text-gray-900">{s.name}</p>
-                      <p className="text-xs text-gray-400 font-mono mt-0.5">/r/{s.slug}</p>
+                      <p className="font-medium text-night-50">{s.name}</p>
+                      <p className="text-xs text-night-400 font-mono mt-0.5">/r/{s.slug}</p>
                     </div>
-                    <div className="flex items-center gap-6 text-sm text-gray-500">
+                    <div className="flex items-center gap-6 text-sm text-night-300">
                       <span>{s.groups.length} grupos</span>
                       <span>
                         {s.groups.reduce((a, g) => a + g.memberCount, 0).toLocaleString('pt-BR')} membros

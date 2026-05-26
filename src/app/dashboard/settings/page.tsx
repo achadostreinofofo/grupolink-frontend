@@ -69,8 +69,8 @@ function SectionCard({ title, icon: Icon, children }: {
   return (
     <Card>
       <CardHeader className="flex items-center gap-2">
-        <Icon className="w-4 h-4 text-gray-500" />
-        <p className="text-sm font-semibold text-gray-800">{title}</p>
+        <Icon className="w-4 h-4 text-night-300" />
+        <p className="text-sm font-semibold text-night-100">{title}</p>
       </CardHeader>
       <CardContent>{children}</CardContent>
     </Card>
@@ -153,7 +153,7 @@ export default function SettingsPage() {
   if (loading) {
     return (
       <div className="max-w-xl space-y-4">
-        {[1, 2, 3].map(i => <div key={i} className="h-36 bg-gray-100 rounded-xl animate-pulse" />)}
+        {[1, 2, 3].map(i => <div key={i} className="h-36 bg-night-700 rounded-xl animate-pulse" />)}
       </div>
     )
   }
@@ -161,17 +161,17 @@ export default function SettingsPage() {
   return (
     <div className="max-w-xl space-y-6">
       <div className="mb-2">
-        <h1 className="text-2xl font-bold text-gray-900">Configurações</h1>
-        <p className="text-sm text-gray-500 mt-1">Gerencie seu perfil, senha e sessão</p>
+        <h1 className="text-2xl font-bold text-night-50">Configurações</h1>
+        <p className="text-sm text-night-300 mt-1">Gerencie seu perfil, senha e sessão</p>
       </div>
 
       {/* Plano atual */}
       {profile && (
-        <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl border border-gray-200">
+        <div className="flex items-center gap-3 p-4 bg-night-700 rounded-xl border border-night-600">
           <div className="flex-1">
-            <p className="text-sm text-gray-500">Plano atual</p>
+            <p className="text-sm text-night-300">Plano atual</p>
             <div className="flex items-center gap-2 mt-0.5">
-              <p className="font-semibold text-gray-900">{profile.plan}</p>
+              <p className="font-semibold text-night-50">{profile.plan}</p>
               <Badge variant={planBadgeVariant(profile.plan)}>Ativo</Badge>
             </div>
           </div>
@@ -250,7 +250,7 @@ export default function SettingsPage() {
           </form>
         ) : (
           <div>
-            <p className="text-sm text-gray-500 mb-4">
+            <p className="text-sm text-night-300 mb-4">
               Sua conta foi criada via Google. Defina uma senha para também poder fazer login com e-mail.
             </p>
             <form onSubmit={setPassForm.handleSubmit(onSetPassword)} className="space-y-4">
@@ -281,8 +281,8 @@ export default function SettingsPage() {
       <SectionCard title="Sessão" icon={LogOut}>
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm text-gray-700 font-medium">Encerrar sessão</p>
-            <p className="text-xs text-gray-400 mt-0.5">Você será desconectado e redirecionado para o login</p>
+            <p className="text-sm text-night-200 font-medium">Encerrar sessão</p>
+            <p className="text-xs text-night-400 mt-0.5">Você será desconectado e redirecionado para o login</p>
           </div>
           <Button variant="danger" size="sm" onClick={handleLogout}>
             <LogOut className="w-3.5 h-3.5" />
@@ -295,8 +295,8 @@ export default function SettingsPage() {
       <SectionCard title="Integrações" icon={Zap}>
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm text-gray-700 font-medium">Conectar serviços</p>
-            <p className="text-xs text-gray-400 mt-0.5">Gerenciar integrações com Mercado Livre e outros serviços</p>
+            <p className="text-sm text-night-200 font-medium">Conectar serviços</p>
+            <p className="text-xs text-night-400 mt-0.5">Gerenciar integrações com Mercado Livre e outros serviços</p>
           </div>
           <a href="/dashboard/settings/integrations" className="text-sm text-brand-600 hover:underline font-medium">
             Gerenciar →

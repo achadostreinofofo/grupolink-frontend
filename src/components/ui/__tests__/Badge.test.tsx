@@ -11,27 +11,27 @@ describe('Badge', () => {
   it('applies gray variant by default', () => {
     render(<Badge>Default</Badge>)
     const badge = screen.getByText('Default')
-    expect(badge).toHaveClass('bg-gray-100', 'text-gray-700')
+    expect(badge).toHaveClass('bg-night-600', 'text-night-200')
   })
 
   it('applies green variant', () => {
     render(<Badge variant="green">Success</Badge>)
-    expect(screen.getByText('Success')).toHaveClass('bg-green-100', 'text-green-800')
+    expect(screen.getByText('Success')).toHaveClass('bg-green-900/30', 'text-green-400')
   })
 
   it('applies yellow variant', () => {
     render(<Badge variant="yellow">Warning</Badge>)
-    expect(screen.getByText('Warning')).toHaveClass('bg-yellow-100', 'text-yellow-800')
+    expect(screen.getByText('Warning')).toHaveClass('bg-yellow-900/30', 'text-yellow-400')
   })
 
   it('applies red variant', () => {
     render(<Badge variant="red">Error</Badge>)
-    expect(screen.getByText('Error')).toHaveClass('bg-red-100', 'text-red-800')
+    expect(screen.getByText('Error')).toHaveClass('bg-red-900/30', 'text-red-400')
   })
 
   it('applies blue variant', () => {
     render(<Badge variant="blue">Info</Badge>)
-    expect(screen.getByText('Info')).toHaveClass('bg-blue-100', 'text-blue-800')
+    expect(screen.getByText('Info')).toHaveClass('bg-blue-900/30', 'text-blue-400')
   })
 
   it('merges custom className', () => {

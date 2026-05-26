@@ -11,7 +11,7 @@ describe('Card', () => {
   it('applies base classes', () => {
     render(<Card data-testid="card">Content</Card>)
     const card = screen.getByTestId('card')
-    expect(card).toHaveClass('bg-white', 'rounded-xl', 'border', 'border-gray-200', 'shadow-sm')
+    expect(card).toHaveClass('bg-night-700', 'rounded-xl', 'border', 'border-night-600', 'shadow-sm')
   })
 
   it('merges custom className', () => {
@@ -34,7 +34,7 @@ describe('CardHeader', () => {
   it('applies base classes', () => {
     render(<CardHeader data-testid="header">Title</CardHeader>)
     const header = screen.getByTestId('header')
-    expect(header).toHaveClass('px-6', 'py-4', 'border-b', 'border-gray-100')
+    expect(header).toHaveClass('px-6', 'py-4', 'border-b', 'border-night-600')
   })
 
   it('merges custom className', () => {

@@ -18,7 +18,7 @@ function CapacityBar({ groups }: { groups: Structure['groups'] }) {
   const pct = totalMax > 0 ? Math.min((totalMembers / totalMax) * 100, 100) : 0
   const color = pct >= 90 ? 'bg-red-400' : pct >= 75 ? 'bg-yellow-400' : 'bg-brand-500'
   return (
-    <div className="w-full bg-gray-100 rounded-full h-1.5">
+    <div className="w-full bg-night-700 rounded-full h-1.5">
       <div className={`${color} h-1.5 rounded-full transition-all`} style={{ width: `${pct}%` }} />
     </div>
   )
@@ -63,8 +63,8 @@ export default function StructuresPage() {
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Estruturas</h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <h1 className="text-2xl font-bold text-night-50">Estruturas</h1>
+          <p className="text-sm text-night-300 mt-1">
             Gerencie seus containers de grupos WhatsApp com smart links
           </p>
         </div>
@@ -79,17 +79,17 @@ export default function StructuresPage() {
       {loading ? (
         <div className="space-y-3">
           {[1, 2, 3].map(i => (
-            <div key={i} className="h-24 rounded-xl bg-gray-100 animate-pulse" />
+            <div key={i} className="h-24 rounded-xl bg-night-700 animate-pulse" />
           ))}
         </div>
       ) : structures.length === 0 ? (
         <Card>
           <CardContent className="py-16 text-center">
-            <div className="w-14 h-14 rounded-2xl bg-gray-50 flex items-center justify-center mx-auto mb-4">
-              <Network className="w-7 h-7 text-gray-300" />
+            <div className="w-14 h-14 rounded-2xl bg-night-700 flex items-center justify-center mx-auto mb-4">
+              <Network className="w-7 h-7 text-night-400" />
             </div>
-            <p className="font-medium text-gray-900 mb-1">Nenhuma estrutura ainda</p>
-            <p className="text-sm text-gray-500 mb-5">
+            <p className="font-medium text-night-50 mb-1">Nenhuma estrutura ainda</p>
+            <p className="text-sm text-night-300 mb-5">
               Crie sua primeira estrutura para começar a distribuir membros entre grupos WhatsApp
             </p>
             <Link href="/dashboard/structures/new">
@@ -120,20 +120,20 @@ export default function StructuresPage() {
                       {/* Main info */}
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-0.5">
-                          <p className="font-semibold text-gray-900 truncate">{s.name}</p>
+                          <p className="font-semibold text-night-50 truncate">{s.name}</p>
                           {!s.active && <Badge variant="gray">Inativa</Badge>}
                         </div>
 
                         {s.description && (
-                          <p className="text-xs text-gray-400 truncate mb-1.5">{s.description}</p>
+                          <p className="text-xs text-night-400 truncate mb-1.5">{s.description}</p>
                         )}
 
                         {/* Smart link row */}
                         <div className="flex items-center gap-2 mb-2">
-                          <span className="text-xs text-gray-400 font-mono truncate">{s.smartLink}</span>
+                          <span className="text-xs text-night-400 font-mono truncate">{s.smartLink}</span>
                           <button
                             onClick={(e) => copyLink(e, s.smartLink, s.id)}
-                            className="flex-shrink-0 text-gray-300 hover:text-brand-500 transition-colors"
+                            className="flex-shrink-0 text-night-400 hover:text-brand-500 transition-colors"
                             title="Copiar smart link"
                           >
                             <Copy className="w-3.5 h-3.5" />
@@ -150,19 +150,19 @@ export default function StructuresPage() {
                       {/* Stats */}
                       <div className="hidden sm:flex items-center gap-6 text-sm flex-shrink-0">
                         <div className="text-center">
-                          <p className="font-semibold text-gray-900">{s.groups.length}</p>
-                          <p className="text-xs text-gray-400">grupos</p>
+                          <p className="font-semibold text-night-50">{s.groups.length}</p>
+                          <p className="text-xs text-night-400">grupos</p>
                         </div>
                         <div className="text-center">
-                          <p className="font-semibold text-gray-900">{totalMembers.toLocaleString('pt-BR')}</p>
-                          <p className="text-xs text-gray-400">membros</p>
+                          <p className="font-semibold text-night-50">{totalMembers.toLocaleString('pt-BR')}</p>
+                          <p className="text-xs text-night-400">membros</p>
                         </div>
                         {totalMax > 0 && (
                           <div className="text-center">
-                            <p className="font-semibold text-gray-900">
+                            <p className="font-semibold text-night-50">
                               {Math.round((totalMembers / totalMax) * 100)}%
                             </p>
-                            <p className="text-xs text-gray-400">capacidade</p>
+                            <p className="text-xs text-night-400">capacidade</p>
                           </div>
                         )}
                       </div>
@@ -170,12 +170,12 @@ export default function StructuresPage() {
                       {/* Delete button + Arrow */}
                       <button
                         onClick={e => { e.preventDefault(); setDeletingStructure(s) }}
-                        className="p-1.5 rounded-lg text-gray-300 hover:text-red-500 hover:bg-red-50 transition-colors flex-shrink-0 self-center"
+                        className="p-1.5 rounded-lg text-night-400 hover:text-red-500 hover:bg-red-50 transition-colors flex-shrink-0 self-center"
                         title="Excluir estrutura"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
-                      <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-brand-400 transition-colors flex-shrink-0 self-center" />
+                      <ChevronRight className="w-4 h-4 text-night-400 group-hover:text-brand-400 transition-colors flex-shrink-0 self-center" />
                     </div>
 
                     {/* Status badges row */}

@@ -95,13 +95,13 @@ export default function EditMessagePage() {
   if (loading) {
     return (
       <div className="max-w-xl space-y-3">
-        <div className="h-8 w-48 bg-gray-200 rounded animate-pulse" />
-        <div className="h-64 bg-gray-100 rounded-xl animate-pulse" />
+        <div className="h-8 w-48 bg-night-600 rounded animate-pulse" />
+        <div className="h-64 bg-night-700 rounded-xl animate-pulse" />
       </div>
     )
   }
 
-  if (!message) return <p className="text-gray-500 text-sm">Mensagem não encontrada.</p>
+  if (!message) return <p className="text-night-300 text-sm">Mensagem não encontrada.</p>
 
   return (
     <div className="max-w-xl">
@@ -112,14 +112,14 @@ export default function EditMessagePage() {
           </Button>
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Editar Mensagem</h1>
-          <p className="text-sm text-gray-500 truncate max-w-xs">{message.title}</p>
+          <h1 className="text-2xl font-bold text-night-50">Editar Mensagem</h1>
+          <p className="text-sm text-night-300 truncate max-w-xs">{message.title}</p>
         </div>
       </div>
 
       <Card>
         <CardHeader>
-          <p className="text-sm font-medium text-gray-700">Conteúdo da Mensagem</p>
+          <p className="text-sm font-medium text-night-200">Conteúdo da Mensagem</p>
         </CardHeader>
         <CardContent>
           {error && (

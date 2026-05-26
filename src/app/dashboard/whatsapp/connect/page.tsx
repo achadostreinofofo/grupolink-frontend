@@ -116,8 +116,8 @@ function ConnectWhatsappWebContent() {
           </Button>
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Conectar via QR Code</h1>
-          <p className="text-sm text-gray-500">Escaneie com seu WhatsApp para conectar</p>
+          <h1 className="text-2xl font-bold text-night-50">Conectar via QR Code</h1>
+          <p className="text-sm text-night-300">Escaneie com seu WhatsApp para conectar</p>
         </div>
       </div>
 
@@ -155,9 +155,9 @@ function ConnectWhatsappWebContent() {
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
-            <p className="text-sm font-medium text-gray-700">QR Code</p>
+            <p className="text-sm font-medium text-night-200">QR Code</p>
             {status === 'WAITING_SCAN' && qrBase64 && (
-              <span className="text-xs text-gray-400">Expira em {timeLeft}s</span>
+              <span className="text-xs text-night-400">Expira em {timeLeft}s</span>
             )}
           </div>
         </CardHeader>
@@ -165,7 +165,7 @@ function ConnectWhatsappWebContent() {
           {loading && (
             <div className="flex flex-col items-center py-10 gap-3">
               <div className="w-10 h-10 border-2 border-brand-500 border-t-transparent rounded-full animate-spin" />
-              <p className="text-sm text-gray-500">Gerando QR code...</p>
+              <p className="text-sm text-night-300">Gerando QR code...</p>
             </div>
           )}
 
@@ -175,9 +175,9 @@ function ConnectWhatsappWebContent() {
                 <CheckCircle className="w-9 h-9 text-green-500" />
               </div>
               <div className="text-center">
-                <p className="font-semibold text-gray-900">WhatsApp conectado!</p>
+                <p className="font-semibold text-night-50">WhatsApp conectado!</p>
                 {phone && (
-                  <p className="text-sm text-gray-500 mt-1 flex items-center justify-center gap-1">
+                  <p className="text-sm text-night-300 mt-1 flex items-center justify-center gap-1">
                     <Smartphone className="w-4 h-4" />
                     +{phone}
                   </p>
@@ -201,9 +201,9 @@ function ConnectWhatsappWebContent() {
               <img
                 src={qrBase64}
                 alt="WhatsApp QR Code"
-                className="w-64 h-64 rounded-xl border border-gray-100 shadow-sm"
+                className="w-64 h-64 rounded-xl border border-night-600 shadow-sm"
               />
-              <p className="text-xs text-gray-400 flex items-center gap-1">
+              <p className="text-xs text-night-400 flex items-center gap-1">
                 <Wifi className="w-3 h-3" />
                 Aguardando leitura do QR code...
               </p>
@@ -216,15 +216,15 @@ function ConnectWhatsappWebContent() {
 
           {!loading && status === 'WAITING_SCAN' && !qrBase64 && (
             <div className="flex flex-col items-center py-10 gap-3">
-              <div className="w-10 h-10 border-2 border-gray-200 border-t-brand-500 rounded-full animate-spin" />
-              <p className="text-sm text-gray-500">Aguardando QR code...</p>
+              <div className="w-10 h-10 border-2 border-night-600 border-t-brand-500 rounded-full animate-spin" />
+              <p className="text-sm text-night-300">Aguardando QR code...</p>
             </div>
           )}
 
           {!loading && status === 'DISCONNECTED' && (
             <div className="flex flex-col items-center py-10 gap-4">
-              <WifiOff className="w-10 h-10 text-gray-300" />
-              <p className="text-sm text-gray-500">Sessão desconectada</p>
+              <WifiOff className="w-10 h-10 text-night-400" />
+              <p className="text-sm text-night-300">Sessão desconectada</p>
               <Button onClick={() => initSession(true)}>
                 <RefreshCw className="w-4 h-4 mr-1" />
                 Reconectar

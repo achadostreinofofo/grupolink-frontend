@@ -91,14 +91,14 @@ export default function NewMessagePage() {
           </Button>
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Nova Mensagem</h1>
-          <p className="text-sm text-gray-500">Crie uma mensagem para esta estrutura</p>
+          <h1 className="text-2xl font-bold text-night-50">Nova Mensagem</h1>
+          <p className="text-sm text-night-300">Crie uma mensagem para esta estrutura</p>
         </div>
       </div>
 
       <Card>
         <CardHeader>
-          <p className="text-sm font-medium text-gray-700">Conteúdo da Mensagem</p>
+          <p className="text-sm font-medium text-night-200">Conteúdo da Mensagem</p>
         </CardHeader>
         <CardContent>
           {error && (

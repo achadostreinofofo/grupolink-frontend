@@ -58,7 +58,7 @@ function CapacityBar({ percentage }: { percentage: number }) {
   const pct   = Math.min(percentage * 100, 100)
   const color = pct >= 90 ? 'bg-red-500' : pct >= 80 ? 'bg-yellow-400' : 'bg-brand-500'
   return (
-    <div className="w-full bg-gray-100 rounded-full h-1.5 mt-1">
+    <div className="w-full bg-night-700 rounded-full h-1.5 mt-1">
       <div className={`${color} h-1.5 rounded-full transition-all`} style={{ width: `${pct}%` }} />
     </div>
   )
@@ -248,12 +248,12 @@ export default function StructureDetailPage() {
   if (loading) {
     return (
       <div className="space-y-4 max-w-3xl">
-        <div className="h-8 w-48 bg-gray-200 rounded animate-pulse" />
-        <div className="h-32 bg-gray-100 rounded-xl animate-pulse" />
+        <div className="h-8 w-48 bg-night-600 rounded animate-pulse" />
+        <div className="h-32 bg-night-700 rounded-xl animate-pulse" />
       </div>
     )
   }
-  if (!structure) return <p className="text-gray-500">Estrutura não encontrada.</p>
+  if (!structure) return <p className="text-night-300">Estrutura não encontrada.</p>
 
   return (
     <div className="max-w-3xl">
@@ -263,9 +263,9 @@ export default function StructureDetailPage() {
           <Button variant="ghost" size="sm"><ArrowLeft className="w-4 h-4" /></Button>
         </Link>
         <div className="flex-1">
-          <h1 className="text-2xl font-bold text-gray-900">{structure.name}</h1>
+          <h1 className="text-2xl font-bold text-night-50">{structure.name}</h1>
           {structure.description && (
-            <p className="text-sm text-gray-500 mt-0.5">{structure.description}</p>
+            <p className="text-sm text-night-300 mt-0.5">{structure.description}</p>
           )}
         </div>
         <div className="flex gap-2">
@@ -291,8 +291,8 @@ export default function StructureDetailPage() {
         <Card className="mb-5">
           <CardContent className="flex items-center gap-4">
             <div className="flex-1 min-w-0">
-              <p className="text-xs text-gray-500 mb-1">Smart Link</p>
-              <p className="text-sm font-mono text-gray-800 truncate">{structure.smartLink}</p>
+              <p className="text-xs text-night-300 mb-1">Smart Link</p>
+              <p className="text-sm font-mono text-night-100 truncate">{structure.smartLink}</p>
             </div>
             <div className="flex gap-2 flex-shrink-0">
               <Button variant="secondary" size="sm" onClick={copyLink}>
@@ -308,16 +308,16 @@ export default function StructureDetailPage() {
       )}
 
       {/* Tabs */}
-      <div className="flex gap-1 bg-gray-100 rounded-xl p-1 mb-5">
+      <div className="flex gap-1 bg-night-700 rounded-xl p-1 mb-5">
         <button
           onClick={() => switchTab('groups')}
-          className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors ${tab === 'groups' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+          className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors ${tab === 'groups' ? 'bg-night-700 text-night-50 shadow-sm' : 'text-night-300 hover:text-night-200'}`}
         >
           Grupos ({structure.groups.length})
         </button>
         <button
           onClick={() => switchTab('messages')}
-          className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors ${tab === 'messages' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+          className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors ${tab === 'messages' ? 'bg-night-700 text-night-50 shadow-sm' : 'text-night-300 hover:text-night-200'}`}
         >
           Mensagens ({messages.length})
         </button>
@@ -327,7 +327,7 @@ export default function StructureDetailPage() {
       {tab === 'groups' && (
         <>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-sm font-semibold text-gray-700">Grupos</h2>
+            <h2 className="text-sm font-semibold text-night-200">Grupos</h2>
             {isFirstGroup && (
               <div className="flex gap-2">
                 <Button size="sm" variant="ghost" onClick={() => setShowImportModal(true)}>
@@ -343,7 +343,7 @@ export default function StructureDetailPage() {
           {showForm && (
             <Card className="mb-4 border-brand-200">
               <CardHeader>
-                <p className="text-sm font-medium text-gray-700">
+                <p className="text-sm font-medium text-night-200">
                   {isFirstGroup ? 'Primeiro Grupo da Estrutura' : 'Adicionar Grupo'}
                 </p>
               </CardHeader>
@@ -377,9 +377,9 @@ export default function StructureDetailPage() {
 
                   {/* Preview do nome gerado */}
                   {(watchedName || structure?.groupNamePrefix) && (
-                    <div className="bg-gray-50 rounded-lg px-3 py-2 text-sm text-gray-600">
-                      <span className="text-gray-400 text-xs">Nome do grupo: </span>
-                      <span className="font-semibold text-gray-900">
+                    <div className="bg-night-700 rounded-lg px-3 py-2 text-sm text-night-200">
+                      <span className="text-night-400 text-xs">Nome do grupo: </span>
+                      <span className="font-semibold text-night-50">
                         {isFirstGroup
                           ? `${watchedName || '…'} #${watchedNumber}`
                           : `${structure?.groupNamePrefix} #${structure?.nextGroupNumber}`
@@ -390,10 +390,10 @@ export default function StructureDetailPage() {
 
                   {/* Foto de perfil */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-night-200 mb-1">
                       Foto de perfil {isFirstGroup && <span className="text-red-500">*</span>}
                     </label>
-                    <p className="text-xs text-gray-400 mb-2">
+                    <p className="text-xs text-night-400 mb-2">
                       {isFirstGroup
                         ? 'Usada neste e em todos os grupos criados automaticamente. Máx. 5 MB.'
                         : 'Deixe em branco para usar a mesma foto da estrutura.'}
@@ -413,12 +413,12 @@ export default function StructureDetailPage() {
                         </div>
                       ) : structure?.groupProfilePicUrl && !isFirstGroup ? (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img src={structure.groupProfilePicUrl} alt="Foto atual" className="w-14 h-14 rounded-full object-cover border-2 border-gray-100 opacity-60" title="Foto atual da estrutura" />
+                        <img src={structure.groupProfilePicUrl} alt="Foto atual" className="w-14 h-14 rounded-full object-cover border-2 border-night-600 opacity-60" title="Foto atual da estrutura" />
                       ) : null}
 
                       <button type="button" onClick={() => picRef.current?.click()}
                         disabled={picUploading}
-                        className="flex items-center gap-2 px-3 py-2 rounded-xl border-2 border-dashed border-gray-200 text-sm text-gray-500 hover:border-brand-400 hover:text-brand-600 transition-colors disabled:opacity-50">
+                        className="flex items-center gap-2 px-3 py-2 rounded-xl border-2 border-dashed border-night-600 text-sm text-night-300 hover:border-brand-400 hover:text-brand-600 transition-colors disabled:opacity-50">
                         {picUploading
                           ? <><Loader2 className="w-4 h-4 animate-spin" /> Enviando...</>
                           : <><Paperclip className="w-4 h-4" /> {picPreview ? 'Trocar foto' : 'Selecionar foto'}</>
@@ -445,7 +445,7 @@ export default function StructureDetailPage() {
           {structure.groups.length === 0 ? (
             <Card>
               <CardContent className="py-10 text-center">
-                <p className="text-sm text-gray-400">Nenhum grupo adicionado ainda.</p>
+                <p className="text-sm text-night-400">Nenhum grupo adicionado ainda.</p>
               </CardContent>
             </Card>
           ) : (
@@ -453,22 +453,22 @@ export default function StructureDetailPage() {
               {structure.groups.map((group, i) => (
                 <Card key={group.id}>
                   <CardContent className="flex items-center gap-4">
-                    <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">
+                    <div className="w-8 h-8 rounded-full bg-night-700 flex items-center justify-center text-sm font-bold text-night-300 flex-shrink-0">
                       {i + 1}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <p className="font-medium text-gray-900 text-sm">{group.name}</p>
+                        <p className="font-medium text-night-50 text-sm">{group.name}</p>
                         <GroupStatusBadge status={group.status} />
                       </div>
-                      <span className="text-xs text-gray-500">
+                      <span className="text-xs text-night-300">
                         {group.memberCount}/{group.maxMembers} membros ({Math.round(group.capacityPercentage * 100)}%)
                       </span>
                       <CapacityBar percentage={group.capacityPercentage} />
                     </div>
                     <div className="text-right flex-shrink-0">
-                      <p className="text-sm font-semibold text-gray-700">{group.clickCount.toLocaleString('pt-BR')}</p>
-                      <p className="text-xs text-gray-400">cliques</p>
+                      <p className="text-sm font-semibold text-night-200">{group.clickCount.toLocaleString('pt-BR')}</p>
+                      <p className="text-xs text-night-400">cliques</p>
                     </div>
                     {!group.whatsappGroupId && (
                       <span title="Grupo sem vínculo WhatsApp — envio de mensagens não funciona" className="text-amber-500 flex-shrink-0">
@@ -492,7 +492,7 @@ export default function StructureDetailPage() {
       {tab === 'messages' && (
         <>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-sm font-semibold text-gray-700">Mensagens</h2>
+            <h2 className="text-sm font-semibold text-night-200">Mensagens</h2>
             <Link href={`/dashboard/structures/${id}/messages/new`}>
               <Button size="sm">
                 <Plus className="w-4 h-4" /> Nova mensagem
@@ -504,7 +504,7 @@ export default function StructureDetailPage() {
             <Card>
               <CardContent className="py-14 text-center">
                 <MessageSquare className="w-10 h-10 text-gray-200 mx-auto mb-3" />
-                <p className="text-sm text-gray-500 mb-1">Nenhuma mensagem criada ainda</p>
+                <p className="text-sm text-night-300 mb-1">Nenhuma mensagem criada ainda</p>
                 <Link href={`/dashboard/structures/${id}/messages/new`}>
                   <Button size="sm" variant="secondary" className="mt-2">
                     <Plus className="w-4 h-4" /> Criar mensagem
@@ -518,21 +518,21 @@ export default function StructureDetailPage() {
                 <Card key={msg.id}>
                   <CardContent className="flex items-start gap-4">
                     {/* icon */}
-                    <div className="w-9 h-9 rounded-xl bg-gray-50 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <div className="w-9 h-9 rounded-xl bg-night-700 flex items-center justify-center flex-shrink-0 mt-0.5">
                       {msg.mediaUrl
-                        ? <ImageIcon className="w-4 h-4 text-gray-400" />
-                        : <MessageSquare className="w-4 h-4 text-gray-400" />
+                        ? <ImageIcon className="w-4 h-4 text-night-400" />
+                        : <MessageSquare className="w-4 h-4 text-night-400" />
                       }
                     </div>
 
                     {/* content */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <p className="font-medium text-gray-900 text-sm truncate">{msg.title}</p>
+                        <p className="font-medium text-night-50 text-sm truncate">{msg.title}</p>
                         <MessageStatusBadge status={msg.status} />
                       </div>
-                      <p className="text-xs text-gray-500 mt-0.5 truncate">{msg.content}</p>
-                      <div className="flex items-center gap-3 mt-1 text-xs text-gray-400 flex-wrap">
+                      <p className="text-xs text-night-300 mt-0.5 truncate">{msg.content}</p>
+                      <div className="flex items-center gap-3 mt-1 text-xs text-night-400 flex-wrap">
                         {msg.scheduledAt && (
                           <span className="flex items-center gap-1">
                             <CalendarClock className="w-3 h-3" />
