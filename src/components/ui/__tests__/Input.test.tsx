@@ -27,12 +27,12 @@ describe('Input', () => {
 
   it('applies error styles when error prop is set', () => {
     render(<Input error="Error!" />)
-    expect(screen.getByRole('textbox')).toHaveClass('border-red-400', 'bg-red-50')
+    expect(screen.getByRole('textbox')).toHaveClass('border-red-500', 'bg-red-900/20')
   })
 
   it('applies normal border when no error', () => {
     render(<Input />)
-    expect(screen.getByRole('textbox')).toHaveClass('border-gray-300', 'bg-white')
+    expect(screen.getByRole('textbox')).toHaveClass('border-night-600', 'bg-night-600')
   })
 
   it('accepts user input', async () => {
