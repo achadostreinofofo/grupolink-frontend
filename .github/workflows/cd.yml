@@ -26,6 +26,7 @@ jobs:
       - name: Build
         env:
           NEXT_PUBLIC_API_URL: https://redirectgrupo.com.br
+          NEXT_PUBLIC_MP_PUBLIC_KEY: ${{ secrets.MP_PUBLIC_KEY }}
           NODE_OPTIONS: --max-old-space-size=4096
         run: npm run build
 

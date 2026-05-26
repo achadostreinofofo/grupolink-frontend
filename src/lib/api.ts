@@ -106,6 +106,17 @@ export const api = {
     current: () => request<SubscriptionStatus>('/subscriptions/current'),
     checkout: (plan: string) =>
       request<CheckoutResponse>('/subscriptions/checkout', { method: 'POST', body: JSON.stringify({ plan }) }),
+    subscribeWithToken: (data: {
+      plan: string
+      cardToken: string
+      payerEmail: string
+      identificationType: string
+      identificationNumber: string
+    }) =>
+      request<{ subscriptionId: string; status: string }>('/subscriptions/subscribe', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
     cancel: () => request<void>('/subscriptions/cancel', { method: 'DELETE' }),
   },
 

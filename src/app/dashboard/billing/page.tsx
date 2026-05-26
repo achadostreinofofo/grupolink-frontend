@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { api } from '@/lib/api'
 import type { SubscriptionStatus } from '@/types'
 import { Card, CardContent } from '@/components/ui/Card'
@@ -70,9 +71,9 @@ function statusBadge(status: string) {
 }
 
 export default function BillingPage() {
+  const router = useRouter()
   const [subscription, setSubscription] = useState<SubscriptionStatus | null>(null)
   const [loading, setLoading]           = useState(true)
-  const [loadingPlan, setLoadingPlan]   = useState<string | null>(null)
 
   useEffect(() => {
     api.subscriptions.current()
@@ -81,15 +82,8 @@ export default function BillingPage() {
       .finally(() => setLoading(false))
   }, [])
 
-  const handleSubscribe = async (planKey: string) => {
-    setLoadingPlan(planKey)
-    try {
-      const res = await api.subscriptions.checkout(planKey)
-      window.location.href = res.checkoutUrl
-    } catch (e) {
-      alert(e instanceof Error ? e.message : 'Erro ao iniciar checkout')
-      setLoadingPlan(null)
-    }
+  const handleSubscribe = (planKey: string) => {
+    router.push(`/billing/checkout/${planKey.toLowerCase()}`)
   }
 
   const handleCancel = async () => {
@@ -210,7 +204,6 @@ export default function BillingPage() {
         {plans.map(plan => {
           const Icon      = plan.icon
           const isCurrent = currentPlan === plan.key
-          const isLoading = loadingPlan === plan.key
 
           return (
             <div
@@ -262,7 +255,6 @@ export default function BillingPage() {
                 className="w-full"
                 variant={isCurrent ? 'secondary' : 'primary'}
                 disabled={isCurrent && isActive}
-                loading={isLoading}
                 onClick={() => !isCurrent && handleSubscribe(plan.key)}
               >
                 {isCurrent && isActive ? 'Plano atual' : `Assinar ${plan.name}`}
