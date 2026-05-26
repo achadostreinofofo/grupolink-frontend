@@ -60,10 +60,10 @@ export default function MonitoredGroupsPage() {
     <div className="max-w-4xl">
       <div className="flex items-start justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Grupos Monitorados</h1>
-          <p className="text-sm text-gray-500 mt-1 max-w-xl">
+          <h1 className="text-2xl font-bold text-night-50">Grupos Monitorados</h1>
+          <p className="text-sm text-night-300 mt-1 max-w-xl">
             Mensagens recebidas em grupos monitorados que contenham um link{' '}
-            <code className="text-xs bg-gray-100 px-1.5 py-0.5 rounded">https://meli.la/...</code>{' '}
+            <code className="text-xs bg-night-700 px-1.5 py-0.5 rounded">https://meli.la/...</code>{' '}
             são automaticamente reenviadas para os grupos da estrutura vinculada.
           </p>
         </div>
@@ -115,14 +115,14 @@ export default function MonitoredGroupsPage() {
       {/* Lista de monitorados */}
       {loading ? (
         <div className="space-y-3">
-          {[1, 2].map(i => <div key={i} className="h-20 bg-gray-100 rounded-xl animate-pulse" />)}
+          {[1, 2].map(i => <div key={i} className="h-20 bg-night-700 rounded-xl animate-pulse" />)}
         </div>
       ) : monitored.length === 0 ? (
         <Card>
           <CardContent className="py-14 text-center">
             <Radio className="w-10 h-10 text-gray-200 mx-auto mb-3" />
-            <p className="text-sm text-gray-500 mb-1">Nenhum grupo sendo monitorado</p>
-            <p className="text-xs text-gray-400">Adicione um grupo para começar a redistribuir mensagens</p>
+            <p className="text-sm text-night-300 mb-1">Nenhum grupo sendo monitorado</p>
+            <p className="text-xs text-night-400">Adicione um grupo para começar a redistribuir mensagens</p>
           </CardContent>
         </Card>
       ) : (
@@ -131,36 +131,36 @@ export default function MonitoredGroupsPage() {
             <Card key={m.id} className={m.active ? '' : 'opacity-60'}>
               <CardContent className="flex items-start gap-4 py-4">
                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
-                  m.active ? 'bg-green-50' : 'bg-gray-100'
+                  m.active ? 'bg-green-50' : 'bg-night-700'
                 }`}>
-                  <Radio className={`w-5 h-5 ${m.active ? 'text-green-600' : 'text-gray-400'}`} />
+                  <Radio className={`w-5 h-5 ${m.active ? 'text-green-600' : 'text-night-400'}`} />
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <p className="font-medium text-gray-900 text-sm">
+                    <p className="font-medium text-night-50 text-sm">
                       {m.whatsappGroupName || m.whatsappGroupId}
                     </p>
                     <Badge variant={m.active ? 'green' : 'gray'}>
                       {m.active ? 'Ativo' : 'Pausado'}
                     </Badge>
                   </div>
-                  <p className="text-xs text-gray-500 mt-1">
-                    Reenvia para a estrutura <span className="font-medium text-gray-700">{m.structureName}</span>
+                  <p className="text-xs text-night-300 mt-1">
+                    Reenvia para a estrutura <span className="font-medium text-night-200">{m.structureName}</span>
                   </p>
                   {m.messagePrefix && (
-                    <p className="text-xs text-gray-400 mt-1">
-                      Prefixo: <code className="bg-gray-100 px-1 py-0.5 rounded">{m.messagePrefix}</code>
+                    <p className="text-xs text-night-400 mt-1">
+                      Prefixo: <code className="bg-night-700 px-1 py-0.5 rounded">{m.messagePrefix}</code>
                     </p>
                   )}
                 </div>
                 <div className="flex gap-1 flex-shrink-0">
                   <button
                     title={m.active ? 'Pausar' : 'Ativar'}
-                    className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors"
+                    className="p-1.5 rounded-lg hover:bg-night-700 transition-colors"
                     onClick={() => onToggleActive(m)}
                   >
                     {m.active
-                      ? <PowerOff className="w-4 h-4 text-gray-500" />
+                      ? <PowerOff className="w-4 h-4 text-night-300" />
                       : <Power className="w-4 h-4 text-green-600" />}
                   </button>
                   <button
@@ -259,15 +259,15 @@ function AddMonitoredGroupModal({
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4"
       onClick={e => { if (e.target === e.currentTarget) onClose() }}
     >
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg p-6 max-h-[90vh] overflow-y-auto">
+      <div className="bg-night-700 rounded-2xl shadow-xl w-full max-w-lg p-6 max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-5">
           <div className="flex items-center gap-2">
             <div className="w-9 h-9 rounded-xl bg-green-50 flex items-center justify-center">
               <Radio className="w-5 h-5 text-green-600" />
             </div>
-            <h2 className="text-base font-semibold text-gray-900">Adicionar grupo monitorado</h2>
+            <h2 className="text-base font-semibold text-night-50">Adicionar grupo monitorado</h2>
           </div>
-          <button className="text-gray-400 hover:text-gray-600" onClick={onClose}>
+          <button className="text-night-400 hover:text-night-200" onClick={onClose}>
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -275,11 +275,11 @@ function AddMonitoredGroupModal({
         <div className="space-y-4">
           {/* Sessão */}
           <div>
-            <label className="text-sm font-medium text-gray-700 block mb-1">
+            <label className="text-sm font-medium text-night-200 block mb-1">
               Conta WhatsApp (sessão autenticada)
             </label>
             <select
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+              className="w-full rounded-lg border border-night-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
               value={sessionId}
               onChange={e => { setSessionId(e.target.value); setGroupId('') }}
             >
@@ -293,18 +293,18 @@ function AddMonitoredGroupModal({
 
           {/* Grupo */}
           <div>
-            <label className="text-sm font-medium text-gray-700 block mb-1">
+            <label className="text-sm font-medium text-night-200 block mb-1">
               Grupo a monitorar
             </label>
             {groupsLoading ? (
-              <div className="text-sm text-gray-400 py-2">Carregando grupos…</div>
+              <div className="text-sm text-night-400 py-2">Carregando grupos…</div>
             ) : selectableGroups.length === 0 ? (
-              <div className="text-sm text-gray-400 py-2">
+              <div className="text-sm text-night-400 py-2">
                 Nenhum grupo disponível nesta sessão
               </div>
             ) : (
               <select
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="w-full rounded-lg border border-night-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                 value={groupId}
                 onChange={e => setGroupId(e.target.value)}
               >
@@ -320,11 +320,11 @@ function AddMonitoredGroupModal({
 
           {/* Estrutura */}
           <div>
-            <label className="text-sm font-medium text-gray-700 block mb-1">
+            <label className="text-sm font-medium text-night-200 block mb-1">
               Estrutura de destino
             </label>
             <select
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+              className="w-full rounded-lg border border-night-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
               value={structureId}
               onChange={e => setStructureId(e.target.value)}
             >
@@ -333,7 +333,7 @@ function AddMonitoredGroupModal({
                 <option key={s.id} value={s.id}>{s.name}</option>
               ))}
             </select>
-            <p className="text-xs text-gray-400 mt-1">
+            <p className="text-xs text-night-400 mt-1">
               <Users className="w-3 h-3 inline mr-1" />
               As mensagens serão reenviadas para todos os grupos ativos desta estrutura.
             </p>
@@ -341,17 +341,17 @@ function AddMonitoredGroupModal({
 
           {/* Prefixo */}
           <div>
-            <label className="text-sm font-medium text-gray-700 block mb-1">
-              Prefixo da mensagem <span className="text-gray-400 text-xs">(opcional)</span>
+            <label className="text-sm font-medium text-night-200 block mb-1">
+              Prefixo da mensagem <span className="text-night-400 text-xs">(opcional)</span>
             </label>
             <input
               type="text"
               placeholder="🔥 PROMO MELI:"
               value={prefix}
               onChange={e => setPrefix(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+              className="w-full rounded-lg border border-night-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
             />
-            <p className="text-xs text-gray-400 mt-1">
+            <p className="text-xs text-night-400 mt-1">
               Adicionado no início de cada mensagem reencaminhada.
             </p>
           </div>

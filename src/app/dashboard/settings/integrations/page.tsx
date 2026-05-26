@@ -79,24 +79,24 @@ function AffiliateParamsModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md">
-        <div className="flex items-center justify-between p-6 border-b border-gray-100">
+      <div className="bg-night-700 rounded-2xl shadow-xl w-full max-w-md">
+        <div className="flex items-center justify-between p-6 border-b border-night-600">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-lg bg-yellow-100 flex items-center justify-center">
               <LinkIcon className="w-5 h-5 text-yellow-600" />
             </div>
             <div>
-              <p className="text-sm font-semibold text-gray-900">Configurar links de afiliado</p>
-              <p className="text-xs text-gray-500">Passo 2 de 2</p>
+              <p className="text-sm font-semibold text-night-50">Configurar links de afiliado</p>
+              <p className="text-xs text-night-300">Passo 2 de 2</p>
             </div>
           </div>
-          <button onClick={onSkip} className="text-gray-400 hover:text-gray-600">
+          <button onClick={onSkip} className="text-night-400 hover:text-night-200">
             <X className="w-5 h-5" />
           </button>
         </div>
 
         <div className="p-6 space-y-4">
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-night-200">
             Para ativar a substituição automática, cole qualquer link de afiliado gerado pelo seu painel Mercado Livre.
             Links curtos <span className="font-mono text-xs">meli.la/...</span> também são aceitos.
           </p>
@@ -111,7 +111,7 @@ function AffiliateParamsModal({
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">
+            <label className="block text-xs font-medium text-night-200 mb-1">
               Link de afiliado
             </label>
             <div className="relative">
@@ -120,15 +120,15 @@ function AffiliateParamsModal({
                 value={link}
                 onChange={e => handleLinkChange(e.target.value)}
                 placeholder="https://meli.la/... ou https://www.mercadolivre.com.br/produto?matt_word=..."
-                className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent pr-8"
+                className="w-full text-sm border border-night-600 rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent pr-8"
                 disabled={resolving || saving}
               />
               {resolving && (
-                <Loader className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 animate-spin" />
+                <Loader className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-night-400 animate-spin" />
               )}
             </div>
             {error && <p className="text-xs text-red-600 mt-1">{error}</p>}
-            {resolving && <p className="text-xs text-gray-500 mt-1">Resolvendo link...</p>}
+            {resolving && <p className="text-xs text-night-300 mt-1">Resolvendo link...</p>}
           </div>
 
           {parsed && (
@@ -239,7 +239,7 @@ function IntegrationsContent() {
   if (loading) {
     return (
       <div className="max-w-xl">
-        <div className="h-40 bg-gray-100 rounded-xl animate-pulse" />
+        <div className="h-40 bg-night-700 rounded-xl animate-pulse" />
       </div>
     )
   }
@@ -254,8 +254,8 @@ function IntegrationsContent() {
       )}
 
       <div className="mb-2">
-        <h1 className="text-2xl font-bold text-gray-900">Integrações</h1>
-        <p className="text-sm text-gray-500 mt-1">Conecte serviços externos para potencializar sua plataforma</p>
+        <h1 className="text-2xl font-bold text-night-50">Integrações</h1>
+        <p className="text-sm text-night-300 mt-1">Conecte serviços externos para potencializar sua plataforma</p>
       </div>
 
       {toast && (
@@ -280,8 +280,8 @@ function IntegrationsContent() {
                 <span className="text-xl font-bold text-yellow-600">M</span>
               </div>
               <div>
-                <p className="text-sm font-semibold text-gray-900">Mercado Livre Afiliados</p>
-                <p className="text-xs text-gray-500">Substitua links por seus links de afiliado automaticamente</p>
+                <p className="text-sm font-semibold text-night-50">Mercado Livre Afiliados</p>
+                <p className="text-xs text-night-300">Substitua links por seus links de afiliado automaticamente</p>
               </div>
             </div>
             {mlStatus?.connected && (
@@ -345,7 +345,7 @@ function IntegrationsContent() {
             </div>
           ) : (
             <div className="space-y-4">
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-night-200">
                 Conecte sua conta Mercado Livre para que links detectados nos grupos monitorados sejam automaticamente substituídos pelos seus links de afiliado.
               </p>
               <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
@@ -375,7 +375,7 @@ function IntegrationsContent() {
 
 export default function IntegrationsPage() {
   return (
-    <Suspense fallback={<div className="max-w-xl"><div className="h-40 bg-gray-100 rounded-xl animate-pulse" /></div>}>
+    <Suspense fallback={<div className="max-w-xl"><div className="h-40 bg-night-700 rounded-xl animate-pulse" /></div>}>
       <IntegrationsContent />
     </Suspense>
   )

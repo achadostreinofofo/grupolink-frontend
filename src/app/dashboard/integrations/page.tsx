@@ -120,19 +120,19 @@ export default function IntegrationsPage() {
     <div className="max-w-2xl">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Integrações WhatsApp</h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <h1 className="text-2xl font-bold text-night-50">Integrações WhatsApp</h1>
+          <p className="text-sm text-night-300 mt-1">
             Conecte sua conta WhatsApp para criação de grupos e envio de mensagens
           </p>
         </div>
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 bg-gray-100 rounded-xl p-1 mb-6">
+      <div className="flex gap-1 bg-night-700 rounded-xl p-1 mb-6">
         <button
           onClick={() => setTab('qrcode')}
           className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-            tab === 'qrcode' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+            tab === 'qrcode' ? 'bg-night-700 text-night-50 shadow-sm' : 'text-night-300 hover:text-night-200'
           }`}
         >
           <QrCode className="w-4 h-4" />
@@ -141,7 +141,7 @@ export default function IntegrationsPage() {
         <button
           onClick={() => setTab('api')}
           className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-            tab === 'api' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+            tab === 'api' ? 'bg-night-700 text-night-50 shadow-sm' : 'text-night-300 hover:text-night-200'
           }`}
         >
           <Smartphone className="w-4 h-4" />
@@ -164,13 +164,13 @@ export default function IntegrationsPage() {
 
           {loadingSessions ? (
             <div className="space-y-3">
-              {[1, 2].map(i => <div key={i} className="h-16 bg-gray-100 rounded-xl animate-pulse" />)}
+              {[1, 2].map(i => <div key={i} className="h-16 bg-night-700 rounded-xl animate-pulse" />)}
             </div>
           ) : sessions.length === 0 ? (
             <Card>
               <CardContent className="py-12 text-center">
                 <QrCode className="w-10 h-10 text-gray-200 mx-auto mb-3" />
-                <p className="text-sm text-gray-500 mb-4">Nenhuma sessão ativa</p>
+                <p className="text-sm text-night-300 mb-4">Nenhuma sessão ativa</p>
                 <Link href="/dashboard/whatsapp/connect">
                   <Button>
                     <QrCode className="w-4 h-4 mr-1" />
@@ -191,18 +191,18 @@ export default function IntegrationsPage() {
                     <Card key={session.sessionId}>
                       <CardContent className="flex items-center gap-4">
                         <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
-                          isConnected ? 'bg-brand-100' : isExpired ? 'bg-amber-50' : 'bg-gray-100'
+                          isConnected ? 'bg-brand-100' : isExpired ? 'bg-amber-50' : 'bg-night-700'
                         }`}>
                           {isConnected
                             ? <Wifi className="w-5 h-5 text-brand-600" />
-                            : <WifiOff className={`w-5 h-5 ${isExpired ? 'text-amber-400' : 'text-gray-400'}`} />
+                            : <WifiOff className={`w-5 h-5 ${isExpired ? 'text-amber-400' : 'text-night-400'}`} />
                           }
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 flex-wrap">
                             {session.phone
-                              ? <p className="font-medium text-gray-900 text-sm">+{session.phone}</p>
-                              : <p className="font-medium text-gray-400 text-sm">Aguardando autenticação</p>
+                              ? <p className="font-medium text-night-50 text-sm">+{session.phone}</p>
+                              : <p className="font-medium text-night-400 text-sm">Aguardando autenticação</p>
                             }
                             {isConnected && (
                               <Badge variant="green"><CheckCircle className="w-3 h-3 mr-1 inline" />Conectado</Badge>
@@ -214,7 +214,7 @@ export default function IntegrationsPage() {
                               <Badge variant="gray">Aguardando scan</Badge>
                             )}
                           </div>
-                          <p className="text-xs text-gray-400 font-mono mt-0.5 truncate">
+                          <p className="text-xs text-night-400 font-mono mt-0.5 truncate">
                             {session.sessionId}
                           </p>
                         </div>
@@ -287,7 +287,7 @@ export default function IntegrationsPage() {
           {showForm && (
             <Card className="border-brand-200">
               <CardHeader>
-                <p className="text-sm font-semibold text-gray-700">Nova Conta WhatsApp Business</p>
+                <p className="text-sm font-semibold text-night-200">Nova Conta WhatsApp Business</p>
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleSubmit(onConnect)} className="space-y-4">
@@ -305,7 +305,7 @@ export default function IntegrationsPage() {
                       error={errors.accessToken?.message}
                       {...register('accessToken')}
                     />
-                    <p className="text-xs text-gray-400 mt-1">
+                    <p className="text-xs text-night-400 mt-1">
                       O token é armazenado de forma segura e nunca exibido novamente.
                     </p>
                   </div>
@@ -325,13 +325,13 @@ export default function IntegrationsPage() {
 
           {loadingApi ? (
             <div className="space-y-3">
-              {[1, 2].map(i => <div key={i} className="h-16 bg-gray-100 rounded-xl animate-pulse" />)}
+              {[1, 2].map(i => <div key={i} className="h-16 bg-night-700 rounded-xl animate-pulse" />)}
             </div>
           ) : accounts.length === 0 ? (
             <Card>
               <CardContent className="py-12 text-center">
                 <Smartphone className="w-10 h-10 text-gray-200 mx-auto mb-3" />
-                <p className="text-sm text-gray-500">Nenhuma conta conectada ainda</p>
+                <p className="text-sm text-night-300">Nenhuma conta conectada ainda</p>
               </CardContent>
             </Card>
           ) : (
@@ -344,12 +344,12 @@ export default function IntegrationsPage() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <p className="font-medium text-gray-900 text-sm">
+                        <p className="font-medium text-night-50 text-sm">
                           {acc.displayName ?? 'Conta WhatsApp'}
                         </p>
                         <Badge variant="green">Conectado</Badge>
                       </div>
-                      <p className="text-xs text-gray-400 font-mono mt-0.5">
+                      <p className="text-xs text-night-400 font-mono mt-0.5">
                         {acc.displayPhone ?? acc.phoneNumberId}
                       </p>
                     </div>

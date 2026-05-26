@@ -11,15 +11,14 @@ interface Props {
   open: boolean
   groupName: string
   onClose: () => void
-  /** Retorna os JIDs das contas participantes (excluindo o criador — adicionado automaticamente) */
   onConfirm: (participantJids: string[]) => void
   loading?: boolean
 }
 
 export function CreateGroupParticipantsModal({ open, groupName, onClose, onConfirm, loading }: Props) {
-  const [sessions, setSessions]   = useState<WebSessionStatus[]>([])
-  const [fetching, setFetching]   = useState(false)
-  const [selected, setSelected]   = useState<Set<string>>(new Set())
+  const [sessions, setSessions] = useState<WebSessionStatus[]>([])
+  const [fetching, setFetching] = useState(false)
+  const [selected, setSelected] = useState<Set<string>>(new Set())
 
   useEffect(() => {
     if (!open) return
@@ -29,7 +28,6 @@ export function CreateGroupParticipantsModal({ open, groupName, onClose, onConfi
       .then(s => {
         const auth = s.filter(x => x.status === 'AUTHENTICATED')
         setSessions(auth)
-        // Pré-seleciona todas as contas exceto a primeira (que será o criador)
         if (auth.length >= 2) {
           setSelected(new Set(auth.slice(1).map(x => x.sessionId)))
         }
@@ -50,33 +48,31 @@ export function CreateGroupParticipantsModal({ open, groupName, onClose, onConfi
     })
 
   const handleConfirm = () => {
-    // Monta JIDs das contas participantes (exceto o criador = sessions[0])
-    // s.phone já contém o código do país (ex: "557181926217"), não adicionar "55"
     const jids = sessions
       .filter(s => selected.has(s.sessionId) && s.phone)
       .map(s => `${s.phone}@s.whatsapp.net`)
     onConfirm(jids)
   }
 
-  const creator = sessions[0]
+  const creator      = sessions[0]
   const participants = sessions.slice(1)
-  const canConfirm = hasEnough && selected.size >= 1
+  const canConfirm   = hasEnough && selected.size >= 1
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/40" onClick={loading ? undefined : onClose} />
+      <div className="absolute inset-0 bg-black/60" onClick={loading ? undefined : onClose} />
 
-      <div className="relative bg-white rounded-2xl shadow-xl w-full max-w-md">
+      <div className="relative bg-night-800 border border-night-600 rounded-2xl shadow-xl w-full max-w-md">
         {/* header */}
-        <div className="flex items-start justify-between px-6 pt-5 pb-4 border-b border-gray-100">
+        <div className="flex items-start justify-between px-6 pt-5 pb-4 border-b border-night-600">
           <div>
-            <h2 className="text-base font-semibold text-gray-900">Criar grupo no WhatsApp</h2>
-            <p className="text-xs text-gray-400 mt-0.5">
-              Grupo: <span className="font-medium text-gray-600">{groupName}</span>
+            <h2 className="text-base font-semibold text-night-50">Criar grupo no WhatsApp</h2>
+            <p className="text-xs text-night-400 mt-0.5">
+              Grupo: <span className="font-medium text-night-200">{groupName}</span>
             </p>
           </div>
           {!loading && (
-            <button onClick={onClose} className="text-gray-400 hover:text-gray-600 ml-2">
+            <button onClick={onClose} className="text-night-400 hover:text-night-100 ml-2">
               <X className="w-5 h-5" />
             </button>
           )}
@@ -85,20 +81,19 @@ export function CreateGroupParticipantsModal({ open, groupName, onClose, onConfi
         <div className="px-6 py-4 space-y-4">
           {fetching ? (
             <div className="flex items-center justify-center py-6">
-              <Loader2 className="w-5 h-5 animate-spin text-gray-400" />
+              <Loader2 className="w-5 h-5 animate-spin text-night-400" />
             </div>
 
           ) : !hasEnough ? (
-            /* ── Menos de 2 contas ── */
             <div className="space-y-3">
-              <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
+              <div className="bg-amber-900/20 border border-amber-700/40 rounded-xl p-4">
                 <div className="flex gap-2">
-                  <AlertTriangle className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
+                  <AlertTriangle className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-sm font-semibold text-amber-800">
+                    <p className="text-sm font-semibold text-amber-300">
                       Mínimo de 2 contas WhatsApp necessário
                     </p>
-                    <p className="text-xs text-amber-700 mt-1">
+                    <p className="text-xs text-amber-400 mt-1">
                       O WhatsApp exige pelo menos 2 participantes para criar um grupo.
                       Além disso, a plataforma precisa de 2 contas conectadas para criar
                       os próximos grupos automaticamente quando a capacidade for atingida.
@@ -108,18 +103,18 @@ export function CreateGroupParticipantsModal({ open, groupName, onClose, onConfi
               </div>
 
               {sessions.length === 1 && (
-                <div className="bg-gray-50 rounded-xl p-3 flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-brand-100 flex items-center justify-center flex-shrink-0">
-                    <Smartphone className="w-4 h-4 text-brand-600" />
+                <div className="bg-night-700 rounded-xl p-3 flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-brand-900/30 flex items-center justify-center flex-shrink-0">
+                    <Smartphone className="w-4 h-4 text-brand-400" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-gray-900">+{sessions[0].phone}</p>
-                    <p className="text-xs text-gray-400">1 conta conectada</p>
+                    <p className="text-sm font-medium text-night-50">+{sessions[0].phone}</p>
+                    <p className="text-xs text-night-400">1 conta conectada</p>
                   </div>
                 </div>
               )}
 
-              <div className="bg-blue-50 border border-blue-100 rounded-xl p-3 text-sm text-blue-700">
+              <div className="bg-blue-900/20 border border-blue-700/40 rounded-xl p-3 text-sm text-blue-300">
                 Conecte uma segunda conta em{' '}
                 <Link
                   href="/dashboard/integrations"
@@ -133,35 +128,34 @@ export function CreateGroupParticipantsModal({ open, groupName, onClose, onConfi
             </div>
 
           ) : (
-            /* ── 2+ contas: mostra criador + participantes ── */
             <div className="space-y-3">
-              {/* Conta criadora (não selecionável — é sempre o admin) */}
+              {/* Conta criadora */}
               <div>
-                <p className="text-xs font-medium text-gray-500 mb-1.5 uppercase tracking-wide">
+                <p className="text-xs font-medium text-night-400 mb-1.5 uppercase tracking-wide">
                   Conta criadora (admin)
                 </p>
-                <div className="flex items-center gap-3 p-3 rounded-xl bg-brand-50 border border-brand-200">
-                  <div className="w-8 h-8 rounded-full bg-brand-100 flex items-center justify-center flex-shrink-0">
-                    <Smartphone className="w-4 h-4 text-brand-600" />
+                <div className="flex items-center gap-3 p-3 rounded-xl bg-brand-900/20 border border-brand-700/40">
+                  <div className="w-8 h-8 rounded-full bg-brand-900/40 flex items-center justify-center flex-shrink-0">
+                    <Smartphone className="w-4 h-4 text-brand-400" />
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-900">+{creator.phone}</p>
-                    <p className="text-xs text-gray-400">Criará o grupo e será admin</p>
+                    <p className="text-sm font-medium text-night-50">+{creator.phone}</p>
+                    <p className="text-xs text-night-400">Criará o grupo e será admin</p>
                   </div>
                   <CheckCircle className="w-4 h-4 text-brand-500 flex-shrink-0" />
                 </div>
               </div>
 
-              {/* Contas participantes (selecionáveis) */}
+              {/* Contas participantes */}
               <div>
-                <p className="text-xs font-medium text-gray-500 mb-1.5 uppercase tracking-wide">
+                <p className="text-xs font-medium text-night-400 mb-1.5 uppercase tracking-wide">
                   Contas participantes
                 </p>
                 <div className="space-y-2">
                   {participants.map(s => (
                     <label
                       key={s.sessionId}
-                      className="flex items-center gap-3 p-3 rounded-xl border border-gray-100 hover:border-brand-200 cursor-pointer transition-colors"
+                      className="flex items-center gap-3 p-3 rounded-xl border border-night-600 hover:border-brand-700/50 cursor-pointer transition-colors"
                     >
                       <input
                         type="checkbox"
@@ -169,19 +163,19 @@ export function CreateGroupParticipantsModal({ open, groupName, onClose, onConfi
                         onChange={() => toggle(s.sessionId)}
                         className="accent-brand-500 w-4 h-4 flex-shrink-0"
                       />
-                      <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0">
-                        <Smartphone className="w-4 h-4 text-gray-500" />
+                      <div className="w-8 h-8 rounded-full bg-night-600 flex items-center justify-center flex-shrink-0">
+                        <Smartphone className="w-4 h-4 text-night-300" />
                       </div>
                       <div className="flex-1">
-                        <p className="text-sm font-medium text-gray-900">+{s.phone}</p>
-                        <p className="text-xs text-gray-400">Também usada em criações automáticas</p>
+                        <p className="text-sm font-medium text-night-50">+{s.phone}</p>
+                        <p className="text-xs text-night-400">Também usada em criações automáticas</p>
                       </div>
                     </label>
                   ))}
                 </div>
               </div>
 
-              <p className="text-xs text-gray-400">
+              <p className="text-xs text-night-400">
                 As contas selecionadas serão usadas em todos os grupos criados automaticamente nesta estrutura.
               </p>
             </div>

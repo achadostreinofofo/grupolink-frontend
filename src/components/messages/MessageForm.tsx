@@ -98,11 +98,11 @@ export function MessageForm({ defaultValues, submitLabel = 'Salvar', onSubmit, s
       />
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Mensagem</label>
+        <label className="block text-sm font-medium text-night-200 mb-1">Mensagem</label>
         <textarea
           rows={5}
           placeholder="Texto da mensagem (emojis são suportados ✅)"
-          className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-400 resize-y"
+          className="w-full rounded-xl border border-night-600 px-4 py-3 text-sm text-night-50 focus:outline-none focus:ring-2 focus:ring-brand-400 resize-y"
           {...register('content')}
         />
         {errors.content && <p className="text-xs text-red-500 mt-1">{errors.content.message}</p>}
@@ -110,10 +110,10 @@ export function MessageForm({ defaultValues, submitLabel = 'Salvar', onSubmit, s
 
       {/* Image attachment */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-night-200 mb-1">
           Imagem anexada (opcional)
         </label>
-        <p className="text-xs text-gray-400 mb-3">
+        <p className="text-xs text-night-400 mb-3">
           Será enviada junto com o texto em uma única mensagem. Máximo 5 MB.
         </p>
 
@@ -133,7 +133,7 @@ export function MessageForm({ defaultValues, submitLabel = 'Salvar', onSubmit, s
               <img
                 src={previewSrc}
                 alt="Preview da imagem"
-                className="w-16 h-16 object-cover rounded-xl border border-gray-200 shadow-sm"
+                className="w-16 h-16 object-cover rounded-xl border border-night-600 shadow-sm"
               />
               <button
                 type="button"
@@ -150,7 +150,7 @@ export function MessageForm({ defaultValues, submitLabel = 'Salvar', onSubmit, s
           <button
             type="button"
             onClick={() => fileRef.current?.click()}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl border-2 border-dashed border-gray-200 text-sm text-gray-500 hover:border-brand-400 hover:text-brand-600 transition-colors"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl border-2 border-dashed border-night-600 text-sm text-night-300 hover:border-brand-400 hover:text-brand-600 transition-colors"
           >
             {previewSrc
               ? <><RefreshCw className="w-4 h-4" /> Trocar imagem</>
@@ -160,7 +160,7 @@ export function MessageForm({ defaultValues, submitLabel = 'Salvar', onSubmit, s
         </div>
 
         {file && (
-          <p className="text-xs text-gray-400 mt-1.5 ml-0.5">
+          <p className="text-xs text-night-400 mt-1.5 ml-0.5">
             {file.name} · {(file.size / 1024).toFixed(0)} KB
           </p>
         )}

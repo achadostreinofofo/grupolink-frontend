@@ -78,9 +78,9 @@ export default function LinksPage() {
     <div className="max-w-3xl">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Encurtador de Links</h1>
-          <p className="text-sm text-gray-500 mt-1">
-            Crie links curtos rastreáveis como <code className="bg-gray-100 px-1 rounded text-xs">/s/promos-ml</code>
+          <h1 className="text-2xl font-bold text-night-50">Encurtador de Links</h1>
+          <p className="text-sm text-night-300 mt-1">
+            Crie links curtos rastreáveis como <code className="bg-night-700 px-1 rounded text-xs">/s/promos-ml</code>
           </p>
         </div>
         <Button size="sm" onClick={() => setShowForm(!showForm)}>
@@ -93,7 +93,7 @@ export default function LinksPage() {
       {showForm && (
         <Card className="mb-6 border-brand-200">
           <CardHeader>
-            <p className="text-sm font-semibold text-gray-700">Criar Link Curto</p>
+            <p className="text-sm font-semibold text-night-200">Criar Link Curto</p>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit(onCreate)} className="space-y-4">
@@ -111,7 +111,7 @@ export default function LinksPage() {
                     error={errors.code?.message}
                     {...register('code')}
                   />
-                  <p className="text-xs text-gray-400 mt-1">Deixe em branco para gerar automaticamente</p>
+                  <p className="text-xs text-night-400 mt-1">Deixe em branco para gerar automaticamente</p>
                 </div>
                 <Input
                   label="Título (opcional)"
@@ -138,14 +138,14 @@ export default function LinksPage() {
       {/* Lista de links */}
       {loading ? (
         <div className="space-y-3">
-          {[1, 2, 3].map(i => <div key={i} className="h-16 bg-gray-100 rounded-xl animate-pulse" />)}
+          {[1, 2, 3].map(i => <div key={i} className="h-16 bg-night-700 rounded-xl animate-pulse" />)}
         </div>
       ) : links.length === 0 ? (
         <Card>
           <CardContent className="py-14 text-center">
             <Link2 className="w-10 h-10 text-gray-200 mx-auto mb-3" />
-            <p className="text-sm text-gray-500 mb-1">Nenhum link criado ainda</p>
-            <p className="text-xs text-gray-400">Crie links curtos rastreáveis para seus anúncios</p>
+            <p className="text-sm text-night-300 mb-1">Nenhum link criado ainda</p>
+            <p className="text-xs text-night-400">Crie links curtos rastreáveis para seus anúncios</p>
           </CardContent>
         </Card>
       ) : (
@@ -160,14 +160,14 @@ export default function LinksPage() {
                       {link.active ? 'Ativo' : 'Inativo'}
                     </Badge>
                     {link.title && (
-                      <span className="text-xs text-gray-500">{link.title}</span>
+                      <span className="text-xs text-night-300">{link.title}</span>
                     )}
                   </div>
-                  <p className="text-xs text-gray-400 truncate mt-0.5">{link.targetUrl}</p>
+                  <p className="text-xs text-night-400 truncate mt-0.5">{link.targetUrl}</p>
                 </div>
 
-                <div className="flex items-center gap-1 text-sm text-gray-500 flex-shrink-0">
-                  <span className="font-semibold text-gray-700">{link.clicks.toLocaleString('pt-BR')}</span>
+                <div className="flex items-center gap-1 text-sm text-night-300 flex-shrink-0">
+                  <span className="font-semibold text-night-200">{link.clicks.toLocaleString('pt-BR')}</span>
                   <span className="text-xs">cliques</span>
                 </div>
 
@@ -179,7 +179,7 @@ export default function LinksPage() {
                   <Button variant="ghost" size="sm" onClick={() => onToggle(link.id)}>
                     {link.active
                       ? <ToggleRight className="w-4 h-4 text-brand-600" />
-                      : <ToggleLeft className="w-4 h-4 text-gray-400" />
+                      : <ToggleLeft className="w-4 h-4 text-night-400" />
                     }
                   </Button>
                   <Button

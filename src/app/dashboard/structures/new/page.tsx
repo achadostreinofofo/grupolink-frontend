@@ -56,14 +56,14 @@ export default function NewStructurePage() {
           </Button>
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Nova Estrutura</h1>
-          <p className="text-sm text-gray-500">Configure um container para seus grupos WhatsApp</p>
+          <h1 className="text-2xl font-bold text-night-50">Nova Estrutura</h1>
+          <p className="text-sm text-night-300">Configure um container para seus grupos WhatsApp</p>
         </div>
       </div>
 
       <Card>
         <CardHeader>
-          <p className="text-sm font-medium text-gray-700">Informações da Estrutura</p>
+          <p className="text-sm font-medium text-night-200">Informações da Estrutura</p>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
@@ -84,10 +84,10 @@ export default function NewStructurePage() {
             />
 
             <div>
-              <label htmlFor="maxMembersPerGroup" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="maxMembersPerGroup" className="block text-sm font-medium text-night-200 mb-1">
                 Número máximo de membros por grupo
               </label>
-              <p className="text-xs text-gray-400 mb-2">
+              <p className="text-xs text-night-400 mb-2">
                 Limite de pessoas em cada grupo do WhatsApp. Máximo permitido: 1024 pessoas.
               </p>
               <div className="flex items-center gap-3">
@@ -106,7 +106,7 @@ export default function NewStructurePage() {
                     if (v < 1) el.value = '1'
                   }}
                 />
-                <div className="flex items-center gap-1 text-sm text-gray-500">
+                <div className="flex items-center gap-1 text-sm text-night-300">
                   <Users className="w-4 h-4" />
                   <span>pessoas por grupo</span>
                 </div>
@@ -114,10 +114,10 @@ export default function NewStructurePage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-night-200 mb-1">
                 Quando direcionar para o próximo grupo?
               </label>
-              <p className="text-xs text-gray-400 mb-4">
+              <p className="text-xs text-night-400 mb-4">
                 Quando um grupo atingir essa porcentagem da capacidade, os novos membros serão
                 automaticamente direcionados para o próximo grupo disponível.
               </p>
@@ -130,14 +130,14 @@ export default function NewStructurePage() {
                   max={100}
                   step={5}
                   {...register('fillThresholdPct')}
-                  className="flex-1 h-2 rounded-lg appearance-none cursor-pointer accent-brand-500 bg-gray-200"
+                  className="flex-1 h-2 rounded-lg appearance-none cursor-pointer accent-brand-500 bg-night-600"
                 />
                 <div className="text-right w-16 shrink-0">
                   <span className="text-2xl font-bold text-brand-600">{thresholdPct}%</span>
                 </div>
               </div>
 
-              <div className="flex justify-between text-xs text-gray-400 mt-1 px-0.5">
+              <div className="flex justify-between text-xs text-night-400 mt-1 px-0.5">
                 <span>50%</span>
                 <span>75%</span>
                 <span>100%</span>

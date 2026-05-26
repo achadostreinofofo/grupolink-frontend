@@ -10,7 +10,6 @@ interface Props {
   open: boolean
   structureId: string
   onClose: () => void
-  /** groupIds vazio = enviar para todos */
   onConfirm: (groupIds: string[]) => void
 }
 
@@ -46,28 +45,23 @@ export function SelectGroupsModal({ open, structureId, onClose, onConfirm }: Pro
     )
 
   const handleConfirm = () => {
-    if (sendToAll) {
-      onConfirm([])   // vazio = todos
-    } else {
-      onConfirm(Array.from(selected))
-    }
+    onConfirm(sendToAll ? [] : Array.from(selected))
   }
 
   const canConfirm = sendToAll || selected.size > 0
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      {/* backdrop */}
-      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/60" onClick={onClose} />
 
-      <div className="relative bg-white rounded-2xl shadow-xl w-full max-w-md">
+      <div className="relative bg-night-800 border border-night-600 rounded-2xl shadow-xl w-full max-w-md">
         {/* header */}
-        <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-gray-100">
+        <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-night-600">
           <div>
-            <h2 className="text-base font-semibold text-gray-900">Para quais grupos enviar?</h2>
-            <p className="text-xs text-gray-400 mt-0.5">Escolha os grupos de destino desta estrutura</p>
+            <h2 className="text-base font-semibold text-night-50">Para quais grupos enviar?</h2>
+            <p className="text-xs text-night-400 mt-0.5">Escolha os grupos de destino desta estrutura</p>
           </div>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+          <button onClick={onClose} className="text-night-400 hover:text-night-100">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -79,8 +73,8 @@ export function SelectGroupsModal({ open, structureId, onClose, onConfirm }: Pro
               onClick={() => setSendToAll(true)}
               className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl border-2 text-sm font-medium transition-all ${
                 sendToAll
-                  ? 'border-brand-500 bg-brand-50 text-brand-700'
-                  : 'border-gray-100 text-gray-500 hover:border-gray-200'
+                  ? 'border-brand-500 bg-brand-900/20 text-brand-300'
+                  : 'border-night-600 text-night-300 hover:border-night-500'
               }`}
             >
               <Users className="w-4 h-4" />
@@ -90,8 +84,8 @@ export function SelectGroupsModal({ open, structureId, onClose, onConfirm }: Pro
               onClick={() => setSendToAll(false)}
               className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl border-2 text-sm font-medium transition-all ${
                 !sendToAll
-                  ? 'border-brand-500 bg-brand-50 text-brand-700'
-                  : 'border-gray-100 text-gray-500 hover:border-gray-200'
+                  ? 'border-brand-500 bg-brand-900/20 text-brand-300'
+                  : 'border-night-600 text-night-300 hover:border-night-500'
               }`}
             >
               Selecionar grupos
@@ -99,27 +93,24 @@ export function SelectGroupsModal({ open, structureId, onClose, onConfirm }: Pro
           </div>
         </div>
 
-        {/* group list (shown only when "selecionar" is active) */}
+        {/* group list */}
         {!sendToAll && (
           <div className="px-6 pb-2 max-h-64 overflow-y-auto">
             {loading ? (
               <div className="flex items-center justify-center py-6">
-                <Loader2 className="w-5 h-5 animate-spin text-gray-400" />
+                <Loader2 className="w-5 h-5 animate-spin text-night-400" />
               </div>
             ) : groups.length === 0 ? (
-              <p className="text-sm text-gray-400 text-center py-4">
+              <p className="text-sm text-night-400 text-center py-4">
                 Nenhum grupo ativo encontrado
               </p>
             ) : (
               <>
-                <div className="flex items-center justify-between py-2 border-b border-gray-50 mb-1">
-                  <span className="text-xs text-gray-400">
+                <div className="flex items-center justify-between py-2 border-b border-night-600 mb-1">
+                  <span className="text-xs text-night-400">
                     {selected.size} de {groups.length} selecionado{selected.size !== 1 ? 's' : ''}
                   </span>
-                  <button
-                    className="text-xs text-brand-600 hover:underline"
-                    onClick={toggleAll}
-                  >
+                  <button className="text-xs text-brand-500 hover:underline" onClick={toggleAll}>
                     {selected.size === groups.length ? 'Desmarcar todos' : 'Selecionar todos'}
                   </button>
                 </div>
@@ -128,7 +119,7 @@ export function SelectGroupsModal({ open, structureId, onClose, onConfirm }: Pro
                   {groups.map(g => (
                     <label
                       key={g.id}
-                      className="flex items-center gap-3 py-2.5 px-3 rounded-xl hover:bg-gray-50 cursor-pointer transition-colors"
+                      className="flex items-center gap-3 py-2.5 px-3 rounded-xl hover:bg-night-700 cursor-pointer transition-colors"
                     >
                       <input
                         type="checkbox"
@@ -137,14 +128,16 @@ export function SelectGroupsModal({ open, structureId, onClose, onConfirm }: Pro
                         className="accent-brand-500 w-4 h-4 flex-shrink-0"
                       />
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-gray-900 truncate">{g.name}</p>
-                        <p className="text-xs text-gray-400">
+                        <p className="text-sm font-medium text-night-50 truncate">{g.name}</p>
+                        <p className="text-xs text-night-400">
                           {g.memberCount}/{g.maxMembers} membros
                           · {Math.round(g.capacityPercentage * 100)}%
                         </p>
                       </div>
                       <span className={`text-xs px-2 py-0.5 rounded-full flex-shrink-0 ${
-                        g.status === 'ACTIVE' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-600'
+                        g.status === 'ACTIVE'
+                          ? 'bg-green-900/30 text-green-400'
+                          : 'bg-red-900/30 text-red-400'
                       }`}>
                         {g.status === 'ACTIVE' ? 'Ativo' : 'Cheio'}
                       </span>
@@ -157,7 +150,7 @@ export function SelectGroupsModal({ open, structureId, onClose, onConfirm }: Pro
         )}
 
         {/* footer */}
-        <div className="flex gap-3 px-6 py-4 border-t border-gray-100 mt-2">
+        <div className="flex gap-3 px-6 py-4 border-t border-night-600 mt-2">
           <Button variant="secondary" className="flex-1" onClick={onClose}>
             Cancelar
           </Button>

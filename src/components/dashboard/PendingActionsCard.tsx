@@ -45,11 +45,11 @@ function PendingGroupRow({ action, onActivated }: {
         <AlertCircle className="w-4 h-4 text-yellow-500 flex-shrink-0 mt-0.5" />
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <p className="font-medium text-gray-900 text-sm">{action.groupName}</p>
+            <p className="font-medium text-night-50 text-sm">{action.groupName}</p>
             <Badge variant="yellow">Aguardando link</Badge>
-            <span className="text-xs text-gray-400">{action.structureName} · #{action.sortOrder + 1}</span>
+            <span className="text-xs text-night-400">{action.structureName} · #{action.sortOrder + 1}</span>
           </div>
-          <p className="text-xs text-gray-500 mt-0.5">
+          <p className="text-xs text-night-300 mt-0.5">
             Criado automaticamente quando a estrutura atingiu o threshold. Adicione o link de convite para ativá-lo.
           </p>
 
@@ -92,7 +92,7 @@ export function PendingActionsCard({ actions, onActionCompleted }: {
       <CardHeader className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <AlertCircle className="w-4 h-4 text-yellow-500" />
-          <p className="text-sm font-semibold text-gray-800">
+          <p className="text-sm font-semibold text-night-100">
             Ações Pendentes
             <span className="ml-2 bg-yellow-100 text-yellow-700 text-xs font-bold px-2 py-0.5 rounded-full">
               {actions.length}

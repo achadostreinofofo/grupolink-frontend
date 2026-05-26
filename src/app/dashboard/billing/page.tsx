@@ -15,8 +15,8 @@ const plans = [
     name:  'Smart',
     price: 128,
     icon:  Zap,
-    color: 'text-blue-600',
-    bg:    'bg-blue-50',
+    color: 'text-blue-400',
+    bg:    'bg-blue-900/20',
     features: [
       '1 conta WhatsApp',
       '80 agendamentos/mês',
@@ -29,8 +29,8 @@ const plans = [
     name:     'Diamond',
     price:    290,
     icon:     Star,
-    color:    'text-purple-600',
-    bg:       'bg-purple-50',
+    color:    'text-purple-400',
+    bg:       'bg-purple-900/20',
     highlight: true,
     features: [
       '2 contas WhatsApp',
@@ -45,8 +45,8 @@ const plans = [
     name:  'Black',
     price: 453,
     icon:  Crown,
-    color: 'text-gray-900',
-    bg:    'bg-gray-100',
+    color: 'text-night-200',
+    bg:    'bg-night-600',
     features: [
       'Contas ilimitadas',
       'Links ilimitados',
@@ -59,11 +59,11 @@ const plans = [
 
 function statusBadge(status: string) {
   const map: Record<string, { label: string; variant: 'green' | 'yellow' | 'gray' | 'red' }> = {
-    ACTIVE:    { label: 'Ativo',    variant: 'green' },
-    PENDING:   { label: 'Pendente', variant: 'yellow' },
-    PAUSED:    { label: 'Pausado',  variant: 'yellow' },
-    CANCELLED: { label: 'Cancelado',variant: 'red' },
-    NONE:      { label: 'Gratuito', variant: 'gray' },
+    ACTIVE:    { label: 'Ativo',     variant: 'green' },
+    PENDING:   { label: 'Pendente',  variant: 'yellow' },
+    PAUSED:    { label: 'Pausado',   variant: 'yellow' },
+    CANCELLED: { label: 'Cancelado', variant: 'red' },
+    NONE:      { label: 'Gratuito',  variant: 'gray' },
   }
   const { label, variant } = map[status] ?? { label: status, variant: 'gray' }
   return <Badge variant={variant}>{label}</Badge>
@@ -71,8 +71,8 @@ function statusBadge(status: string) {
 
 export default function BillingPage() {
   const [subscription, setSubscription] = useState<SubscriptionStatus | null>(null)
-  const [loading, setLoading]   = useState(true)
-  const [loadingPlan, setLoadingPlan] = useState<string | null>(null)
+  const [loading, setLoading]           = useState(true)
+  const [loadingPlan, setLoadingPlan]   = useState<string | null>(null)
 
   useEffect(() => {
     api.subscriptions.current()
@@ -85,7 +85,6 @@ export default function BillingPage() {
     setLoadingPlan(planKey)
     try {
       const res = await api.subscriptions.checkout(planKey)
-      // Redireciona para o checkout do Mercado Pago
       window.location.href = res.checkoutUrl
     } catch (e) {
       alert(e instanceof Error ? e.message : 'Erro ao iniciar checkout')
@@ -109,46 +108,46 @@ export default function BillingPage() {
   return (
     <div className="max-w-4xl">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">Plano e Assinatura</h1>
-        <p className="text-sm text-gray-500 mt-1">Gerencie seu plano e pagamentos</p>
+        <h1 className="text-2xl font-bold text-night-50">Plano e Assinatura</h1>
+        <p className="text-sm text-night-300 mt-1">Gerencie seu plano e pagamentos</p>
       </div>
 
-      {/* Trial banner — shown only for FREE users */}
+      {/* Trial banner */}
       {!loading && subscription?.plan === 'FREE' && (
         (() => {
-          const days = subscription.trialDaysLeft ?? 0
+          const days    = subscription.trialDaysLeft ?? 0
           const expired = days === 0
           return (
             <div className={`mb-6 rounded-2xl border-2 px-5 py-4 flex flex-col sm:flex-row sm:items-center gap-4 ${
               expired
-                ? 'border-red-200 bg-red-50'
+                ? 'border-red-800/50 bg-red-900/20'
                 : days <= 2
-                  ? 'border-amber-300 bg-amber-50'
-                  : 'border-brand-200 bg-brand-50'
+                  ? 'border-amber-700/50 bg-amber-900/20'
+                  : 'border-brand-700/30 bg-brand-900/10'
             }`}>
               <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
-                expired ? 'bg-red-100' : days <= 2 ? 'bg-amber-100' : 'bg-brand-100'
+                expired ? 'bg-red-900/40' : days <= 2 ? 'bg-amber-900/40' : 'bg-brand-900/30'
               }`}>
                 {expired
-                  ? <AlertTriangle className="w-5 h-5 text-red-500" />
-                  : <Clock className={`w-5 h-5 ${days <= 2 ? 'text-amber-500' : 'text-brand-600'}`} />
+                  ? <AlertTriangle className="w-5 h-5 text-red-400" />
+                  : <Clock className={`w-5 h-5 ${days <= 2 ? 'text-amber-400' : 'text-brand-500'}`} />
                 }
               </div>
 
               <div className="flex-1">
                 {expired ? (
                   <>
-                    <p className="font-semibold text-red-700 text-sm">Período de teste encerrado</p>
-                    <p className="text-xs text-red-600 mt-0.5">
+                    <p className="font-semibold text-red-300 text-sm">Período de teste encerrado</p>
+                    <p className="text-xs text-red-400 mt-0.5">
                       Seu acesso gratuito expirou. Assine um plano para continuar usando todas as funcionalidades.
                     </p>
                   </>
                 ) : (
                   <>
-                    <p className={`font-semibold text-sm ${days <= 2 ? 'text-amber-700' : 'text-brand-800'}`}>
+                    <p className={`font-semibold text-sm ${days <= 2 ? 'text-amber-300' : 'text-brand-400'}`}>
                       {days === 1 ? 'Último dia de teste gratuito!' : `${days} dias restantes no teste gratuito`}
                     </p>
-                    <p className={`text-xs mt-0.5 ${days <= 2 ? 'text-amber-600' : 'text-brand-700'}`}>
+                    <p className={`text-xs mt-0.5 ${days <= 2 ? 'text-amber-400' : 'text-brand-500'}`}>
                       Teste encerra em{' '}
                       {subscription.trialEndDate
                         ? new Date(subscription.trialEndDate).toLocaleDateString('pt-BR', {
@@ -160,22 +159,21 @@ export default function BillingPage() {
                   </>
                 )}
 
-                {/* Progress bar */}
                 {!expired && (
                   <div className="mt-2 w-full max-w-xs">
-                    <div className="w-full bg-white/60 rounded-full h-1.5">
+                    <div className="w-full bg-night-600 rounded-full h-1.5">
                       <div
                         className={`h-1.5 rounded-full transition-all ${days <= 2 ? 'bg-amber-400' : 'bg-brand-500'}`}
                         style={{ width: `${(days / 7) * 100}%` }}
                       />
                     </div>
-                    <p className="text-xs text-gray-400 mt-0.5">{7 - days} de 7 dias utilizados</p>
+                    <p className="text-xs text-night-400 mt-0.5">{7 - days} de 7 dias utilizados</p>
                   </div>
                 )}
               </div>
 
-              <p className="text-xs text-gray-500 sm:text-right flex-shrink-0">
-                Plano atual: <span className="font-semibold text-gray-700">Free Trial</span>
+              <p className="text-xs text-night-400 sm:text-right flex-shrink-0">
+                Plano atual: <span className="font-semibold text-night-200">Free Trial</span>
               </p>
             </div>
           )
@@ -187,13 +185,13 @@ export default function BillingPage() {
         <Card className="mb-8">
           <CardContent className="flex flex-col sm:flex-row sm:items-center gap-4">
             <div className="flex-1">
-              <p className="text-sm text-gray-500">Plano atual</p>
+              <p className="text-sm text-night-300">Plano atual</p>
               <div className="flex items-center gap-2 mt-1">
-                <p className="text-xl font-bold text-gray-900">{currentPlan}</p>
+                <p className="text-xl font-bold text-night-50">{currentPlan}</p>
                 {statusBadge(subscription.status)}
               </div>
               {subscription.periodEndDate && (
-                <p className="text-xs text-gray-400 mt-1">
+                <p className="text-xs text-night-400 mt-1">
                   Próxima cobrança: {new Date(subscription.periodEndDate).toLocaleDateString('pt-BR')}
                 </p>
               )}
@@ -210,7 +208,7 @@ export default function BillingPage() {
       {/* Cards de planos */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {plans.map(plan => {
-          const Icon = plan.icon
+          const Icon      = plan.icon
           const isCurrent = currentPlan === plan.key
           const isLoading = loadingPlan === plan.key
 
@@ -218,8 +216,10 @@ export default function BillingPage() {
             <div
               key={plan.key}
               className={cn(
-                'relative rounded-2xl border p-6 flex flex-col',
-                plan.highlight ? 'border-purple-300 shadow-lg shadow-purple-100' : 'border-gray-200',
+                'relative rounded-2xl border p-6 flex flex-col bg-night-700',
+                plan.highlight
+                  ? 'border-purple-700/50 shadow-lg shadow-purple-900/20'
+                  : 'border-night-600',
                 isCurrent && 'ring-2 ring-brand-500'
               )}
             >
@@ -233,7 +233,7 @@ export default function BillingPage() {
 
               {isCurrent && (
                 <div className="absolute -top-3 right-4">
-                  <span className="bg-brand-600 text-white text-xs font-bold px-3 py-1 rounded-full">
+                  <span className="bg-brand-600 text-night-900 text-xs font-bold px-3 py-1 rounded-full">
                     SEU PLANO
                   </span>
                 </div>
@@ -243,15 +243,15 @@ export default function BillingPage() {
                 <Icon className={cn('w-5 h-5', plan.color)} />
               </div>
 
-              <h3 className="text-lg font-bold text-gray-900">{plan.name}</h3>
+              <h3 className="text-lg font-bold text-night-50">{plan.name}</h3>
               <div className="mt-2 mb-4">
-                <span className="text-3xl font-extrabold text-gray-900">R$ {plan.price}</span>
-                <span className="text-sm text-gray-400">/mês</span>
+                <span className="text-3xl font-extrabold text-night-50">R$ {plan.price}</span>
+                <span className="text-sm text-night-400">/mês</span>
               </div>
 
               <ul className="space-y-2 mb-6 flex-1">
                 {plan.features.map(f => (
-                  <li key={f} className="flex items-start gap-2 text-sm text-gray-600">
+                  <li key={f} className="flex items-start gap-2 text-sm text-night-200">
                     <Check className="w-4 h-4 text-brand-500 mt-0.5 flex-shrink-0" />
                     {f}
                   </li>
@@ -272,7 +272,7 @@ export default function BillingPage() {
         })}
       </div>
 
-      <p className="mt-6 text-xs text-center text-gray-400">
+      <p className="mt-6 text-xs text-center text-night-400">
         Pagamentos processados pelo Mercado Pago. Cancele a qualquer momento.
       </p>
     </div>

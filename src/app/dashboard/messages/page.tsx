@@ -136,8 +136,8 @@ export default function MessagesPage() {
     <div className="max-w-3xl">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Mensagens Agendadas</h1>
-          <p className="text-sm text-gray-500 mt-1">Programe envios em massa para seus grupos WhatsApp</p>
+          <h1 className="text-2xl font-bold text-night-50">Mensagens Agendadas</h1>
+          <p className="text-sm text-night-300 mt-1">Programe envios em massa para seus grupos WhatsApp</p>
         </div>
         <Button size="sm" onClick={() => setShowForm(!showForm)}>
           <Plus className="w-4 h-4" />
@@ -149,15 +149,15 @@ export default function MessagesPage() {
       {showForm && (
         <Card className="mb-6 border-brand-200">
           <CardHeader>
-            <p className="text-sm font-semibold text-gray-700">Agendar Nova Mensagem</p>
+            <p className="text-sm font-semibold text-night-200">Agendar Nova Mensagem</p>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit(onCreate)} className="space-y-4">
               {templates.length > 0 && (
                 <div>
-                  <label className="text-sm font-medium text-gray-700 block mb-1">Usar template (opcional)</label>
+                  <label className="text-sm font-medium text-night-200 block mb-1">Usar template (opcional)</label>
                   <select
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                    className="w-full rounded-lg border border-night-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                     onChange={e => applyTemplate(e.target.value)}
                     defaultValue=""
                   >
@@ -175,9 +175,9 @@ export default function MessagesPage() {
               />
 
               <div>
-                <label className="text-sm font-medium text-gray-700 block mb-1">Mensagem</label>
+                <label className="text-sm font-medium text-night-200 block mb-1">Mensagem</label>
                 <textarea
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 min-h-[100px] resize-y"
+                  className="w-full rounded-lg border border-night-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 min-h-[100px] resize-y"
                   placeholder="Texto da mensagem (emojis são suportados ✅)"
                   {...register('content')}
                 />
@@ -194,9 +194,9 @@ export default function MessagesPage() {
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700 block mb-1">Estrutura de destino</label>
+                  <label className="text-sm font-medium text-night-200 block mb-1">Estrutura de destino</label>
                   <select
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                    className="w-full rounded-lg border border-night-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                     {...register('structureId')}
                   >
                     <option value="">Todas as estruturas</option>
@@ -236,13 +236,13 @@ export default function MessagesPage() {
       {/* Mensagens pendentes */}
       {loading ? (
         <div className="space-y-3 mb-6">
-          {[1, 2].map(i => <div key={i} className="h-20 bg-gray-100 rounded-xl animate-pulse" />)}
+          {[1, 2].map(i => <div key={i} className="h-20 bg-night-700 rounded-xl animate-pulse" />)}
         </div>
       ) : (
         <>
           {pending.length > 0 && (
             <div className="mb-6">
-              <h2 className="text-sm font-semibold text-gray-600 mb-3">
+              <h2 className="text-sm font-semibold text-night-200 mb-3">
                 Agendadas ({pending.length})
               </h2>
               <div className="space-y-3">
@@ -254,11 +254,11 @@ export default function MessagesPage() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
-                          <p className="font-medium text-gray-900 text-sm">{msg.title}</p>
+                          <p className="font-medium text-night-50 text-sm">{msg.title}</p>
                           <Badge variant="yellow">Agendado</Badge>
                         </div>
-                        <p className="text-xs text-gray-500 mt-0.5 truncate">{msg.content}</p>
-                        <div className="flex items-center gap-3 mt-1 text-xs text-gray-400">
+                        <p className="text-xs text-night-300 mt-0.5 truncate">{msg.content}</p>
+                        <div className="flex items-center gap-3 mt-1 text-xs text-night-400">
                           <span>Envio: {formatDateTime(msg.scheduledAt!)}</span>
                           {msg.structureName && <span>· {msg.structureName}</span>}
                         </div>
@@ -281,7 +281,7 @@ export default function MessagesPage() {
           {/* Histórico */}
           {history.length > 0 && (
             <div>
-              <h2 className="text-sm font-semibold text-gray-600 mb-3">Histórico</h2>
+              <h2 className="text-sm font-semibold text-night-200 mb-3">Histórico</h2>
               <div className="space-y-2">
                 {history.map(msg => {
                   const { label, variant } = statusInfo(msg.status)
@@ -290,13 +290,13 @@ export default function MessagesPage() {
                       <CardContent className="flex items-center gap-4 py-3">
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2">
-                            <p className="font-medium text-gray-800 text-sm">{msg.title}</p>
+                            <p className="font-medium text-night-100 text-sm">{msg.title}</p>
                             <Badge variant={variant}>{label}</Badge>
                           </div>
                           {msg.errorMessage && (
                             <p className="text-xs text-red-500 mt-0.5">{msg.errorMessage}</p>
                           )}
-                          <p className="text-xs text-gray-400 mt-0.5">
+                          <p className="text-xs text-night-400 mt-0.5">
                             {msg.executedAt ? `Executado: ${formatDateTime(msg.executedAt)}` : msg.scheduledAt ? formatDateTime(msg.scheduledAt) : '—'}
                             {msg.structureName && ` · ${msg.structureName}`}
                           </p>
@@ -322,8 +322,8 @@ export default function MessagesPage() {
             <Card>
               <CardContent className="py-14 text-center">
                 <MessageSquare className="w-10 h-10 text-gray-200 mx-auto mb-3" />
-                <p className="text-sm text-gray-500 mb-1">Nenhuma mensagem agendada</p>
-                <p className="text-xs text-gray-400">Crie seu primeiro agendamento acima</p>
+                <p className="text-sm text-night-300 mb-1">Nenhuma mensagem agendada</p>
+                <p className="text-xs text-night-400">Crie seu primeiro agendamento acima</p>
               </CardContent>
             </Card>
           )}
@@ -336,32 +336,32 @@ export default function MessagesPage() {
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4"
           onClick={e => { if (e.target === e.currentTarget) closeModal() }}
         >
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6">
+          <div className="bg-night-700 rounded-2xl shadow-xl w-full max-w-md p-6">
             <div className="flex items-center justify-between mb-5">
               <div className="flex items-center gap-2">
                 <div className="w-9 h-9 rounded-xl bg-yellow-50 flex items-center justify-center">
                   <Clock className="w-5 h-5 text-yellow-500" />
                 </div>
-                <h2 className="text-base font-semibold text-gray-900">Reagendar envio</h2>
+                <h2 className="text-base font-semibold text-night-50">Reagendar envio</h2>
               </div>
               <button
-                className="text-gray-400 hover:text-gray-600 transition-colors"
+                className="text-night-400 hover:text-night-200 transition-colors"
                 onClick={closeModal}
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <p className="text-sm text-gray-500 mb-1">Mensagem</p>
-            <p className="text-sm font-medium text-gray-800 mb-5 truncate">{reschedulingMsg.title}</p>
+            <p className="text-sm text-night-300 mb-1">Mensagem</p>
+            <p className="text-sm font-medium text-night-100 mb-5 truncate">{reschedulingMsg.title}</p>
 
-            <label className="text-sm font-medium text-gray-700 block mb-1.5">Nova data e hora de envio</label>
+            <label className="text-sm font-medium text-night-200 block mb-1.5">Nova data e hora de envio</label>
             <input
               type="datetime-local"
               min={minDateTimeLocal()}
               value={rescheduleDate}
               onChange={e => setRescheduleDate(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 mb-6"
+              className="w-full rounded-lg border border-night-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 mb-6"
             />
 
             <div className="flex gap-2">
