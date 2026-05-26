@@ -57,7 +57,7 @@ const fieldClass =
   'w-full rounded-lg border border-night-600 bg-night-700 px-3 py-2.5 text-sm text-night-50 placeholder-night-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition'
 
 const iframeContainerClass =
-  'w-full rounded-lg border border-night-600 bg-night-700 px-3 transition focus-within:ring-2 focus-within:ring-brand-500 focus-within:border-transparent'
+  'w-full rounded-lg border border-night-600 bg-night-700 overflow-hidden transition focus-within:ring-2 focus-within:ring-brand-500 focus-within:border-transparent'
 
 export default function CheckoutPage() {
   const params   = useParams()
@@ -143,7 +143,7 @@ export default function CheckoutPage() {
       />
 
       <div className="min-h-screen bg-night-900 flex items-center justify-center p-4">
-        <div className="w-full max-w-md">
+        <div className="w-full max-w-sm">
 
           <Link
             href="/dashboard/billing"
@@ -167,7 +167,7 @@ export default function CheckoutPage() {
               <Lock className="w-4 h-4 text-night-500 flex-shrink-0" />
             </div>
 
-            <form onSubmit={handleSubmit} className="px-6 py-6 space-y-5">
+            <form onSubmit={handleSubmit} className="px-6 py-5 space-y-4">
 
               {/* E-mail */}
               <div>
@@ -189,22 +189,22 @@ export default function CheckoutPage() {
                 <label className="block text-sm font-medium text-night-200 mb-1.5">
                   Número do cartão
                 </label>
-                <div id="mp-cardNumber" className={iframeContainerClass} style={{ minHeight: '42px' }} />
+                <div id="mp-cardNumber" className={iframeContainerClass} style={{ height: '42px' }} />
               </div>
 
               {/* Validade + CVV */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm font-medium text-night-200 mb-1.5">
                     Validade
                   </label>
-                  <div id="mp-expirationDate" className={iframeContainerClass} style={{ minHeight: '42px' }} />
+                  <div id="mp-expirationDate" className={iframeContainerClass} style={{ height: '42px' }} />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-night-200 mb-1.5">
                     CVV
                   </label>
-                  <div id="mp-securityCode" className={iframeContainerClass} style={{ minHeight: '42px' }} />
+                  <div id="mp-securityCode" className={iframeContainerClass} style={{ height: '42px' }} />
                 </div>
               </div>
 

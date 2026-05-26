@@ -15,6 +15,14 @@
   }
 }
 
+/* Mercado Pago SDK iframe fields */
+[id^="mp-"] iframe {
+  display: block;
+  width: 100% !important;
+  height: 42px !important;
+  border: none;
+}
+
 @layer utilities {
   .text-neon {
     color: #00FFC8;
