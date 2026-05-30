@@ -6,27 +6,33 @@ import { api } from '@/lib/api'
 import type { WebSessionStatus } from '@/types'
 import { Card, CardContent, CardHeader } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
-import { AlertTriangle, ArrowLeft, CheckCircle, RefreshCw, Smartphone, Wifi, WifiOff } from 'lucide-react'
+import { AlertTriangle, ArrowLeft, CheckCircle, Clock, QrCode, RefreshCw, Smartphone, Wifi, WifiOff } from 'lucide-react'
 import Link from 'next/link'
 
 const POLL_INTERVAL = 2000   // 2 s
-const QR_TTL       = 60      // seconds before QR expires
+const QR_TTL        = 60     // seconds before QR expires
+const MAX_REFRESH   = 3      // maximum automatic QR refreshes before giving up
 
 function ConnectWhatsappWebContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const forceNewSession = searchParams.get('new') === 'true'
 
-  const [sessionId, setSessionId]     = useState<string | null>(null)
-  const [status, setStatus]           = useState<WebSessionStatus['status'] | null>(null)
-  const [qrBase64, setQrBase64]       = useState<string | null>(null)
-  const [phone, setPhone]             = useState<string | null>(null)
-  const [timeLeft, setTimeLeft]       = useState(QR_TTL)
-  const [loading, setLoading]         = useState(true)
-  const [error, setError]             = useState('')
+  const [sessionId, setSessionId]               = useState<string | null>(null)
+  const [status, setStatus]                     = useState<WebSessionStatus['status'] | null>(null)
+  const [qrBase64, setQrBase64]                 = useState<string | null>(null)
+  const [phone, setPhone]                       = useState<string | null>(null)
+  const [timeLeft, setTimeLeft]                 = useState(QR_TTL)
+  const [loading, setLoading]                   = useState(false)
+  const [error, setError]                       = useState('')
+  const [sessionRequested, setSessionRequested] = useState(false)
+  const [refreshCount, setRefreshCount]         = useState(0)
+  const [limitReached, setLimitReached]         = useState(false)
 
-  const pollRef  = useRef<NodeJS.Timeout | null>(null)
-  const timerRef = useRef<NodeJS.Timeout | null>(null)
+  const pollRef         = useRef<NodeJS.Timeout | null>(null)
+  const timerRef        = useRef<NodeJS.Timeout | null>(null)
+  // Ref mirrors refreshCount to avoid stale closure inside the timer interval
+  const refreshCountRef = useRef(0)
 
   const stopPolling = () => {
     if (pollRef.current)  clearInterval(pollRef.current)
@@ -58,20 +64,51 @@ function ConnectWhatsappWebContent() {
 
     timerRef.current = setInterval(() => {
       setTimeLeft(t => {
-        if (t <= 1) {
-          setQrBase64(null) // QR expired visually
+        if (t > 1) return t - 1
+
+        // QR expired — decide whether to refresh or give up
+        if (refreshCountRef.current < MAX_REFRESH) {
+          refreshCountRef.current += 1
+          setRefreshCount(refreshCountRef.current)
+          setQrBase64(null) // hide expired QR; polling will deliver the new one
           return QR_TTL
         }
-        return t - 1
+
+        // Limit reached — stop polling and show friendly message
+        stopPolling()
+        setQrBase64(null)
+        setLimitReached(true)
+        return 0
       })
     }, 1000)
   }, [])
+
+  // On mount: check silently for an already-authenticated session.
+  // Never auto-generate a QR — the user must click to start.
+  useEffect(() => {
+    if (forceNewSession) return
+    api.whatsappWeb.listSessions()
+      .then(sessions => {
+        const auth = sessions.find(s => s.status === 'AUTHENTICATED')
+        if (auth) {
+          setSessionId(auth.sessionId)
+          setStatus('AUTHENTICATED')
+          setPhone(auth.phone ?? null)
+          setSessionRequested(true)
+        }
+      })
+      .catch(() => { /* ignore — user will click to generate */ })
+    return stopPolling
+  }, [forceNewSession])
 
   const initSession = useCallback(async (force = false) => {
     setLoading(true)
     setError('')
     setQrBase64(null)
     setStatus(null)
+    setLimitReached(false)
+    refreshCountRef.current = 0
+    setRefreshCount(0)
     try {
       const res = await api.whatsappWeb.startSession(force)
       setSessionId(res.sessionId)
@@ -87,10 +124,10 @@ function ConnectWhatsappWebContent() {
     }
   }, [startPolling])
 
-  useEffect(() => {
+  const handleRequestQr = () => {
+    setSessionRequested(true)
     initSession(forceNewSession)
-    return stopPolling
-  }, [initSession, forceNewSession])
+  }
 
   const handleDisconnect = async () => {
     if (!sessionId) return
@@ -102,8 +139,19 @@ function ConnectWhatsappWebContent() {
   const handleRefreshQr = async () => {
     if (!sessionId) return
     stopPolling()
+    refreshCountRef.current = 0
+    setRefreshCount(0)
+    setLimitReached(false)
     await api.whatsappWeb.disconnect(sessionId).catch(console.error)
-    // Sempre força criação após refresh manual — a sessão acabou de ser apagada
+    await initSession(true)
+  }
+
+  const handleRestartAfterLimit = async () => {
+    if (sessionId) {
+      stopPolling()
+      await api.whatsappWeb.disconnect(sessionId).catch(console.error)
+    }
+    setSessionRequested(true)
     await initSession(true)
   }
 
@@ -156,12 +204,34 @@ function ConnectWhatsappWebContent() {
         <CardHeader>
           <div className="flex items-center justify-between">
             <p className="text-sm font-medium text-night-200">QR Code</p>
-            {status === 'WAITING_SCAN' && qrBase64 && (
+            {status === 'WAITING_SCAN' && qrBase64 && !limitReached && (
               <span className="text-xs text-night-400">Expira em {timeLeft}s</span>
             )}
           </div>
         </CardHeader>
         <CardContent>
+
+          {/* Idle — waiting for user to request QR */}
+          {!sessionRequested && !loading && (
+            <div className="flex flex-col items-center py-10 gap-4">
+              <div className="w-16 h-16 rounded-2xl bg-night-600 flex items-center justify-center">
+                <QrCode className="w-8 h-8 text-night-300" />
+              </div>
+              <div className="text-center">
+                <p className="font-semibold text-night-100">Pronto para conectar</p>
+                <p className="text-sm text-night-400 mt-1">Clique no botão abaixo para gerar o QR Code</p>
+              </div>
+              <Button onClick={handleRequestQr}>
+                <QrCode className="w-4 h-4 mr-2" />
+                Gerar QR Code
+              </Button>
+              {error && (
+                <p className="text-xs text-red-400 text-center">{error}</p>
+              )}
+            </div>
+          )}
+
+          {/* Loading */}
           {loading && (
             <div className="flex flex-col items-center py-10 gap-3">
               <div className="w-10 h-10 border-2 border-brand-500 border-t-transparent rounded-full animate-spin" />
@@ -169,6 +239,7 @@ function ConnectWhatsappWebContent() {
             </div>
           )}
 
+          {/* Authenticated */}
           {!loading && status === 'AUTHENTICATED' && (
             <div className="flex flex-col items-center py-10 gap-4">
               <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center">
@@ -195,7 +266,8 @@ function ConnectWhatsappWebContent() {
             </div>
           )}
 
-          {!loading && status === 'WAITING_SCAN' && qrBase64 && (
+          {/* QR code visible */}
+          {!loading && status === 'WAITING_SCAN' && qrBase64 && !limitReached && (
             <div className="flex flex-col items-center py-4 gap-4">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
@@ -203,6 +275,11 @@ function ConnectWhatsappWebContent() {
                 alt="WhatsApp QR Code"
                 className="w-64 h-64 rounded-xl border border-night-600 shadow-sm"
               />
+              {refreshCount > 0 && (
+                <p className="text-xs text-night-500">
+                  Atualização {refreshCount} de {MAX_REFRESH}
+                </p>
+              )}
               <p className="text-xs text-night-400 flex items-center gap-1">
                 <Wifi className="w-3 h-3" />
                 Aguardando leitura do QR code...
@@ -214,14 +291,36 @@ function ConnectWhatsappWebContent() {
             </div>
           )}
 
-          {!loading && status === 'WAITING_SCAN' && !qrBase64 && (
+          {/* Waiting for new QR after expiry */}
+          {!loading && status === 'WAITING_SCAN' && !qrBase64 && !limitReached && sessionRequested && (
             <div className="flex flex-col items-center py-10 gap-3">
               <div className="w-10 h-10 border-2 border-night-600 border-t-brand-500 rounded-full animate-spin" />
               <p className="text-sm text-night-300">Aguardando QR code...</p>
             </div>
           )}
 
-          {!loading && status === 'DISCONNECTED' && (
+          {/* Limit reached — friendly message */}
+          {!loading && limitReached && (
+            <div className="flex flex-col items-center py-10 gap-4 text-center">
+              <div className="w-16 h-16 rounded-2xl bg-night-600 flex items-center justify-center">
+                <Clock className="w-8 h-8 text-night-400" />
+              </div>
+              <div>
+                <p className="font-semibold text-night-100">Nenhuma tentativa identificada</p>
+                <p className="text-sm text-night-400 mt-1 max-w-xs">
+                  O QR Code foi renovado {MAX_REFRESH} vezes sem que nenhum dispositivo tentasse se conectar.
+                  Quando estiver pronto, clique abaixo para tentar novamente.
+                </p>
+              </div>
+              <Button onClick={handleRestartAfterLimit}>
+                <RefreshCw className="w-4 h-4 mr-2" />
+                Tentar novamente
+              </Button>
+            </div>
+          )}
+
+          {/* Disconnected */}
+          {!loading && status === 'DISCONNECTED' && !limitReached && (
             <div className="flex flex-col items-center py-10 gap-4">
               <WifiOff className="w-10 h-10 text-night-400" />
               <p className="text-sm text-night-300">Sessão desconectada</p>
@@ -232,11 +331,12 @@ function ConnectWhatsappWebContent() {
             </div>
           )}
 
-          {error && (
+          {/* Error — only shown inside the card when session was already requested */}
+          {sessionRequested && !loading && error && (
             <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-4 py-3 mt-4">
               <p className="font-medium mb-1">Não foi possível gerar o QR Code</p>
               <p className="text-red-600">{error}</p>
-              <Button variant="ghost" size="sm" className="mt-3" onClick={() => initSession(forceNewSession)}>
+              <Button variant="ghost" size="sm" className="mt-3" onClick={() => initSession(true)}>
                 <RefreshCw className="w-4 h-4 mr-1" />
                 Tentar novamente
               </Button>
