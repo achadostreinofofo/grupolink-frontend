@@ -8,7 +8,7 @@ import { Card, CardContent } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
 import { cn } from '@/lib/utils'
-import { AlertTriangle, Check, Clock, Crown, Star, Zap } from 'lucide-react'
+import { AlertTriangle, Check, Clock, Crown, Infinity, Star, Zap } from 'lucide-react'
 
 const plans = [
   {
@@ -98,6 +98,55 @@ export default function BillingPage() {
 
   const currentPlan = subscription?.plan ?? 'FREE'
   const isActive    = subscription?.status === 'ACTIVE'
+  const isMaximus   = currentPlan === 'MAXIMUS'
+
+  // Plano Maximus exclusivo — exibe card especial e oculta opções de assinatura
+  if (!loading && isMaximus) {
+    return (
+      <div className="max-w-4xl">
+        <div className="mb-8">
+          <h1 className="text-2xl font-bold text-night-50">Plano e Assinatura</h1>
+          <p className="text-sm text-night-300 mt-1">Gerencie seu plano e pagamentos</p>
+        </div>
+
+        <div className="relative rounded-2xl border-2 border-brand-500/50 bg-night-700 p-8 overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-brand-900/20 via-transparent to-purple-900/10 pointer-events-none" />
+
+          <div className="relative flex flex-col sm:flex-row sm:items-center gap-6">
+            <div className="w-14 h-14 rounded-2xl bg-brand-900/30 border border-brand-500/30 flex items-center justify-center flex-shrink-0">
+              <Infinity className="w-7 h-7 text-brand-400" />
+            </div>
+
+            <div className="flex-1">
+              <div className="flex items-center gap-3 mb-1">
+                <h2 className="text-xl font-bold text-night-50">Plano Maximus</h2>
+                <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-brand-500/20 text-brand-400 border border-brand-500/30">
+                  EXCLUSIVO
+                </span>
+              </div>
+              <p className="text-sm text-night-300">Acesso ilimitado a todas as funcionalidades da plataforma.</p>
+
+              <ul className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {[
+                  'Estruturas ilimitadas',
+                  'Contas WhatsApp ilimitadas',
+                  'Links ilimitados',
+                  'Analytics completo',
+                  'Acesso total à API',
+                  'Suporte prioritário',
+                ].map(f => (
+                  <li key={f} className="flex items-center gap-2 text-sm text-night-200">
+                    <Check className="w-4 h-4 text-brand-500 flex-shrink-0" />
+                    {f}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="max-w-4xl">
