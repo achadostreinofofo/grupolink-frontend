@@ -102,7 +102,7 @@ export function MessageForm({ defaultValues, submitLabel = 'Salvar', onSubmit, s
         <textarea
           rows={5}
           placeholder="Texto da mensagem (emojis são suportados ✅)"
-          className="w-full rounded-xl border border-night-600 px-4 py-3 text-sm text-night-50 focus:outline-none focus:ring-2 focus:ring-brand-400 resize-y"
+          className="w-full rounded-xl border border-night-600 bg-night-700 px-4 py-3 text-sm text-night-50 placeholder:text-night-500 focus:outline-none focus:ring-2 focus:ring-brand-400 resize-y"
           {...register('content')}
         />
         {errors.content && <p className="text-xs text-red-500 mt-1">{errors.content.message}</p>}

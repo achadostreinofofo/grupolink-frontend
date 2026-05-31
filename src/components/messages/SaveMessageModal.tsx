@@ -80,14 +80,14 @@ export function SaveMessageModal({ open, saving, onClose, onConfirm }: Props) {
               onClick={() => { setSelected(opt.id); setScheduleErr('') }}
               className={`w-full flex items-start gap-3 p-4 rounded-xl border-2 text-left transition-all ${opt.color}`}
             >
-              <span className={`mt-0.5 flex-shrink-0 ${selected === opt.id ? 'text-night-50' : 'text-night-400'}`}>
+              <span className={`mt-0.5 flex-shrink-0 ${selected === opt.id ? 'text-night-50' : 'text-night-300'}`}>
                 {opt.icon}
               </span>
               <div>
-                <p className={`text-sm font-semibold ${selected === opt.id ? 'text-night-50' : 'text-night-200'}`}>
+                <p className={`text-sm font-semibold ${selected === opt.id ? 'text-night-50' : 'text-night-100'}`}>
                   {opt.title}
                 </p>
-                <p className="text-xs text-night-400 mt-0.5">{opt.desc}</p>
+                <p className="text-xs text-night-300 mt-0.5">{opt.desc}</p>
               </div>
             </button>
           ))}
