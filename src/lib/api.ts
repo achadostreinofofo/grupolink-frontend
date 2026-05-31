@@ -137,6 +137,11 @@ export const api = {
   },
 
   messages: {
+    generateFromLink: (productUrl: string) =>
+      request<{ content: string }>('/messages/generate-from-link', {
+        method: 'POST',
+        body: JSON.stringify({ productUrl }),
+      }),
     list: () => request<ScheduledMessage[]>('/messages'),
     listByStructure: (structureId: string) =>
       request<ScheduledMessage[]>(`/structures/${structureId}/messages`),
