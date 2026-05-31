@@ -1,12 +1,13 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
-import { Paperclip, RefreshCw, X } from 'lucide-react'
+import { api } from '@/lib/api'
+import { Link, Loader2, Paperclip, RefreshCw, Sparkles, X } from 'lucide-react'
 
 const schema = z.object({
   title:   z.string().min(2, 'Título obrigatório'),
@@ -38,12 +39,50 @@ export function MessageForm({ defaultValues, submitLabel = 'Salvar', onSubmit, s
   const [existingUrl, setExistingUrl] = useState(defaultValues?.mediaUrl ?? '')
   const [fileErr, setFileErr] = useState('')
 
-  const { register, handleSubmit, formState: { errors } } = useForm<z.infer<typeof schema>>({
+  // AI text generation from affiliate link
+  const [affiliateLink, setAffiliateLink] = useState('')
+  const [generating, setGenerating]       = useState(false)
+  const [generateErr, setGenerateErr]     = useState('')
+  const abortRef = useRef<AbortController | null>(null)
+
+  const { register, handleSubmit, setValue, formState: { errors } } = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
     defaultValues: { title: defaultValues?.title ?? '', content: defaultValues?.content ?? '' },
   })
 
   const previewSrc = localUrl ?? existingUrl ?? null
+
+  useEffect(() => {
+    const trimmed = affiliateLink.trim()
+    if (!trimmed) return
+
+    // cancel any in-flight request
+    abortRef.current?.abort()
+    const controller = new AbortController()
+    abortRef.current = controller
+
+    const timer = setTimeout(async () => {
+      setGenerating(true)
+      setGenerateErr('')
+      try {
+        const res = await api.messages.generateFromLink(trimmed)
+        if (!controller.signal.aborted) {
+          setValue('content', res.content)
+        }
+      } catch (e) {
+        if (!controller.signal.aborted) {
+          setGenerateErr(e instanceof Error ? e.message : 'Não foi possível processar o link')
+        }
+      } finally {
+        if (!controller.signal.aborted) setGenerating(false)
+      }
+    }, 600)
+
+    return () => {
+      clearTimeout(timer)
+      controller.abort()
+    }
+  }, [affiliateLink, setValue])
 
   const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const chosen = e.target.files?.[0]
@@ -97,12 +136,48 @@ export function MessageForm({ defaultValues, submitLabel = 'Salvar', onSubmit, s
         {...register('title')}
       />
 
+      {/* AI generation from affiliate link */}
+      <div className="rounded-xl border border-brand-500/20 bg-night-800 p-4 space-y-3">
+        <div className="flex items-center gap-2">
+          <Sparkles className="w-4 h-4 text-brand-400" />
+          <span className="text-sm font-medium text-night-100">Gerar texto com IA</span>
+          <span className="text-xs text-night-400">(opcional)</span>
+        </div>
+        <p className="text-xs text-night-400">
+          Cole um link de produto do Mercado Livre e a IA vai montar um texto persuasivo automaticamente.
+        </p>
+        <div className="relative">
+          <Link className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-night-400 pointer-events-none" />
+          <input
+            type="url"
+            value={affiliateLink}
+            onChange={e => { setAffiliateLink(e.target.value); setGenerateErr('') }}
+            placeholder="https://meli.la/... ou https://produto.mercadolivre.com.br/..."
+            disabled={generating}
+            className="w-full rounded-xl border border-night-600 bg-night-700 pl-9 pr-4 py-2.5 text-sm text-night-50 placeholder:text-night-500 focus:outline-none focus:ring-2 focus:ring-brand-400 disabled:opacity-50"
+          />
+          {generating && (
+            <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-brand-400 animate-spin" />
+          )}
+        </div>
+        {generating && (
+          <p className="text-xs text-brand-400 flex items-center gap-1">
+            <Loader2 className="w-3 h-3 animate-spin" />
+            Buscando produto e gerando texto...
+          </p>
+        )}
+        {generateErr && (
+          <p className="text-xs text-red-400">{generateErr}</p>
+        )}
+      </div>
+
       <div>
         <label className="block text-sm font-medium text-night-200 mb-1">Mensagem</label>
         <textarea
           rows={5}
           placeholder="Texto da mensagem (emojis são suportados ✅)"
-          className="w-full rounded-xl border border-night-600 bg-night-700 px-4 py-3 text-sm text-night-50 placeholder:text-night-500 focus:outline-none focus:ring-2 focus:ring-brand-400 resize-y"
+          disabled={generating}
+          className="w-full rounded-xl border border-night-600 bg-night-700 px-4 py-3 text-sm text-night-50 placeholder:text-night-500 focus:outline-none focus:ring-2 focus:ring-brand-400 resize-y disabled:opacity-50 disabled:cursor-not-allowed"
           {...register('content')}
         />
         {errors.content && <p className="text-xs text-red-500 mt-1">{errors.content.message}</p>}
