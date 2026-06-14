@@ -14,7 +14,7 @@ const nav = [
   // { href: '/dashboard/templates',          label: 'Templates',         icon: FileText },   // MVP: desabilitado
   { href: '/dashboard/links',              label: 'Links',             icon: Link2 },
   { href: '/dashboard/integrations',       label: 'WhatsApp',          icon: Smartphone },
-  // { href: '/dashboard/monitored-groups',   label: 'Grupos Monitorados',icon: Radio },       // MVP: desabilitado
+  { href: '/dashboard/monitored-groups',   label: 'Grupos Monitorados',icon: Radio },
   { href: '/dashboard/billing',            label: 'Plano',             icon: CreditCard },
   { href: '/dashboard/settings',           label: 'Configurações',     icon: Settings },
 ]
