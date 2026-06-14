@@ -91,6 +91,7 @@ function LoginForm() {
           </div>
         </form>
 
+        {/* MVP: login com Google desabilitado
         <div className="mt-4 relative">
           <div className="absolute inset-0 flex items-center">
             <div className="w-full border-t border-gray-200" />
@@ -111,6 +112,7 @@ function LoginForm() {
             Continuar com Google
           </Button>
         </a>
+        */}
 
         <p className="mt-4 text-center text-sm text-gray-500">
           Não tem conta?{' '}

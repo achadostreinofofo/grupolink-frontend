@@ -252,6 +252,7 @@ export default function SignupPage() {
             </Button>
           </form>
 
+          {/* MVP: cadastro com Google desabilitado
           <div className="mt-4 relative">
             <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-gray-200" /></div>
             <div className="relative flex justify-center"><span className="bg-white px-3 text-xs text-gray-400">ou</span></div>
@@ -268,6 +269,7 @@ export default function SignupPage() {
               Cadastrar com Google
             </Button>
           </a>
+          */}
 
           <p className="mt-4 text-center text-xs text-gray-400">
             Ao criar uma conta você concorda com nossos termos de uso.
