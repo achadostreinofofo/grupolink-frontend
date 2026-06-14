@@ -11,10 +11,10 @@ const nav = [
   { href: '/dashboard',                    label: 'Visão Geral',       icon: LayoutDashboard },
   { href: '/dashboard/structures',         label: 'Estruturas',        icon: Network },
   { href: '/dashboard/analytics',          label: 'Analytics',         icon: BarChart2 },
-  { href: '/dashboard/templates',          label: 'Templates',         icon: FileText },
+  // { href: '/dashboard/templates',          label: 'Templates',         icon: FileText },   // MVP: desabilitado
   { href: '/dashboard/links',              label: 'Links',             icon: Link2 },
   { href: '/dashboard/integrations',       label: 'WhatsApp',          icon: Smartphone },
-  { href: '/dashboard/monitored-groups',   label: 'Grupos Monitorados',icon: Radio },
+  // { href: '/dashboard/monitored-groups',   label: 'Grupos Monitorados',icon: Radio },       // MVP: desabilitado
   { href: '/dashboard/billing',            label: 'Plano',             icon: CreditCard },
   { href: '/dashboard/settings',           label: 'Configurações',     icon: Settings },
 ]
