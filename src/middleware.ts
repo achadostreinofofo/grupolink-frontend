@@ -15,10 +15,14 @@ const PUBLIC_PATHS = new Set([
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // Permite arquivos estáticos, API proxy e rotas públicas
+  // Permite arquivos estáticos, API proxy, redirects públicos e rotas públicas.
+  // /r/ (smart links) e /s/ (shortlinks) são proxied para o backend e devem ser públicos —
+  // sem isso o middleware os redireciona para /login antes de chegarem ao rewrite.
   if (
     pathname.startsWith('/_next') ||
     pathname.startsWith('/api') ||
+    pathname.startsWith('/r/') ||
+    pathname.startsWith('/s/') ||
     pathname.includes('.') ||
     PUBLIC_PATHS.has(pathname) ||
     pathname.startsWith('/billing/')

@@ -69,6 +69,18 @@ describe('middleware – static and special paths', () => {
     expect(mockNext).toHaveBeenCalled()
     expect(mockRedirect).not.toHaveBeenCalled()
   })
+
+  it('allows /r/* smart links without token (proxied to backend)', () => {
+    middleware(makeRequest('/r/minha-estrutura'))
+    expect(mockNext).toHaveBeenCalled()
+    expect(mockRedirect).not.toHaveBeenCalled()
+  })
+
+  it('allows /s/* short links without token (proxied to backend)', () => {
+    middleware(makeRequest('/s/abc1234'))
+    expect(mockNext).toHaveBeenCalled()
+    expect(mockRedirect).not.toHaveBeenCalled()
+  })
 })
 
 describe('middleware – protected paths', () => {
