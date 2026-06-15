@@ -39,7 +39,6 @@ describe('Sidebar', () => {
     expect(screen.getByText('Visão Geral')).toBeInTheDocument()
     expect(screen.getByText('Estruturas')).toBeInTheDocument()
     expect(screen.getByText('Analytics')).toBeInTheDocument()
-    expect(screen.getByText('Links')).toBeInTheDocument()
     expect(screen.getByText('WhatsApp')).toBeInTheDocument()
     expect(screen.getByText('Grupos Monitorados')).toBeInTheDocument()
     expect(screen.getByText('Plano')).toBeInTheDocument()
@@ -49,6 +48,7 @@ describe('Sidebar', () => {
   it('does not render MVP-disabled features', () => {
     render(<Sidebar />)
     expect(screen.queryByText('Templates')).not.toBeInTheDocument()
+    expect(screen.queryByText('Links')).not.toBeInTheDocument()
   })
 
   it('renders logout button', () => {

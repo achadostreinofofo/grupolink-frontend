@@ -12,7 +12,7 @@ const nav = [
   { href: '/dashboard/structures',         label: 'Estruturas',        icon: Network },
   { href: '/dashboard/analytics',          label: 'Analytics',         icon: BarChart2 },
   // { href: '/dashboard/templates',          label: 'Templates',         icon: FileText },   // MVP: desabilitado
-  { href: '/dashboard/links',              label: 'Links',             icon: Link2 },
+  // { href: '/dashboard/links',              label: 'Links',             icon: Link2 },      // MVP: desabilitado (mensagens usam link completo, sem encurtar)
   { href: '/dashboard/integrations',       label: 'WhatsApp',          icon: Smartphone },
   { href: '/dashboard/monitored-groups',   label: 'Grupos Monitorados',icon: Radio },
   { href: '/dashboard/billing',            label: 'Plano',             icon: CreditCard },
