@@ -22,6 +22,9 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>
 
+// MVP: feature de Templates desabilitada — oculta o seletor "Usar template" sem remover o código.
+const TEMPLATES_ENABLED = false
+
 const STATUS_INFO: Record<ScheduledMessage['status'], { label: string; variant: 'green' | 'yellow' | 'red' | 'gray' }> = {
   DRAFT:     { label: 'Rascunho',  variant: 'gray'   },
   PENDING:   { label: 'Agendado',  variant: 'yellow' },
@@ -153,7 +156,8 @@ export default function MessagesPage() {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit(onCreate)} className="space-y-4">
-              {templates.length > 0 && (
+              {/* MVP: seletor de template oculto (feature de Templates desabilitada) */}
+              {TEMPLATES_ENABLED && templates.length > 0 && (
                 <div>
                   <label className="text-sm font-medium text-night-200 block mb-1">Usar template (opcional)</label>
                   <select
