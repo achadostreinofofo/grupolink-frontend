@@ -10,6 +10,10 @@ const nextConfig = {
         source: '/r/:slug*',
         destination: `${process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8080'}/r/:slug*`,
       },
+      {
+        source: '/s/:code*',
+        destination: `${process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8080'}/s/:code*`,
+      },
     ]
   },
 }
