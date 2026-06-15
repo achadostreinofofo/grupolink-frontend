@@ -73,4 +73,29 @@ describe('Input', () => {
     const { container } = render(<Input />)
     expect(container.querySelector('p')).not.toBeInTheDocument()
   })
+
+  describe('password visibility toggle', () => {
+    it('renders a toggle button for password inputs', () => {
+      render(<Input type="password" label="Senha" id="pwd" />)
+      expect(screen.getByRole('button', { name: /mostrar senha/i })).toBeInTheDocument()
+    })
+
+    it('does not render a toggle for non-password inputs', () => {
+      render(<Input type="text" />)
+      expect(screen.queryByRole('button')).not.toBeInTheDocument()
+    })
+
+    it('starts hidden (type=password) and toggles to text and back', async () => {
+      const user = userEvent.setup()
+      const { container } = render(<Input type="password" label="Senha" id="pwd" />)
+      const input = container.querySelector('input')!
+      expect(input).toHaveAttribute('type', 'password')
+
+      await user.click(screen.getByRole('button', { name: /mostrar senha/i }))
+      expect(input).toHaveAttribute('type', 'text')
+
+      await user.click(screen.getByRole('button', { name: /esconder senha/i }))
+      expect(input).toHaveAttribute('type', 'password')
+    })
+  })
 })
