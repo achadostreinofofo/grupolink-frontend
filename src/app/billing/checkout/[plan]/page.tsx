@@ -10,9 +10,9 @@ import { ArrowLeft, Lock, Zap, Star, Crown } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const PLANS = {
-  smart:   { name: 'Smart',   price: 128, key: 'SMART',   icon: Zap,   color: 'text-blue-400',   bg: 'bg-blue-900/20' },
-  diamond: { name: 'Diamond', price: 290, key: 'DIAMOND', icon: Star,  color: 'text-purple-400', bg: 'bg-purple-900/20' },
-  black:   { name: 'Black',   price: 453, key: 'BLACK',   icon: Crown, color: 'text-night-200',  bg: 'bg-night-600' },
+  smart:   { name: 'Smart',   price: 98,  key: 'SMART',   icon: Zap,   color: 'text-blue-400',   bg: 'bg-blue-900/20' },
+  diamond: { name: 'Diamond', price: 179, key: 'DIAMOND', icon: Star,  color: 'text-purple-400', bg: 'bg-purple-900/20' },
+  black:   { name: 'Black',   price: 299, key: 'BLACK',   icon: Crown, color: 'text-night-200',  bg: 'bg-night-600' },
 } as const
 
 const MP_FIELD_STYLE = {
