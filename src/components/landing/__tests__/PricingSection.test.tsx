@@ -25,9 +25,9 @@ describe('PricingSection', () => {
 
   it('renders plan prices', () => {
     const { container } = render(<PricingSection />)
-    expect(container.textContent).toContain('128')
-    expect(container.textContent).toContain('290')
-    expect(container.textContent).toContain('453')
+    expect(container.textContent).toContain('98')
+    expect(container.textContent).toContain('179')
+    expect(container.textContent).toContain('299')
   })
 
   it('renders the "MAIS POPULAR" badge on Diamond plan', () => {

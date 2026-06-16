@@ -68,9 +68,9 @@ export default function TermosDeUsoPage() {
               <tbody>
                 {[
                   ['Free', 'Gratuito', 'Acesso básico, 1 estrutura, sem WhatsApp API'],
-                  ['Smart', 'R$ 128,00/mês', 'Até 5 estruturas, integração WhatsApp, analytics básico'],
-                  ['Diamond', 'R$ 290,00/mês', 'Estruturas ilimitadas, analytics completo, links curtos'],
-                  ['Black', 'R$ 453,00/mês', 'Todos os recursos + suporte prioritário + agendamento avançado'],
+                  ['Smart', 'R$ 98,00/mês', '2 celulares, 80 agendamentos/mês, 1 estrutura, analytics básico'],
+                  ['Diamond', 'R$ 179,00/mês', '4 celulares, 400 agendamentos/mês, 4 estruturas, IA, monitoramento, analytics avançado'],
+                  ['Black', 'R$ 299,00/mês', '10 celulares, 1000 agendamentos/mês, estruturas ilimitadas, IA, suporte 24/7'],
                 ].map((row, i) => (
                   <tr key={i} className={i % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
                     {row.map((cell, j) => (
