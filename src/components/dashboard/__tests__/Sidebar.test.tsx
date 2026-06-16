@@ -31,7 +31,13 @@ beforeEach(() => {
 describe('Sidebar', () => {
   it('renders the Redirect Grupo brand', () => {
     render(<Sidebar />)
-    expect(screen.getByRole('img', { name: /redirect grupo/i })).toBeInTheDocument()
+    // A marca aparece na top bar (mobile) e no cabeçalho do drawer
+    expect(screen.getAllByRole('img', { name: /redirect grupo/i }).length).toBeGreaterThan(0)
+  })
+
+  it('renders the mobile menu (hamburger) button', () => {
+    render(<Sidebar />)
+    expect(screen.getByRole('button', { name: /abrir menu/i })).toBeInTheDocument()
   })
 
   it('renders all navigation links', () => {
