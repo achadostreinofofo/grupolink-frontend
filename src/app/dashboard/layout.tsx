@@ -1,4 +1,5 @@
 import { Sidebar } from '@/components/dashboard/Sidebar'
+import { SessionExpiredModal } from '@/components/ui/SessionExpiredModal'
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -9,6 +10,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <main className="flex-1 lg:ml-60 px-4 pb-6 pt-16 lg:p-8 text-night-50">
         {children}
       </main>
+      <SessionExpiredModal />
     </div>
   )
 }

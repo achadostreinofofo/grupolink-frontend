@@ -32,6 +32,9 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   if (!res.ok) {
     const body = await res.json().catch(() => ({}))
     if (body?.error === 'ENCRYPTION_KEY_EXPIRED') clearPublicKeyCache()
+    if (res.status === 401 && typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('session-expired'))
+    }
     const err = new Error(body?.message ?? body?.error ?? `Erro ${res.status}`) as Error & { code?: string }
     err.code = body?.error
     throw err
