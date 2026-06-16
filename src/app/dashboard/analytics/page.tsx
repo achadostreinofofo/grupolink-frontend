@@ -56,7 +56,7 @@ function AnalyticsContent() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-8">
         <div>
           <h1 className="text-2xl font-bold text-night-50">Analytics</h1>
           <p className="text-sm text-night-300 mt-1">Cliques, membros e desempenho das suas estruturas</p>
@@ -78,11 +78,11 @@ function AnalyticsContent() {
 
       {/* Stats gerais */}
       {loading ? (
-        <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
           {Array(5).fill(0).map((_, i) => <div key={i} className="h-20 bg-night-700 rounded-xl animate-pulse" />)}
         </div>
       ) : (
-        <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
           {stats.map(({ label, value, icon: Icon, color }) => (
             <Card key={label}>
               <CardContent className="flex items-center gap-3 py-3">

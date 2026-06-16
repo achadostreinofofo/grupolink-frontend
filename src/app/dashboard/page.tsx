@@ -40,7 +40,7 @@ export default function DashboardPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-8">
         <div>
           <h1 className="text-2xl font-bold text-night-50">Visão Geral</h1>
           <p className="text-sm text-night-300 mt-1">Acompanhe o desempenho das suas estruturas</p>
@@ -57,7 +57,7 @@ export default function DashboardPage() {
       <PendingActionsCard actions={pendingActions} onActionCompleted={load} />
 
       {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-6">
         {stats.map(({ label, value, icon: Icon, color }) => (
           <Card key={label}>
             <CardContent className="flex items-center gap-3 py-3">
