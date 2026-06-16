@@ -58,7 +58,7 @@ export default function MonitoredGroupsPage() {
 
   return (
     <div className="max-w-4xl">
-      <div className="flex items-start justify-between mb-8">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between mb-8">
         <div>
           <h1 className="text-2xl font-bold text-night-50">Grupos Monitorados</h1>
           <p className="text-sm text-night-300 mt-1 max-w-xl">

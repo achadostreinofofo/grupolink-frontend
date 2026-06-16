@@ -137,7 +137,7 @@ export default function MessagesPage() {
 
   return (
     <div className="max-w-3xl">
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-8">
         <div>
           <h1 className="text-2xl font-bold text-night-50">Mensagens Agendadas</h1>
           <p className="text-sm text-night-300 mt-1">Programe envios em massa para seus grupos WhatsApp</p>
@@ -188,7 +188,7 @@ export default function MessagesPage() {
                 {errors.content && <p className="text-xs text-red-600 mt-1">{errors.content.message}</p>}
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <Input
                     label="URL de imagem (opcional)"
