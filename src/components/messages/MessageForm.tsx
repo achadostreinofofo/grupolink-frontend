@@ -68,6 +68,11 @@ export function MessageForm({ defaultValues, submitLabel = 'Salvar', onSubmit, s
         const res = await api.messages.generateFromLink(trimmed)
         if (!controller.signal.aborted) {
           setValue('content', res.content)
+          if (res.imageUrl) {
+            setFile(null)
+            setLocalUrl(null)
+            setExistingUrl(res.imageUrl)
+          }
         }
       } catch (e) {
         if (!controller.signal.aborted) {
