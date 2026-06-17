@@ -3,6 +3,12 @@ import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MessageForm } from '../MessageForm'
 
+jest.mock('@/lib/api', () => ({
+  api: { messages: { generateFromLink: jest.fn() } },
+}))
+import { api } from '@/lib/api'
+const mockGenerate = api.messages.generateFromLink as jest.Mock
+
 const mockCreateObjectURL = jest.fn().mockReturnValue('blob:http://localhost/fake-url')
 const mockRevokeObjectURL = jest.fn()
 global.URL.createObjectURL = mockCreateObjectURL
@@ -32,6 +38,23 @@ describe('MessageForm', () => {
   it('renders custom submit label', () => {
     render(<MessageForm onSubmit={jest.fn()} submitLabel="Publicar" />)
     expect(screen.getByRole('button', { name: /publicar/i })).toBeInTheDocument()
+  })
+
+  it('prefills title, content and image from generated product data', async () => {
+    mockGenerate.mockResolvedValue({
+      content: 'Texto gerado',
+      title: 'Whey Protein 900g',
+      imageUrl: 'https://cdn/img.webp',
+    })
+    const user = userEvent.setup()
+    render(<MessageForm onSubmit={jest.fn()} />)
+
+    await user.type(screen.getByPlaceholderText(/meli\.la/i), 'https://meli.la/abc')
+
+    await waitFor(() => {
+      expect(screen.getByLabelText('Título')).toHaveValue('Whey Protein 900g')
+    }, { timeout: 2000 })
+    expect(screen.getByPlaceholderText(/Texto da mensagem/)).toHaveValue('Texto gerado')
   })
 
   it('fills default values', () => {

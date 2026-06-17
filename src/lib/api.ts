@@ -141,7 +141,7 @@ export const api = {
 
   messages: {
     generateFromLink: (productUrl: string) =>
-      request<{ content: string; imageUrl?: string }>('/messages/generate-from-link', {
+      request<{ content: string; imageUrl?: string; title?: string }>('/messages/generate-from-link', {
         method: 'POST',
         body: JSON.stringify({ productUrl }),
       }),
