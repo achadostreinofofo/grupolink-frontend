@@ -105,7 +105,12 @@ export function SaveMessageModal({ open, saving, onClose, onConfirm }: Props) {
                 min={minDateTime()}
                 value={scheduleAt}
                 onChange={e => { setScheduleAt(e.target.value); setScheduleErr('') }}
-                className="w-full rounded-xl border border-night-600 bg-night-700 text-night-50 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                // Abre o calendário ao clicar em qualquer parte do campo (Chrome/Edge só abrem
+                // pelo ícone nativo, que no tema escuro fica invisível). showPicker pode lançar
+                // se não houver gesto do usuário — clique é gesto, mas protegemos por garantia.
+                onClick={e => { try { e.currentTarget.showPicker?.() } catch { /* noop */ } }}
+                // color-scheme:dark deixa o ícone do calendário visível e o popup em tema escuro.
+                className="w-full rounded-xl border border-night-600 bg-night-700 text-night-50 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 [color-scheme:dark]"
               />
               {scheduleErr && <p className="text-xs text-red-400 mt-1">{scheduleErr}</p>}
             </div>
