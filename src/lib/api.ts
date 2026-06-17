@@ -72,6 +72,12 @@ export const api = {
     verifyEmail: (token: string) =>
       request<AuthResponse>(`/auth/verify-email?token=${encodeURIComponent(token)}`),
 
+    resendVerification: (email: string) =>
+      request<{ message: string }>('/auth/resend-verification', {
+        method: 'POST',
+        body: JSON.stringify({ email }),
+      }),
+
     forgotPassword: (data: { email: string; cpf: string }) =>
       request<{ message: string }>('/auth/forgot-password', {
         method: 'POST',

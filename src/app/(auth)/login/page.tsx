@@ -11,6 +11,7 @@ import { saveAuth } from '@/lib/auth'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Card, CardContent } from '@/components/ui/Card'
+import { EmailNotVerifiedModal } from '@/components/auth/EmailNotVerifiedModal'
 
 const schema = z.object({
   email:    z.string().email('E-mail inválido'),
@@ -23,8 +24,9 @@ function LoginForm() {
   const router = useRouter()
   const params = useSearchParams()
   const [error, setError] = useState('')
+  const [emailNotVerified, setEmailNotVerified] = useState(false)
 
-  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<FormData>({
+  const { register, handleSubmit, getValues, formState: { errors, isSubmitting } } = useForm<FormData>({
     resolver: zodResolver(schema),
   })
 
@@ -37,8 +39,8 @@ function LoginForm() {
       router.push(redirect)
     } catch (e) {
       const err = e as Error & { code?: string }
-      if (err.message === 'EMAIL_NOT_VERIFIED') {
-        setError('EMAIL_NOT_VERIFIED')
+      if (err.code === 'EMAIL_NOT_VERIFIED' || err.message === 'EMAIL_NOT_VERIFIED') {
+        setEmailNotVerified(true)
       } else {
         setError(err.message || 'Erro ao fazer login')
       }
@@ -69,16 +71,11 @@ function LoginForm() {
             {...register('password')}
           />
 
-          {error === 'EMAIL_NOT_VERIFIED' ? (
-            <div className="bg-amber-50 border border-amber-200 text-amber-800 text-sm rounded-lg px-4 py-3">
-              <p className="font-medium mb-1">E-mail não verificado</p>
-              <p>Verifique sua caixa de entrada e clique no link de ativação que enviamos.</p>
-            </div>
-          ) : error ? (
+          {error && (
             <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-4 py-3">
               {error}
             </div>
-          ) : null}
+          )}
 
           <Button type="submit" className="w-full" loading={isSubmitting}>
             Entrar
@@ -121,6 +118,12 @@ function LoginForm() {
           </Link>
         </p>
       </CardContent>
+
+      <EmailNotVerifiedModal
+        open={emailNotVerified}
+        email={getValues('email') ?? ''}
+        onClose={() => setEmailNotVerified(false)}
+      />
     </Card>
   )
 }
