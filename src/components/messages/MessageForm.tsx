@@ -152,7 +152,7 @@ export function MessageForm({ defaultValues, submitLabel = 'Salvar', onSubmit, s
           <span className="text-xs text-night-400">(opcional)</span>
         </div>
         <p className="text-xs text-night-400">
-          Cole um link de produto do Mercado Livre e a IA vai montar um texto persuasivo automaticamente.
+          Cole um link de produto do Mercado Livre ou da Amazon e a IA vai montar um texto persuasivo automaticamente.
         </p>
         <div className="relative">
           <Link className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-night-400 pointer-events-none" />
@@ -160,7 +160,7 @@ export function MessageForm({ defaultValues, submitLabel = 'Salvar', onSubmit, s
             type="url"
             value={affiliateLink}
             onChange={e => { setAffiliateLink(e.target.value); setGenerateErr('') }}
-            placeholder="https://meli.la/... ou https://produto.mercadolivre.com.br/..."
+            placeholder="https://meli.la/... ou https://amzn.to/..."
             disabled={generating}
             className="w-full rounded-xl border border-night-600 bg-night-700 pl-9 pr-4 py-2.5 text-sm text-night-50 placeholder:text-night-500 focus:outline-none focus:ring-2 focus:ring-brand-400 disabled:opacity-50"
           />
