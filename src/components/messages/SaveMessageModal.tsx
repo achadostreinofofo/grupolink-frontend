@@ -15,7 +15,10 @@ interface Props {
 
 function minDateTime() {
   const d = new Date(Date.now() + 5 * 60 * 1000)
-  return d.toISOString().slice(0, 16)
+  // O input datetime-local opera no fuso local do navegador; o `min` também precisa estar em
+  // horário local. toISOString() devolve UTC — descontar o offset corrige o deslocamento.
+  const local = new Date(d.getTime() - d.getTimezoneOffset() * 60000)
+  return local.toISOString().slice(0, 16)
 }
 
 export function SaveMessageModal({ open, saving, onClose, onConfirm }: Props) {
