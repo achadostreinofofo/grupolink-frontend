@@ -41,6 +41,7 @@ export interface Structure {
   groupNamePrefix: string | null
   nextGroupNumber: number
   groupProfilePicUrl: string | null
+  maxGroupsPerStructure: number | null   // null = ilimitado (plano Black)
 }
 
 export interface CreateStructurePayload {

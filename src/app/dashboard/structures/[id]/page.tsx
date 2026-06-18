@@ -582,6 +582,11 @@ export default function StructureDetailPage() {
         <ImportGroupModal
           structureId={id}
           structureName={structure.name}
+          remainingSlots={
+            structure.maxGroupsPerStructure == null
+              ? null
+              : Math.max(0, structure.maxGroupsPerStructure - structure.groups.filter(g => g.status === 'ACTIVE').length)
+          }
           onSuccess={load}
           onClose={() => setShowImportModal(false)}
         />
