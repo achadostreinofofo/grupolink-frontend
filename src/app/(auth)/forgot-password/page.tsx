@@ -10,24 +10,15 @@ import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import Link from 'next/link'
 
-function maskCpf(value: string): string {
-  const d = value.replace(/\D/g, '').slice(0, 11)
-  if (d.length <= 3) return d
-  if (d.length <= 6) return `${d.slice(0,3)}.${d.slice(3)}`
-  if (d.length <= 9) return `${d.slice(0,3)}.${d.slice(3,6)}.${d.slice(6)}`
-  return `${d.slice(0,3)}.${d.slice(3,6)}.${d.slice(6,9)}-${d.slice(9)}`
-}
-
 const schema = z.object({
   email: z.string().email('E-mail inválido'),
-  cpf:   z.string().min(14, 'CPF inválido'),
 })
 type FormData = z.infer<typeof schema>
 
 export default function ForgotPasswordPage() {
   const [sent, setSent] = useState(false)
 
-  const { register, handleSubmit, setValue, watch, formState: { errors, isSubmitting } } = useForm<FormData>({
+  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<FormData>({
     resolver: zodResolver(schema),
   })
 
@@ -45,7 +36,7 @@ export default function ForgotPasswordPage() {
       </div>
       <h2 className="text-xl font-bold text-gray-900 mb-2">E-mail enviado</h2>
       <p className="text-sm text-gray-500 mb-6">
-        Se os dados conferem, você receberá um e-mail com instruções para redefinir sua senha.<br/>
+        Se houver uma conta com este e-mail, você receberá instruções para redefinir sua senha.<br/>
         O link expira em 2 horas.
       </p>
       <Link href="/login"><Button variant="secondary">Voltar para o login</Button></Link>
@@ -57,7 +48,7 @@ export default function ForgotPasswordPage() {
       <CardContent className="pt-6">
         <h1 className="text-2xl font-bold text-gray-900 mb-1">Recuperar senha</h1>
         <p className="text-sm text-gray-500 mb-6">
-          Informe seu e-mail e CPF cadastrados para receber o link de redefinição.
+          Informe seu e-mail cadastrado para receber o link de redefinição.
         </p>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -68,19 +59,6 @@ export default function ForgotPasswordPage() {
             placeholder="seu@email.com"
             error={errors.email?.message}
             {...register('email')}
-          />
-          <Input
-            id="cpf"
-            label="CPF"
-            placeholder="000.000.000-00"
-            maxLength={14}
-            error={errors.cpf?.message}
-            {...register('cpf')}
-            onChange={e => {
-              const masked = maskCpf(e.target.value)
-              setValue('cpf', masked, { shouldValidate: !!watch('cpf') })
-              e.target.value = masked
-            }}
           />
 
           <Button type="submit" className="w-full" loading={isSubmitting}>
