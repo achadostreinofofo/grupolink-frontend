@@ -4,7 +4,7 @@ import type {
   ChurnAnalytics, ConnectWhatsappPayload, CreateMessagePayload,
   CreateMonitoredGroupPayload, CreateShortLinkPayload, CreateStructurePayload,
   MessageTemplate, MlStatus, MonitoredGroup, OverviewAnalytics, PendingAction,
-  ScheduledMessage, ShortLink, Structure, StructureAnalytics,
+  ScheduledMessage, ScheduleSlot, ShortLink, Structure, StructureAnalytics,
   SubscriptionStatus, UpdateMessagePayload, UpdateMonitoredGroupPayload,
   User, UserProfile, UtmAnalytics, WebSessionStartResponse, WebSessionStatus,
   WhatsappAccount
@@ -104,6 +104,10 @@ export const api = {
         `/structures/${structureId}/groups/import`,
         { method: 'POST', body: JSON.stringify(data) }
       ),
+    updateScheduleConfig: (structureId: string, data: { scheduleWindowStart: string; scheduleWindowEnd: string; scheduleIntervalMinutes: number }) =>
+      request<Structure>(`/structures/${structureId}/schedule-config`, { method: 'PUT', body: JSON.stringify(data) }),
+    scheduleSlots: (structureId: string, date: string) =>
+      request<ScheduleSlot[]>(`/structures/${structureId}/messages/slots?date=${encodeURIComponent(date)}`),
   },
 
   whatsapp: {

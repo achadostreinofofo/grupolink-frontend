@@ -42,6 +42,9 @@ export interface Structure {
   nextGroupNumber: number
   groupProfilePicUrl: string | null
   maxGroupsPerStructure: number | null   // null = ilimitado (plano Black)
+  scheduleWindowStart: string            // "HH:mm"
+  scheduleWindowEnd: string              // "HH:mm"
+  scheduleIntervalMinutes: number
 }
 
 export interface CreateStructurePayload {
@@ -49,6 +52,16 @@ export interface CreateStructurePayload {
   description?: string
   maxMembersPerGroup?: number
   fillThreshold?: number
+  scheduleWindowStart?: string
+  scheduleWindowEnd?: string
+  scheduleIntervalMinutes?: number
+}
+
+export interface ScheduleSlot {
+  time: string        // "HH:mm"
+  datetime: string    // "yyyy-MM-ddTHH:mm"
+  available: boolean
+  status: 'AVAILABLE' | 'TAKEN' | 'PAST'
 }
 
 export interface AddGroupPayload {
