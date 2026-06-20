@@ -84,6 +84,9 @@ export const api = {
         body: JSON.stringify(data),
       }),
 
+    validateResetToken: (token: string) =>
+      request<{ valid: boolean }>(`/auth/reset-password/validate?token=${encodeURIComponent(token)}`),
+
     resetPassword: (data: { token: string; newPassword: string }) =>
       request<{ message: string }>('/auth/reset-password', {
         method: 'POST',

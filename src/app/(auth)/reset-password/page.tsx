@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, Suspense } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -24,12 +24,22 @@ function ResetPasswordHandler() {
   const router  = useRouter()
   const params  = useSearchParams()
   const token   = params.get('token') ?? ''
+  const [tokenState, setTokenState] = useState<'checking' | 'valid' | 'invalid'>('checking')
   const [done, setDone]   = useState(false)
   const [error, setError] = useState('')
 
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<FormData>({
     resolver: zodResolver(schema),
   })
+
+  // Valida o token ao abrir a página: avisa cedo se o link expirou, em vez de
+  // só ao salvar a nova senha.
+  useEffect(() => {
+    if (!token) { setTokenState('invalid'); return }
+    api.auth.validateResetToken(token)
+      .then(res => setTokenState(res.valid ? 'valid' : 'invalid'))
+      .catch(() => setTokenState('invalid'))
+  }, [token])
 
   const onSubmit = async (data: FormData) => {
     setError('')
@@ -42,10 +52,25 @@ function ResetPasswordHandler() {
     }
   }
 
-  if (!token) return (
+  if (tokenState === 'checking') return (
+    <Card><CardContent className="py-14 text-center">
+      <div className="w-10 h-10 border-2 border-brand-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+      <p className="text-sm text-gray-500">Validando seu link...</p>
+    </CardContent></Card>
+  )
+
+  if (tokenState === 'invalid') return (
     <Card><CardContent className="py-12 text-center">
-      <p className="text-sm text-gray-500 mb-4">Link inválido ou expirado.</p>
-      <Link href="/forgot-password"><Button variant="secondary">Solicitar novo link</Button></Link>
+      <div className="w-16 h-16 rounded-full bg-amber-100 flex items-center justify-center mx-auto mb-4">
+        <svg className="w-8 h-8 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m0 3.75h.008M10.34 3.94l-7.5 12.99A1.5 1.5 0 004.14 19.5h15.72a1.5 1.5 0 001.3-2.57l-7.5-12.99a1.5 1.5 0 00-2.6 0z" />
+        </svg>
+      </div>
+      <h2 className="text-xl font-bold text-gray-900 mb-2">Link inválido ou expirado</h2>
+      <p className="text-sm text-gray-500 mb-6">
+        Este link de redefinição não é mais válido (eles expiram em 2 horas). Solicite um novo para continuar.
+      </p>
+      <Link href="/forgot-password"><Button>Solicitar novo link</Button></Link>
     </CardContent></Card>
   )
 
