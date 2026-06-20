@@ -113,6 +113,7 @@ export default function NewMessagePage() {
       <SaveMessageModal
         open={showSaveModal}
         saving={false}
+        structureId={structureId}
         onClose={() => setShowSaveModal(false)}
         onConfirm={handleSaveConfirm}
       />

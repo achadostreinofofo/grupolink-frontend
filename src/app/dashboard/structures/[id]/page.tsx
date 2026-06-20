@@ -12,7 +12,7 @@ import { Input } from '@/components/ui/Input'
 import { Card, CardContent, CardHeader } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
 import {
-  ArrowLeft, CalendarClock, Copy, Download, Edit2,
+  ArrowLeft, CalendarClock, Clock, Copy, Download, Edit2,
   ExternalLink, Image as ImageIcon, Loader2, MessageSquare,
   Paperclip, Plus, Send, Trash2, X, AlertTriangle,
 } from 'lucide-react'
@@ -22,6 +22,7 @@ import { SelectGroupsModal } from '@/components/messages/SelectGroupsModal'
 import { CreateGroupParticipantsModal } from '@/components/groups/CreateGroupParticipantsModal'
 import { ImportGroupModal } from '@/components/groups/ImportGroupModal'
 import { DeleteStructureModal } from '@/components/structures/DeleteStructureModal'
+import { ScheduleConfigModal } from '@/components/structures/ScheduleConfigModal'
 
 const addGroupSchema = z.object({
   name:           z.string().min(2, 'Nome obrigatório'),
@@ -94,6 +95,7 @@ export default function StructureDetailPage() {
   const [pendingMsgId,  setPendingMsgId]         = useState<string | null>(null)
   const [showDeleteModal, setShowDeleteModal]     = useState(false)
   const [showImportModal, setShowImportModal]     = useState(false)
+  const [showScheduleModal, setShowScheduleModal] = useState(false)
 
   // Profile picture state for group creation
   const [picFile, setPicFile]         = useState<File | null>(null)
@@ -274,6 +276,9 @@ export default function StructureDetailPage() {
           </Button>
           <Button variant="secondary" size="sm" onClick={() => downloadCsv('redirects')}>
             <Download className="w-3.5 h-3.5" /> Cliques
+          </Button>
+          <Button variant="secondary" size="sm" onClick={() => setShowScheduleModal(true)}>
+            <Clock className="w-3.5 h-3.5" /> Agendamento
           </Button>
           <Button
             variant="ghost"
@@ -576,6 +581,14 @@ export default function StructureDetailPage() {
             </div>
           )}
         </>
+      )}
+
+      {showScheduleModal && structure && (
+        <ScheduleConfigModal
+          structure={structure}
+          onClose={() => setShowScheduleModal(false)}
+          onSaved={(s) => setStructure(s)}
+        />
       )}
 
       {showImportModal && structure && (

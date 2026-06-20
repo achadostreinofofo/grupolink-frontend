@@ -17,9 +17,17 @@ const schema = z.object({
   description:       z.string().optional(),
   maxMembersPerGroup: z.coerce.number().min(1).max(1024).default(256),
   fillThresholdPct:  z.coerce.number().min(50).max(100).default(80),
+  scheduleWindowStart: z.string().default('08:00'),
+  scheduleWindowEnd:   z.string().default('18:00'),
+  scheduleIntervalMinutes: z.coerce.number().default(5),
+}).refine(d => d.scheduleWindowStart < d.scheduleWindowEnd, {
+  message: 'A hora de início deve ser anterior à de fim',
+  path: ['scheduleWindowEnd'],
 })
 
 type FormData = z.infer<typeof schema>
+
+const INTERVAL_OPTIONS = [5, 10, 15, 20, 30, 60]
 
 export default function NewStructurePage() {
   const router = useRouter()
@@ -27,7 +35,10 @@ export default function NewStructurePage() {
 
   const { register, handleSubmit, watch, formState: { errors, isSubmitting } } = useForm<FormData>({
     resolver: zodResolver(schema),
-    defaultValues: { maxMembersPerGroup: 256, fillThresholdPct: 80 },
+    defaultValues: {
+      maxMembersPerGroup: 256, fillThresholdPct: 80,
+      scheduleWindowStart: '08:00', scheduleWindowEnd: '18:00', scheduleIntervalMinutes: 5,
+    },
   })
 
   const thresholdPct = watch('fillThresholdPct') ?? 80
@@ -40,6 +51,9 @@ export default function NewStructurePage() {
         description:        data.description,
         maxMembersPerGroup: data.maxMembersPerGroup,
         fillThreshold:      data.fillThresholdPct / 100,
+        scheduleWindowStart:     data.scheduleWindowStart,
+        scheduleWindowEnd:       data.scheduleWindowEnd,
+        scheduleIntervalMinutes: data.scheduleIntervalMinutes,
       })
       router.push(`/dashboard/structures/${structure.id}`)
     } catch (e) {
@@ -150,6 +164,39 @@ export default function NewStructurePage() {
                     Com 100%, o grupo só vai para o próximo quando estiver completamente lotado.
                   </p>
                 </div>
+              )}
+            </div>
+
+            {/* Regras de agendamento */}
+            <div className="border-t border-night-600 pt-5">
+              <label className="block text-sm font-medium text-night-200 mb-1">
+                Agendamento de mensagens
+              </label>
+              <p className="text-xs text-night-400 mb-3">
+                Define a janela e o intervalo dos horários disponíveis para agendar mensagens nesta estrutura.
+                Não afeta o envio imediato.
+              </p>
+              <div className="grid grid-cols-3 gap-3">
+                <div>
+                  <label className="block text-xs text-night-400 mb-1">Início</label>
+                  <input type="time" {...register('scheduleWindowStart')}
+                    className="w-full rounded-lg border border-night-600 bg-night-700 text-night-50 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 [color-scheme:dark]" />
+                </div>
+                <div>
+                  <label className="block text-xs text-night-400 mb-1">Fim</label>
+                  <input type="time" {...register('scheduleWindowEnd')}
+                    className="w-full rounded-lg border border-night-600 bg-night-700 text-night-50 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 [color-scheme:dark]" />
+                </div>
+                <div>
+                  <label className="block text-xs text-night-400 mb-1">Intervalo</label>
+                  <select {...register('scheduleIntervalMinutes')}
+                    className="w-full rounded-lg border border-night-600 bg-night-700 text-night-50 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 [color-scheme:dark]">
+                    {INTERVAL_OPTIONS.map(m => <option key={m} value={m}>{m} min</option>)}
+                  </select>
+                </div>
+              </div>
+              {errors.scheduleWindowEnd && (
+                <p className="text-xs text-red-500 mt-1.5">{errors.scheduleWindowEnd.message}</p>
               )}
             </div>
 

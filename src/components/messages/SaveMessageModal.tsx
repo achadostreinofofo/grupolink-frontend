@@ -3,25 +3,26 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/Button'
 import { BookmarkCheck, CalendarClock, Send, X } from 'lucide-react'
+import { ScheduleSlotPicker } from './ScheduleSlotPicker'
 
 export type SaveAction = 'draft' | 'schedule' | 'send_now'
 
 interface Props {
   open: boolean
   saving: boolean
+  structureId: string
   onClose: () => void
   onConfirm: (action: SaveAction, scheduledAt?: string) => void
 }
 
-function minDateTime() {
-  const d = new Date(Date.now() + 5 * 60 * 1000)
-  // O input datetime-local opera no fuso local do navegador; o `min` também precisa estar em
-  // horário local. toISOString() devolve UTC — descontar o offset corrige o deslocamento.
-  const local = new Date(d.getTime() - d.getTimezoneOffset() * 60000)
-  return local.toISOString().slice(0, 16)
+function formatSlot(datetime: string): string {
+  // "2026-06-20T08:05" → "20/06 às 08:05"
+  const [d, t] = datetime.split('T')
+  const [y, m, day] = d.split('-')
+  return `${day}/${m}/${y} às ${t.slice(0, 5)}`
 }
 
-export function SaveMessageModal({ open, saving, onClose, onConfirm }: Props) {
+export function SaveMessageModal({ open, saving, structureId, onClose, onConfirm }: Props) {
   const [selected, setSelected]     = useState<SaveAction | null>(null)
   const [scheduleAt, setScheduleAt] = useState('')
   const [scheduleErr, setScheduleErr] = useState('')
@@ -30,9 +31,9 @@ export function SaveMessageModal({ open, saving, onClose, onConfirm }: Props) {
 
   const handleConfirm = () => {
     if (!selected) return
-    if (selected === 'schedule') {
-      if (!scheduleAt) { setScheduleErr('Informe a data e hora'); return }
-      if (new Date(scheduleAt) <= new Date()) { setScheduleErr('A data deve ser futura'); return }
+    if (selected === 'schedule' && !scheduleAt) {
+      setScheduleErr('Escolha um horário disponível')
+      return
     }
     onConfirm(selected, selected === 'schedule' ? scheduleAt : undefined)
   }
@@ -97,21 +98,17 @@ export function SaveMessageModal({ open, saving, onClose, onConfirm }: Props) {
 
           {selected === 'schedule' && (
             <div className="px-1 pt-1">
-              <label className="block text-sm font-medium text-night-200 mb-1">
-                Data e hora de envio
+              <label className="block text-sm font-medium text-night-200 mb-2">
+                Escolha o dia e um horário disponível
               </label>
-              <input
-                type="datetime-local"
-                min={minDateTime()}
+              <ScheduleSlotPicker
+                structureId={structureId}
                 value={scheduleAt}
-                onChange={e => { setScheduleAt(e.target.value); setScheduleErr('') }}
-                // Abre o calendário ao clicar em qualquer parte do campo (Chrome/Edge só abrem
-                // pelo ícone nativo, que no tema escuro fica invisível). showPicker pode lançar
-                // se não houver gesto do usuário — clique é gesto, mas protegemos por garantia.
-                onClick={e => { try { e.currentTarget.showPicker?.() } catch { /* noop */ } }}
-                // color-scheme:dark deixa o ícone do calendário visível e o popup em tema escuro.
-                className="w-full rounded-xl border border-night-600 bg-night-700 text-night-50 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 [color-scheme:dark]"
+                onSelect={dt => { setScheduleAt(dt); setScheduleErr('') }}
               />
+              {scheduleAt && (
+                <p className="text-xs text-brand-400 mt-2">Agendado para {formatSlot(scheduleAt)}</p>
+              )}
               {scheduleErr && <p className="text-xs text-red-400 mt-1">{scheduleErr}</p>}
             </div>
           )}

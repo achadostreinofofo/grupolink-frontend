@@ -143,6 +143,7 @@ export default function EditMessagePage() {
       <SaveMessageModal
         open={showSaveModal}
         saving={false}
+        structureId={structureId}
         onClose={() => setShowSaveModal(false)}
         onConfirm={handleSaveConfirm}
       />

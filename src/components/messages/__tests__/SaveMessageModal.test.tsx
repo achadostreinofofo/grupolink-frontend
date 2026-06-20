@@ -1,11 +1,17 @@
 import React from 'react'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { SaveMessageModal } from '../SaveMessageModal'
+import { api } from '@/lib/api'
+
+jest.mock('@/lib/api', () => ({
+  api: { structures: { scheduleSlots: jest.fn().mockResolvedValue([]) } },
+}))
 
 const defaultProps = {
   open: true,
   saving: false,
+  structureId: 'struct-1',
   onClose: jest.fn(),
   onConfirm: jest.fn(),
 }
@@ -60,20 +66,19 @@ describe('SaveMessageModal', () => {
     expect(onConfirm).toHaveBeenCalledWith('send_now', undefined)
   })
 
-  it('shows datetime input when schedule is selected', async () => {
+  it('shows the slot picker when schedule is selected', async () => {
     const user = userEvent.setup()
-    const { container } = render(<SaveMessageModal {...defaultProps} />)
+    render(<SaveMessageModal {...defaultProps} />)
     await user.click(screen.getByText('Agendar envio'))
-    expect(screen.getByText('Data e hora de envio')).toBeInTheDocument()
-    expect(container.querySelector('input[type="datetime-local"]')).toBeInTheDocument()
+    expect(screen.getByText('Escolha o dia e um horário disponível')).toBeInTheDocument()
   })
 
-  it('shows error when schedule confirmed without a date', async () => {
+  it('shows error when schedule confirmed without a slot', async () => {
     const user = userEvent.setup()
     render(<SaveMessageModal {...defaultProps} />)
     await user.click(screen.getByText('Agendar envio'))
     await user.click(screen.getByRole('button', { name: /confirmar/i }))
-    expect(screen.getByText('Informe a data e hora')).toBeInTheDocument()
+    expect(screen.getByText('Escolha um horário disponível')).toBeInTheDocument()
   })
 
   it('calls onClose when cancel button clicked', async () => {
@@ -89,22 +94,25 @@ describe('SaveMessageModal', () => {
     expect(screen.getByRole('button', { name: /confirmar/i })).toBeDisabled()
   })
 
-  it('calls onConfirm with schedule action and date when valid date entered', async () => {
+  it('calls onConfirm with the picked slot when scheduling', async () => {
     const user = userEvent.setup()
     const onConfirm = jest.fn()
-    render(<SaveMessageModal {...defaultProps} onConfirm={onConfirm} />)
+    ;(api.structures.scheduleSlots as jest.Mock).mockResolvedValue([
+      { time: '08:00', datetime: '2099-01-15T08:00', available: true, status: 'AVAILABLE' },
+    ])
+    const { container } = render(<SaveMessageModal {...defaultProps} onConfirm={onConfirm} />)
 
     await user.click(screen.getByText('Agendar envio'))
 
-    const futureDate = new Date(Date.now() + 24 * 60 * 60 * 1000)
-    const dateStr = futureDate.toISOString().slice(0, 16)
-    const dateInput = screen.getByDisplayValue('')
-    await user.type(dateInput, dateStr)
+    // navega para o próximo mês (sempre futuro) e escolhe o dia 15
+    const nextBtn = container.querySelector('.lucide-chevron-right')!.closest('button')!
+    await user.click(nextBtn)
+    await user.click(screen.getByRole('button', { name: '15' }))
+
+    const slot = await screen.findByRole('button', { name: '08:00' })
+    await user.click(slot)
 
     await user.click(screen.getByRole('button', { name: /confirmar/i }))
-
-    await waitFor(() => {
-      expect(onConfirm).toHaveBeenCalledWith('schedule', dateStr)
-    })
+    expect(onConfirm).toHaveBeenCalledWith('schedule', '2099-01-15T08:00')
   })
 })
