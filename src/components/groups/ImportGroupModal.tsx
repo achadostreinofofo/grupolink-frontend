@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { api } from '@/lib/api'
 import type { WebSessionStatus } from '@/types'
 import { Button } from '@/components/ui/Button'
-import { X, Loader2, Smartphone, Users, Download, CheckCircle2, ArrowLeft, Settings2 } from 'lucide-react'
+import { X, Loader2, Smartphone, Users, Download, CheckCircle2, ArrowLeft, Check } from 'lucide-react'
 
 type Step = 'session' | 'groups' | 'config'
 
@@ -17,6 +17,7 @@ interface WhatsappGroup {
 interface Props {
   structureId: string
   structureName: string
+  remainingSlots?: number | null   // vagas restantes no plano; null = ilimitado
   onSuccess: () => void
   onClose: () => void
 }
@@ -29,20 +30,31 @@ const THRESHOLD_OPTIONS = [
   { label: '90%', value: 0.90 },
 ]
 
-export function ImportGroupModal({ structureId, structureName, onSuccess, onClose }: Props) {
-  const [step, setStep]                           = useState<Step>('session')
-  const [sessions, setSessions]                   = useState<WebSessionStatus[]>([])
-  const [loadingSessions, setLoadingSessions]     = useState(true)
-  const [selectedSession, setSelectedSession]     = useState<WebSessionStatus | null>(null)
-  const [groups, setGroups]                       = useState<WhatsappGroup[]>([])
-  const [loadingGroups, setLoadingGroups]         = useState(false)
-  const [groupsError, setGroupsError]             = useState('')
-  const [selectedGroup, setSelectedGroup]         = useState<WhatsappGroup | null>(null)
-  const [maxMembers, setMaxMembers]               = useState(256)
-  const [fillThreshold, setFillThreshold]         = useState(0.80)
-  const [importing, setImporting]                 = useState(false)
-  const [importError, setImportError]             = useState('')
-  const [imported, setImported]                   = useState(false)
+export function ImportGroupModal({ structureId, structureName, remainingSlots, onSuccess, onClose }: Props) {
+  const [step, setStep]                       = useState<Step>('session')
+  const [sessions, setSessions]               = useState<WebSessionStatus[]>([])
+  const [loadingSessions, setLoadingSessions] = useState(true)
+  const [selectedSession, setSelectedSession] = useState<WebSessionStatus | null>(null)
+  const [groups, setGroups]                   = useState<WhatsappGroup[]>([])
+  const [loadingGroups, setLoadingGroups]     = useState(false)
+  const [groupsError, setGroupsError]         = useState('')
+  const [selectedGroups, setSelectedGroups]   = useState<WhatsappGroup[]>([])
+  const [maxMembers, setMaxMembers]           = useState(256)
+  const [fillThreshold, setFillThreshold]     = useState(0.80)
+  const [importing, setImporting]             = useState(false)
+  const [importError, setImportError]         = useState('')
+  const [imported, setImported]               = useState(false)
+  const [importedCount, setImportedCount]     = useState(0)
+  const [failedCount, setFailedCount]         = useState(0)
+
+  // Maior contagem entre os grupos selecionados — o limite por grupo nunca fica abaixo disso.
+  const maxParticipants = selectedGroups.reduce((m, g) => Math.max(m, g.participants), 0)
+  const minMembers = Math.max(maxParticipants, 50)
+
+  // Bloqueio antecipado pelo limite do plano (null = ilimitado).
+  const slotsLimited = remainingSlots != null
+  const noSlots      = slotsLimited && remainingSlots! <= 0
+  const atLimit      = slotsLimited && selectedGroups.length >= remainingSlots!
 
   useEffect(() => {
     api.whatsappWeb.listSessions()
@@ -66,32 +78,44 @@ export function ImportGroupModal({ structureId, structureName, onSuccess, onClos
     }
   }
 
-  const selectGroup = (group: WhatsappGroup) => {
-    setSelectedGroup(group)
-    const minMembers = Math.max(group.participants, 50)
+  const toggleGroup = (group: WhatsappGroup) => {
+    setSelectedGroups(prev => {
+      const exists = prev.some(g => g.groupId === group.groupId)
+      if (exists) return prev.filter(g => g.groupId !== group.groupId)
+      // Não deixa selecionar além das vagas do plano
+      if (slotsLimited && prev.length >= remainingSlots!) return prev
+      return [...prev, group]
+    })
+  }
+
+  const goToConfig = () => {
+    if (selectedGroups.length === 0) return
     setMaxMembers(Math.max(minMembers, 256))
     setStep('config')
   }
 
   const handleImport = async () => {
-    if (!selectedGroup) return
+    if (selectedGroups.length === 0) return
     setImporting(true)
     setImportError('')
     try {
-      await api.structures.importGroup(structureId, {
-        whatsappGroupId: selectedGroup.groupId,
+      const res = await api.structures.importGroups(structureId, {
+        whatsappGroupIds: selectedGroups.map(g => g.groupId),
         maxMembersPerGroup: maxMembers,
         fillThreshold,
       })
+      setImportedCount(res.imported.length)
+      setFailedCount(res.failed.length)
       setImported(true)
-      setTimeout(() => { onSuccess(); onClose() }, 1500)
+      setTimeout(() => { onSuccess(); onClose() }, 1800)
     } catch (e) {
-      setImportError(e instanceof Error ? e.message : 'Erro ao importar grupo')
+      setImportError(e instanceof Error ? e.message : 'Erro ao importar grupos')
     } finally {
       setImporting(false)
     }
   }
 
+  const isSelected = (g: WhatsappGroup) => selectedGroups.some(s => s.groupId === g.groupId)
   const backLabel = step === 'groups' ? 'session' : 'groups'
 
   return (
@@ -102,14 +126,11 @@ export function ImportGroupModal({ structureId, structureName, onSuccess, onClos
         <div className="flex items-center justify-between px-6 py-4 border-b border-night-600">
           <div className="flex items-center gap-2">
             {!imported && step !== 'session' && (
-              <button
-                onClick={() => setStep(backLabel as Step)}
-                className="text-night-400 hover:text-night-100 mr-1"
-              >
+              <button onClick={() => setStep(backLabel as Step)} className="text-night-400 hover:text-night-100 mr-1">
                 <ArrowLeft className="w-4 h-4" />
               </button>
             )}
-            <h2 className="font-semibold text-night-50">Importar grupo existente</h2>
+            <h2 className="font-semibold text-night-50">Importar grupos existentes</h2>
           </div>
           <button onClick={onClose} className="text-night-400 hover:text-night-100">
             <X className="w-5 h-5" />
@@ -135,8 +156,17 @@ export function ImportGroupModal({ structureId, structureName, onSuccess, onClos
           {imported && (
             <div className="flex flex-col items-center py-8 gap-3 text-center">
               <CheckCircle2 className="w-12 h-12 text-green-400" />
-              <p className="font-semibold text-night-50">Grupo importado com sucesso!</p>
-              <p className="text-sm text-night-300">O grupo foi adicionado à estrutura <strong>{structureName}</strong>.</p>
+              <p className="font-semibold text-night-50">
+                {importedCount} grupo{importedCount === 1 ? '' : 's'} importado{importedCount === 1 ? '' : 's'} com sucesso!
+              </p>
+              <p className="text-sm text-night-300">
+                Adicionado{importedCount === 1 ? '' : 's'} à estrutura <strong>{structureName}</strong>.
+              </p>
+              {failedCount > 0 && (
+                <p className="text-sm text-amber-400">
+                  {failedCount} grupo{failedCount === 1 ? '' : 's'} não pôde{failedCount === 1 ? '' : 'ram'} ser importado{failedCount === 1 ? '' : 's'}.
+                </p>
+              )}
             </div>
           )}
 
@@ -175,12 +205,24 @@ export function ImportGroupModal({ structureId, structureName, onSuccess, onClos
             </>
           )}
 
-          {/* Step 2: selecionar grupo */}
+          {/* Step 2: selecionar grupos (multi) */}
           {!imported && step === 'groups' && (
             <>
-              <p className="text-sm text-night-300 mb-4">
-                Selecione o grupo que deseja importar para <strong className="text-night-100">{structureName}</strong>.
+              <p className="text-sm text-night-300 mb-3">
+                Selecione os grupos que deseja importar para <strong className="text-night-100">{structureName}</strong>.
               </p>
+
+              {noSlots ? (
+                <div className="bg-amber-900/20 border border-amber-800/40 text-amber-300 text-sm rounded-lg px-3 py-2 mb-3">
+                  Você atingiu o limite de grupos por estrutura do seu plano. Faça upgrade para importar mais.
+                </div>
+              ) : slotsLimited && (
+                <div className="flex items-center justify-between text-xs text-night-400 mb-3">
+                  <span>{selectedGroups.length} selecionado{selectedGroups.length === 1 ? '' : 's'}</span>
+                  <span>{remainingSlots} vaga{remainingSlots === 1 ? '' : 's'} no seu plano</span>
+                </div>
+              )}
+
               {loadingGroups ? (
                 <div className="flex justify-center py-8">
                   <Loader2 className="w-6 h-6 animate-spin text-night-400" />
@@ -190,36 +232,45 @@ export function ImportGroupModal({ structureId, structureName, onSuccess, onClos
               ) : groups.length === 0 ? (
                 <p className="text-sm text-night-400 text-center py-6">Nenhum grupo onde você é criador foi encontrado.</p>
               ) : (
-                <div className="space-y-2 max-h-72 overflow-y-auto pr-1">
-                  {groups.map(g => (
-                    <button key={g.groupId} onClick={() => selectGroup(g)}
-                      className="w-full flex items-center gap-3 p-3 rounded-xl border border-night-600 hover:border-brand-600 hover:bg-night-700 transition-colors text-left">
-                      <div className="w-8 h-8 rounded-full bg-night-600 flex items-center justify-center flex-shrink-0">
-                        <Users className="w-4 h-4 text-night-300" />
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <p className="text-sm font-medium text-night-50 truncate">{g.name}</p>
-                        <p className="text-xs text-night-400">{g.participants} participantes</p>
-                      </div>
-                      <ArrowLeft className="w-4 h-4 text-night-500 rotate-180 flex-shrink-0" />
-                    </button>
-                  ))}
-                </div>
+                <>
+                  <div className="space-y-2 max-h-72 overflow-y-auto pr-1">
+                    {groups.map(g => {
+                      const disabled = !isSelected(g) && atLimit
+                      return (
+                        <button key={g.groupId} onClick={() => toggleGroup(g)} disabled={disabled}
+                          className={`w-full flex items-center gap-3 p-3 rounded-xl border transition-colors text-left ${
+                            isSelected(g) ? 'border-brand-500 bg-brand-900/15' : 'border-night-600 hover:border-brand-600 hover:bg-night-700'
+                          } ${disabled ? 'opacity-40 cursor-not-allowed hover:border-night-600 hover:bg-transparent' : ''}`}>
+                          <div className={`w-5 h-5 rounded-md flex items-center justify-center flex-shrink-0 border ${
+                            isSelected(g) ? 'bg-brand-500 border-brand-500' : 'border-night-500'
+                          }`}>
+                            {isSelected(g) && <Check className="w-3.5 h-3.5 text-night-900" />}
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <p className="text-sm font-medium text-night-50 truncate">{g.name}</p>
+                            <p className="text-xs text-night-400">{g.participants} participantes</p>
+                          </div>
+                        </button>
+                      )
+                    })}
+                  </div>
+                  <Button className="w-full mt-4" onClick={goToConfig} disabled={selectedGroups.length === 0}>
+                    Continuar
+                    {selectedGroups.length > 0 ? ` (${selectedGroups.length})` : ''}
+                  </Button>
+                </>
               )}
             </>
           )}
 
           {/* Step 3: configurações */}
-          {!imported && step === 'config' && selectedGroup && (
+          {!imported && step === 'config' && selectedGroups.length > 0 && (
             <>
-              <div className="flex items-center gap-2 mb-4 p-3 bg-night-700 rounded-xl">
-                <div className="w-8 h-8 rounded-full bg-brand-900/30 flex items-center justify-center flex-shrink-0">
-                  <Users className="w-4 h-4 text-brand-400" />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-sm font-medium text-night-50 truncate">{selectedGroup.name}</p>
-                  <p className="text-xs text-night-400">{selectedGroup.participants} participantes atualmente</p>
-                </div>
+              <div className="mb-4 p-3 bg-night-700 rounded-xl">
+                <p className="text-sm font-medium text-night-50">
+                  {selectedGroups.length} grupo{selectedGroups.length === 1 ? '' : 's'} selecionado{selectedGroups.length === 1 ? '' : 's'}
+                </p>
+                <p className="text-xs text-night-400 mt-0.5">Maior grupo: {maxParticipants} participantes</p>
               </div>
 
               {/* Max membros */}
@@ -230,7 +281,7 @@ export function ImportGroupModal({ structureId, structureName, onSuccess, onClos
                 </div>
                 <input
                   type="range"
-                  min={Math.max(selectedGroup.participants, 50)}
+                  min={minMembers}
                   max={1024}
                   step={10}
                   value={maxMembers}
@@ -238,7 +289,7 @@ export function ImportGroupModal({ structureId, structureName, onSuccess, onClos
                   className="w-full accent-brand-500"
                 />
                 <div className="flex justify-between text-xs text-night-400 mt-1">
-                  <span>{Math.max(selectedGroup.participants, 50)} (mín)</span>
+                  <span>{minMembers} (mín)</span>
                   <span>1024 (máx)</span>
                 </div>
               </div>
@@ -280,7 +331,7 @@ export function ImportGroupModal({ structureId, structureName, onSuccess, onClos
                   {importing ? (
                     <><Loader2 className="w-4 h-4 animate-spin mr-2" /> Importando...</>
                   ) : (
-                    <><Download className="w-4 h-4 mr-2" /> Importar grupo</>
+                    <><Download className="w-4 h-4 mr-2" /> Importar {selectedGroups.length} grupo{selectedGroups.length === 1 ? '' : 's'}</>
                   )}
                 </Button>
               </div>

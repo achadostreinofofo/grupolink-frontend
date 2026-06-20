@@ -102,8 +102,11 @@ export const api = {
     delete: (id: string) => request<void>(`/structures/${id}`, { method: 'DELETE' }),
     addGroup: (structureId: string, data: AddGroupPayload & { participantJids?: string[] }) =>
       request(`/structures/${structureId}/groups`, { method: 'POST', body: JSON.stringify(data) }),
-    importGroup: (structureId: string, data: { whatsappGroupId: string; inviteLink?: string; maxMembersPerGroup?: number; fillThreshold?: number }) =>
-      request(`/structures/${structureId}/groups/import`, { method: 'POST', body: JSON.stringify(data) }),
+    importGroups: (structureId: string, data: { whatsappGroupIds: string[]; maxMembersPerGroup?: number; fillThreshold?: number }) =>
+      request<{ imported: { id: string }[]; failed: { whatsappGroupId: string; reason: string }[] }>(
+        `/structures/${structureId}/groups/import`,
+        { method: 'POST', body: JSON.stringify(data) }
+      ),
   },
 
   whatsapp: {
