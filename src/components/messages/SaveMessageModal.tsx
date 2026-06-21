@@ -47,18 +47,18 @@ export function SaveMessageModal({ open, saving, structureId, onClose, onConfirm
       color: 'border-night-600 hover:border-night-400 data-[sel=true]:border-night-300 data-[sel=true]:bg-night-700',
     },
     {
-      id: 'schedule',
-      icon: <CalendarClock className="w-5 h-5" />,
-      title: 'Agendar envio',
-      desc: 'Escolhe uma data e hora para o envio automático.',
-      color: 'border-night-600 hover:border-blue-500 data-[sel=true]:border-blue-500 data-[sel=true]:bg-blue-900/20',
-    },
-    {
       id: 'send_now',
       icon: <Send className="w-5 h-5" />,
       title: 'Enviar agora',
       desc: 'Dispara a mensagem imediatamente para todos os grupos da estrutura.',
       color: 'border-night-600 hover:border-brand-600 data-[sel=true]:border-brand-500 data-[sel=true]:bg-brand-900/20',
+    },
+    {
+      id: 'schedule',
+      icon: <CalendarClock className="w-5 h-5" />,
+      title: 'Agendar envio',
+      desc: 'Escolhe uma data e hora para o envio automático.',
+      color: 'border-night-600 hover:border-blue-500 data-[sel=true]:border-blue-500 data-[sel=true]:bg-blue-900/20',
     },
   ]
 
